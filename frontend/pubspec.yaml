@@ -7,7 +7,6 @@ version: 1.0.0+1
 environment:
   sdk: ">=2.17.0 <4.0.0"
 
-
 dependencies:
   flutter:
     sdk: flutter
@@ -43,6 +42,10 @@ flutter:
     - assets/Apple.svg
     - assets/Google.svg
     - assets/Kakao.svg
+    - assets/onboarding_icon_1.json
+    - assets/onboarding_icon_2.json
+    - assets/onboarding_icon_3.json
+    - assets/onboarding_bg_1.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

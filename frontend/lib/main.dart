@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_template.dart';
 import 'package:okay_life_app/data/auth_state.dart';
 import 'package:okay_life_app/pages/login_page.dart';
+import 'package:okay_life_app/pages/onboarding_page.dart';
 import 'package:okay_life_app/pages/splash_page.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // 디버그 배너 제거
       title: 'Okay Life App',
-      home: LoginPage(),
+      home: OnboardingPage(),
     );
   }
 }
