@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+
+@Entity
 public class DailyMission {
 
     @Id
@@ -16,8 +18,8 @@ public class DailyMission {
 
     @ManyToOne
     @JoinColumn(name = "planet_id", nullable = false)
-    private Planet planet_id;
-
+    private Planet planetId;
+  
     private String content;
     private Date date;
 

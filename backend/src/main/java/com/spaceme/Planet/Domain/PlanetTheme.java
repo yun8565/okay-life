@@ -10,11 +10,12 @@ public class PlanetTheme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "planet_theme_id")
-    private Long planet_theme_id;
+    private Long planetThemeId;
 
     @ManyToOne
     @JoinColumn(name = "galaxy_theme_id")
-    private GalaxyTheme galaxy_theme_id;
+    private GalaxyTheme galaxyThemeId;
+
 
     private String theme;
 
