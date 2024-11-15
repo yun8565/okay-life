@@ -12,15 +12,15 @@ public class Planet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "planet_id")
-    private Long planet_id;
+    private Long planetId;
 
     @ManyToOne
     @JoinColumn(name = "galaxy_id", nullable = false)
-    private Galaxy galaxy_id;
+    private Galaxy galaxyId;
 
     @ManyToOne
     @JoinColumn(name = "planet_theme_id")
-    private PlanetTheme planet_theme_id;
+    private PlanetTheme planetThemeId;
 
     private String title;
     private Boolean achieved;

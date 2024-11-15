@@ -14,18 +14,18 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type")
-    private UserType user_type;
+    private UserType userType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "auth_type")
-    private AuthType auth_type;
+    private AuthType authType;
 
     private Long point;
     private String nickname;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "alien_theme")
-    private AlienType alien_theme;
+    private AlienType alienTheme;
 
     @OneToMany(mappedBy = "user")
     private List<Galaxy> galaxies;

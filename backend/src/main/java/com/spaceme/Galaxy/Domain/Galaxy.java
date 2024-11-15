@@ -12,19 +12,19 @@ public class Galaxy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "galaxy_id")
-    private Long galaxy_id;
+    private Long galaxyId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user_id;
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "galaxy_theme_id")
-    private GalaxyTheme galaxy_theme_id;
+    private GalaxyTheme galaxyThemeId;
 
     private String title;
-    private Date start_date;
-    private Date end_date;
+    private Date startDate;
+    private Date endDate;
 
     @OneToMany(mappedBy = "galaxy")
     private List<Planet> planets;
