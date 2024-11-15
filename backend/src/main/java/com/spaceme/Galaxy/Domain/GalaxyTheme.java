@@ -11,6 +11,7 @@ public class GalaxyTheme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "galaxy_theme_id")
+
     private Long galaxyThemeId;
 
     private String theme;

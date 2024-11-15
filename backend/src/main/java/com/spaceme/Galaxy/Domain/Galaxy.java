@@ -26,6 +26,7 @@ public class Galaxy {
     private Date startDate;
     private Date endDate;
 
+
     @OneToMany(mappedBy = "galaxy")
     private List<Planet> planets;
 }

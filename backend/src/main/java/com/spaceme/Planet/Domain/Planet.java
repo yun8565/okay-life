@@ -22,6 +22,7 @@ public class Planet {
     @JoinColumn(name = "planet_theme_id")
     private PlanetTheme planetThemeId;
 
+
     private String title;
     private Boolean achieved;
 

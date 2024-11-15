@@ -20,12 +20,14 @@ public class User {
     @Column(name = "auth_type")
     private AuthType authType;
 
+
     private Long point;
     private String nickname;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "alien_theme")
     private AlienType alienTheme;
+
 
     @OneToMany(mappedBy = "user")
     private List<Galaxy> galaxies;

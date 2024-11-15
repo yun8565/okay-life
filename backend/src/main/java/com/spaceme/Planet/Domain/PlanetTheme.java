@@ -16,6 +16,7 @@ public class PlanetTheme {
     @JoinColumn(name = "galaxy_theme_id")
     private GalaxyTheme galaxyThemeId;
 
+
     private String theme;
 
     @OneToMany(mappedBy = "planetType")

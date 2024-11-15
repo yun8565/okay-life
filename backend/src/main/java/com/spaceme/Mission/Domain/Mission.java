@@ -3,6 +3,7 @@ package com.spaceme.Mission.Domain;
 import com.spaceme.DailyMission.Domain.DailyMission;
 import jakarta.persistence.*;
 
+
 @Entity
 public class Mission {
     @Id
@@ -13,6 +14,7 @@ public class Mission {
     @ManyToOne
     @JoinColumn(name = "daily_mission_id", nullable = false)
     private DailyMission dailyMissionId;
+
 
     private Boolean achieved;
     private String content;
