@@ -3,11 +3,15 @@ package com.spaceme.Galaxy.Domain;
 import com.spaceme.Planet.Domain.Planet;
 import com.spaceme.User.Domain.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class Galaxy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
