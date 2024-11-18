@@ -1,9 +1,9 @@
-package com.spaceme.Galaxy.Service;
+package com.spaceme.galaxy.service;
 
-import com.spaceme.Galaxy.DTO.GalaxyDTO;
-import com.spaceme.Galaxy.Domain.Galaxy;
-import com.spaceme.Galaxy.Domain.GalaxyTheme;
-import com.spaceme.Galaxy.Repository.GalaxyRepository;
+import com.spaceme.galaxy.dto.GalaxyDTO;
+import com.spaceme.galaxy.domain.Galaxy;
+import com.spaceme.galaxy.domain.GalaxyTheme;
+import com.spaceme.galaxy.repository.GalaxyRepository;
 import com.spaceme.User.Domain.User;
 import org.springframework.stereotype.Service;
 

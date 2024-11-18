@@ -1,6 +1,6 @@
-package com.spaceme.Galaxy.Repository;
+package com.spaceme.galaxy.repository;
 
-import com.spaceme.Galaxy.Domain.Galaxy;
+import com.spaceme.galaxy.domain.Galaxy;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.spaceme.Galaxy.DTO;
+package com.spaceme.galaxy.dto;
 
 import lombok.Getter;
 import lombok.Setter;
