@@ -1,8 +1,7 @@
-package com.spaceme.Galaxy.Controller;
+package com.spaceme.galaxy.controller;
 
-import com.spaceme.Galaxy.DTO.GalaxyDTO;
-import com.spaceme.Galaxy.Domain.Galaxy;
-import com.spaceme.Galaxy.Service.GalaxyService;
+import com.spaceme.galaxy.dto.GalaxyDTO;
+import com.spaceme.galaxy.service.GalaxyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

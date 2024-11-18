@@ -1,31 +1,31 @@
-package com.spaceme.Planet.Domain;
+package com.spaceme.planet.domain;
 
 
-import com.spaceme.DailyMission.Domain.DailyMission;
-import com.spaceme.Galaxy.Domain.Galaxy;
+import com.spaceme.galaxy.domain.Galaxy;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class Planet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "planet_id")
     private Long planetId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "galaxy_id", nullable = false)
-    private Galaxy galaxyId;
+    private Galaxy galaxy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planet_theme_id")
-    private PlanetTheme planetThemeId;
+    private PlanetTheme planetTheme;
 
-
+    @Column(nullable = false)
     private String title;
     private Boolean achieved;
 
-    @OneToMany(mappedBy = "planet")
-    private List<DailyMission> dailyMissions;
 }

@@ -1,6 +1,6 @@
-package com.spaceme.Galaxy.Domain;
+package com.spaceme.galaxy.domain;
 
-import com.spaceme.Planet.Domain.PlanetTheme;
+import com.spaceme.planet.domain.PlanetTheme;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,14 +15,8 @@ public class GalaxyTheme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "galaxy_theme_id")
-
     private Long galaxyThemeId;
 
     private String theme;
 
-    @OneToMany(mappedBy = "galaxyType")
-    private List<Galaxy> galaxies;
-
-    @OneToMany(mappedBy = "galaxyType")
-    private List<PlanetTheme> planetThemes;
 }

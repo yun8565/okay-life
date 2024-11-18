@@ -1,6 +1,6 @@
-package com.spaceme.Galaxy.Domain;
+package com.spaceme.galaxy.domain;
 
-import com.spaceme.Planet.Domain.Planet;
+import com.spaceme.planet.domain.Planet;
 import com.spaceme.User.Domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,19 +18,16 @@ public class Galaxy {
     @Column(name = "galaxy_id")
     private Long galaxyId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "galaxy_theme_id")
-    private GalaxyTheme galaxyThemeId;
+    private GalaxyTheme galaxyTheme;
 
     private String title;
     private Date startDate;
     private Date endDate;
 
-
-    @OneToMany(mappedBy = "galaxy")
-    private List<Planet> planets;
 }

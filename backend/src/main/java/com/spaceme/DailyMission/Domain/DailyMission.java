@@ -1,7 +1,7 @@
 package com.spaceme.DailyMission.Domain;
 
 import com.spaceme.Mission.Domain.Mission;
-import com.spaceme.Planet.Domain.Planet;
+import com.spaceme.planet.domain.Planet;
 import jakarta.persistence.*;
 
 import java.util.Date;

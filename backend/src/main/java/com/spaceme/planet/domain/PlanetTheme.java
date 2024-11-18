@@ -1,24 +1,26 @@
-package com.spaceme.Planet.Domain;
+package com.spaceme.planet.domain;
 
-import com.spaceme.Galaxy.Domain.GalaxyTheme;
+import com.spaceme.galaxy.domain.GalaxyTheme;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class PlanetTheme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "planet_theme_id")
     private Long planetThemeId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "galaxy_theme_id")
-    private GalaxyTheme galaxyThemeId;
+    private GalaxyTheme galaxyTheme;
 
 
     private String theme;
 
-    @OneToMany(mappedBy = "planetType")
-    private List<Planet> planets;
 }
