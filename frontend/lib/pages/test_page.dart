@@ -367,7 +367,7 @@ class _TestPageState extends State<TestPage> {
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateGalaxyPage()),
+                      MaterialPageRoute(builder: (context) => CreateGalaxyPage(result: result)),
                     );
                   },
                   child: Container(
