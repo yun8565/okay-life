@@ -1,22 +1,17 @@
 package com.spaceme.galaxy.domain;
 
-import com.spaceme.planet.domain.PlanetTheme;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GalaxyTheme {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "galaxy_theme_id")
-    private Long galaxyThemeId;
+    private Long id;
 
+    @Column(nullable = false)
     private String theme;
-
 }

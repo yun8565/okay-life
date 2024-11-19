@@ -1,31 +1,41 @@
 package com.spaceme.planet.domain;
 
-
 import com.spaceme.galaxy.domain.Galaxy;
+import com.spaceme.common.Status;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import static com.spaceme.common.Status.SOON;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Planet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "planet_id")
-    private Long planetId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "galaxy_id", nullable = false)
     private Galaxy galaxy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "planet_theme_id")
     private PlanetTheme planetTheme;
 
     @Column(nullable = false)
     private String title;
-    private Boolean achieved;
 
+    @Builder.Default
+    private Status status = SOON;
+
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
 }

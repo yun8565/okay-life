@@ -1,33 +1,37 @@
 package com.spaceme.galaxy.domain;
 
-import com.spaceme.planet.domain.Planet;
-import com.spaceme.User.Domain.User;
+import com.spaceme.user.domain.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Galaxy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "galaxy_id")
-    private Long galaxyId;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "galaxy_theme_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private GalaxyTheme galaxyTheme;
 
-    private String title;
-    private Date startDate;
-    private Date endDate;
-
+    public void updateTitle(String title) {
+        this.title = title;
+    }
 }

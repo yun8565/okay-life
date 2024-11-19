@@ -1,38 +1,17 @@
-package com.spaceme.User.Domain;
+package com.spaceme.user.domain;
 
-import com.spaceme.galaxy.domain.Galaxy;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
-
-
-import java.util.List;
 
 @Entity
 @Getter
-@Setter
 public class User {
     @Id
-    @Column(name = "user_id")
-    private String userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_type")
-    private UserType userType;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "auth_type")
-    private AuthType authType;
-
-
-    private Long point;
     private String nickname;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "alien_theme")
-    private AlienType alienTheme;
-
-
-    @OneToMany(mappedBy = "user")
-    private List<Galaxy> galaxies;
 }

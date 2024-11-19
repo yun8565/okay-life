@@ -1,16 +1,20 @@
 package com.spaceme.mission.service;
 
+import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.mission.domain.Mission;
 import com.spaceme.mission.dto.request.MissionCreateRequest;
 import com.spaceme.mission.dto.request.MissionModifyRequest;
+import com.spaceme.mission.dto.response.MissionResponse;
 import com.spaceme.mission.repository.MissionRepository;
+import com.spaceme.planet.domain.Planet;
+import com.spaceme.planet.repository.PlanetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
+import java.util.List;
 
-import static com.spaceme.mission.domain.Status.CLEAR;
+import static com.spaceme.common.Status.CLEAR;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +24,15 @@ public class MissionService {
     private final MissionRepository missionRepository;
     private final PlanetRepository planetRepository;
 
+    public List<MissionResponse> findAllMissionByPlanetId(Long planetId) {
+        return missionRepository.findAllByPlanetId(planetId).stream()
+                .map(MissionResponse::from)
+                .toList();
+    }
+
     public void saveMission(MissionCreateRequest request) {
-        Planet planet = planetRepository.findById(request.planetId());
-                //TODO: orElseThrow로 예외 처리
+        Planet planet = planetRepository.findById(request.planetId())
+                .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
 
         Mission mission = Mission.builder()
                 .content(request.content())
@@ -35,7 +45,7 @@ public class MissionService {
 
     public void modifyMission(Long missionId, MissionModifyRequest request) {
         Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."));
 
         mission.updateContent(request.content());
     }
@@ -46,8 +56,8 @@ public class MissionService {
 
     public void setMissionStatusAsClear(Long missionId) {
         Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."));
 
-        mission.setStatus(CLEAR);
+        mission.updateStatus(CLEAR);
     }
 }
