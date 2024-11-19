@@ -51,6 +51,7 @@ flutter:
     - assets/rocket.png
     - assets/mascot.svg
     - assets/dashboard_bg.png
+    - assets/sun-star.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
