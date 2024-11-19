@@ -1,10 +1,13 @@
 package com.spaceme.mission.domain;
 
+import com.spaceme.common.Status;
 import com.spaceme.planet.domain.Planet;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static com.spaceme.mission.domain.Status.*;
+import java.time.LocalDate;
+
+import static com.spaceme.common.Status.*;
 
 @Entity
 @Getter
@@ -15,7 +18,7 @@ public class Mission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long missionId;
+    private Long id;
 
     @Column(nullable = false)
     private String content;
@@ -25,7 +28,7 @@ public class Mission {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Status missionStatus = SOON;
+    private Status status = SOON;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Planet planet;
@@ -34,7 +37,7 @@ public class Mission {
         this.content = content;
     }
 
-    public void setStatus(Status status) {
-        this.missionStatus = status;
+    public void updateStatus(Status status) {
+        this.status = status;
     }
 }
