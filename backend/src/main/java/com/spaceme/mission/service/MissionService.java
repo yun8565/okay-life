@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
+import static com.spaceme.mission.domain.Status.CLEAR;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -40,5 +42,12 @@ public class MissionService {
 
     public void deleteMission(Long missionId) {
         missionRepository.deleteById(missionId);
+    }
+
+    public void setMissionStatusAsClear(Long missionId) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(NoSuchElementException::new);
+
+        mission.setStatus(CLEAR);
     }
 }

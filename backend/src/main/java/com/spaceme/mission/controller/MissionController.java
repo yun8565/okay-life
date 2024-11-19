@@ -34,4 +34,10 @@ public class MissionController {
         missionService.deleteMission(missionId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{missionId}/status")
+    public ResponseEntity<Void> setMissionStatus(@PathVariable Long missionId) {
+        missionService.setMissionStatusAsClear(missionId);
+        return ResponseEntity.ok().build();
+    }
 }

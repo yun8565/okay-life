@@ -4,8 +4,6 @@ import com.spaceme.planet.domain.Planet;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-
 import static com.spaceme.mission.domain.Status.*;
 
 @Entity
@@ -23,7 +21,7 @@ public class Mission {
     private String content;
 
     @Column(nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
@@ -34,5 +32,9 @@ public class Mission {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void setStatus(Status status) {
+        this.missionStatus = status;
     }
 }
