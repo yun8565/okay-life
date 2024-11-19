@@ -31,4 +31,8 @@ public class Mission {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Planet planet;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

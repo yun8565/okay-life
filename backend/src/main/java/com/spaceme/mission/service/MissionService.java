@@ -2,10 +2,13 @@ package com.spaceme.mission.service;
 
 import com.spaceme.mission.domain.Mission;
 import com.spaceme.mission.dto.request.MissionCreateRequest;
+import com.spaceme.mission.dto.request.MissionModifyRequest;
 import com.spaceme.mission.repository.MissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,5 +29,13 @@ public class MissionService {
                 .build();
 
         missionRepository.save(mission);
+    }
+
+    @Transactional
+    public void modifyMission(Long missionId, MissionModifyRequest request) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(NoSuchElementException::new);
+
+        mission.updateContent(request.content());
     }
 }
