@@ -1,10 +1,10 @@
 package com.spaceme.mission.dto.request;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record MissionCreateRequest(
         Long planetId,
         String content,
-        Date date
+        LocalDate date
 ) {
 }

@@ -1,80 +1,61 @@
 package com.spaceme.galaxy.service;
 
-import com.spaceme.galaxy.dto.GalaxyDTO;
+import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.galaxy.domain.Galaxy;
-import com.spaceme.galaxy.domain.GalaxyTheme;
+import com.spaceme.galaxy.dto.request.GalaxyModifyRequest;
+import com.spaceme.galaxy.dto.request.GalaxyRequest;
+import com.spaceme.galaxy.dto.response.GalaxyResponse;
 import com.spaceme.galaxy.repository.GalaxyRepository;
-import com.spaceme.User.Domain.User;
+import com.spaceme.planet.repository.PlanetRepository;
+import com.spaceme.planet.service.PlanetService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class GalaxyService {
 
     private final GalaxyRepository galaxyRepository;
+    private final PlanetRepository planetRepository;
+    private final PlanetService planetService;
 
-    public GalaxyService(GalaxyRepository galaxyRepository) {
-        this.galaxyRepository = galaxyRepository;
+    @Transactional(readOnly = true)
+    public List<GalaxyResponse> findGalaxies() {
+        return galaxyRepository.findAllByUserId(1L).stream() //TODO: 인증 기능 추가 시 사용자ID로 변경
+            .map(galaxy -> GalaxyResponse.of(
+                    galaxy,
+                    planetService.findAllByGalaxyId(galaxy.getId())
+            ))
+            .toList();
     }
 
-    public List<GalaxyDTO> getAllGalaxies() {
-        return galaxyRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public void saveGalaxy(GalaxyRequest request) {
+        //TODO: 인증 기능 추가 시 사용자ID도 받아오기
+        // User user = userRepository.findById()
+
+        Galaxy galaxy = Galaxy.builder()
+                .title(request.title())
+                // TODO .galaxyTheme() 확률 적용해서 테마 생성
+                // TODO .user(user)
+                .startDate(request.startDate())
+                .endDate(request.endDate())
+                .build();
+
+        galaxyRepository.save(galaxy);
     }
 
-    public List<GalaxyDTO> getUserGalaxies(Long userId) {
-        return galaxyRepository.findByUserId(userId).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    public GalaxyDTO createGalaxy(GalaxyDTO galaxyDTO) {
-        Galaxy galaxy = convertToEntity(galaxyDTO);
-        Galaxy savedGalaxy = galaxyRepository.save(galaxy);
-        return convertToDTO(savedGalaxy);
-    }
-
-    public GalaxyDTO updateGalaxy(Long galaxyId, GalaxyDTO galaxyDTO) {
+    public void modifyGalaxy(Long galaxyId, GalaxyModifyRequest request) {
         Galaxy galaxy = galaxyRepository.findById(galaxyId)
-                .orElseThrow(() -> new RuntimeException("Galaxy not found"));
-        galaxy.setTitle(galaxyDTO.getTitle());
-        galaxy.setStartDate(galaxyDTO.getStartDate());
-        galaxy.setEndDate(galaxyDTO.getEndDate());
-        Galaxy updatedGalaxy = galaxyRepository.save(galaxy);
-        return convertToDTO(updatedGalaxy);
+                .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
+
+        galaxy.updateTitle(request.title());
     }
 
     public void deleteGalaxy(Long galaxyId) {
         galaxyRepository.deleteById(galaxyId);
-    }
-
-    private GalaxyDTO convertToDTO(Galaxy galaxy) {
-        GalaxyDTO galaxyDTO = new GalaxyDTO();
-        galaxyDTO.setGalaxyId(galaxy.getGalaxyId());
-        galaxyDTO.setUserId(galaxy.getUserId().getUserId()); // User 엔티티의 ID 추출
-        galaxyDTO.setGalaxyThemeId(galaxy.getGalaxyThemeId().getGalaxyThemeId()); // GalaxyTheme 엔티티의 ID 추출
-        galaxyDTO.setTitle(galaxy.getTitle());
-        galaxyDTO.setStartDate(galaxy.getStartDate());
-        galaxyDTO.setEndDate(galaxy.getEndDate());
-        return galaxyDTO;
-    }
-
-    private Galaxy convertToEntity(GalaxyDTO galaxyDTO) {
-        Galaxy galaxy = new Galaxy();
-        galaxy.setTitle(galaxyDTO.getTitle());
-        galaxy.setStartDate(galaxyDTO.getStartDate());
-        galaxy.setEndDate(galaxyDTO.getEndDate());
-
-        User user = new User(); // UserRepository 또는 Service에서 조회해야 함
-        user.setUserId(galaxyDTO.getUserId());
-        galaxy.setUserId(user);
-
-        GalaxyTheme galaxyTheme = new GalaxyTheme(); // GalaxyThemeRepository에서 조회 필요
-        galaxyTheme.setGalaxyThemeId(galaxyDTO.getGalaxyThemeId());
-        galaxy.setGalaxyThemeId(galaxyTheme);
-        return galaxy;
     }
 }

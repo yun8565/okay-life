@@ -1,13 +1,22 @@
 package com.spaceme.mission.dto.response;
 
-import com.spaceme.mission.domain.Status;
+import com.spaceme.common.Status;
+import com.spaceme.mission.domain.Mission;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record MissionResponse(
         Long missionId,
         String content,
-        Date date,
+        LocalDate date,
         Status status
 ) {
+    public static MissionResponse from(Mission mission) {
+        return new MissionResponse(
+                mission.getId(),
+                mission.getContent(),
+                mission.getDate(),
+                mission.getStatus()
+        );
+    }
 }

@@ -1,51 +1,42 @@
 package com.spaceme.galaxy.controller;
 
-import com.spaceme.galaxy.dto.GalaxyDTO;
+import com.spaceme.galaxy.dto.request.GalaxyModifyRequest;
+import com.spaceme.galaxy.dto.request.GalaxyRequest;
+import com.spaceme.galaxy.dto.response.GalaxyResponse;
 import com.spaceme.galaxy.service.GalaxyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/galaxies")
 public class GalaxyController {
 
     private final GalaxyService galaxyService;
 
-    public GalaxyController(GalaxyService galaxyService) {
-        this.galaxyService = galaxyService;
-    }
-
-    // GET: 전체 은하수 조회
     @GetMapping
-    public ResponseEntity<List<GalaxyDTO>> getAllGalaxies() {
-        List<GalaxyDTO> galaxies = galaxyService.getAllGalaxies();
-        return ResponseEntity.ok(galaxies);
+    public ResponseEntity<List<GalaxyResponse>> findGalaxies() {
+        return ResponseEntity.ok(galaxyService.findGalaxies());
     }
 
-    // GET: 내 은하수 도감 조회
-    @GetMapping("/book")
-    public ResponseEntity<List<GalaxyDTO>> getUserGalaxies(@RequestParam Long userId) {
-        List<GalaxyDTO> userGalaxies = galaxyService.getUserGalaxies(userId);
-        return ResponseEntity.ok(userGalaxies);
-    }
-
-    // POST: 은하수 생성
     @PostMapping
-    public ResponseEntity<GalaxyDTO> createGalaxy(@RequestBody GalaxyDTO galaxyDTO) {
-        GalaxyDTO createdGalaxy = galaxyService.createGalaxy(galaxyDTO);
-        return ResponseEntity.status(201).body(createdGalaxy);
+    public ResponseEntity<Void> createGalaxy(@RequestBody GalaxyRequest request) {
+        galaxyService.saveGalaxy(request);
+        return ResponseEntity.noContent().build();
     }
 
-    // PUT: 은하수 수정
     @PutMapping("/{galaxyId}")
-    public ResponseEntity<GalaxyDTO> updateGalaxy(@PathVariable Long galaxyId, @RequestBody GalaxyDTO galaxyDTO) {
-        GalaxyDTO updatedGalaxy = galaxyService.updateGalaxy(galaxyId, galaxyDTO);
-        return ResponseEntity.ok(updatedGalaxy);
+    public ResponseEntity<Void> modifyGalaxy(
+            @PathVariable Long galaxyId,
+            @RequestBody GalaxyModifyRequest request
+    ) {
+        galaxyService.modifyGalaxy(galaxyId, request);
+        return ResponseEntity.noContent().build();
     }
 
-    // DELETE: 은하수 삭제
     @DeleteMapping("/{galaxyId}")
     public ResponseEntity<Void> deleteGalaxy(@PathVariable Long galaxyId) {
         galaxyService.deleteGalaxy(galaxyId);

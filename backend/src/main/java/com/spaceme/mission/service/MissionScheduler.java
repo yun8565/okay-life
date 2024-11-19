@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static com.spaceme.mission.domain.Status.FAILED;
-import static com.spaceme.mission.domain.Status.ON_PROGRESS;
+import static com.spaceme.common.Status.FAILED;
+import static com.spaceme.common.Status.ON_PROGRESS;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,14 +24,14 @@ public class MissionScheduler {
         LocalDate today = LocalDate.now();
 
         missionRepository.findAllByDate(today)
-                .forEach(mission -> mission.setStatus(ON_PROGRESS));
+                .forEach(mission -> mission.updateStatus(ON_PROGRESS));
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkMissionStatusYesterday() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        missionRepository.findAllByMissionStatusAndDate(ON_PROGRESS, yesterday)
-                .forEach(mission -> mission.setStatus(FAILED));
+        missionRepository.findAllByStatusAndDate(ON_PROGRESS, yesterday)
+                .forEach(mission -> mission.updateStatus(FAILED));
     }
 }
