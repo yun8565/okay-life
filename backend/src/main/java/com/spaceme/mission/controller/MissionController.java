@@ -28,4 +28,10 @@ public class MissionController {
         missionService.modifyMission(missionId, request);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{missionId}")
+    public ResponseEntity<Void> deleteMission(@PathVariable Long missionId) {
+        missionService.deleteMission(missionId);
+        return ResponseEntity.noContent().build();
+    }
 }

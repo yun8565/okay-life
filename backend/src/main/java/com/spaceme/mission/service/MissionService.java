@@ -12,12 +12,12 @@ import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MissionService {
 
     private final MissionRepository missionRepository;
     private final PlanetRepository planetRepository;
 
-    @Transactional
     public void saveMission(MissionCreateRequest request) {
         Planet planet = planetRepository.findById(request.planetId());
                 //TODO: orElseThrow로 예외 처리
@@ -31,11 +31,14 @@ public class MissionService {
         missionRepository.save(mission);
     }
 
-    @Transactional
     public void modifyMission(Long missionId, MissionModifyRequest request) {
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(NoSuchElementException::new);
 
         mission.updateContent(request.content());
+    }
+
+    public void deleteMission(Long missionId) {
+        missionRepository.deleteById(missionId);
     }
 }
