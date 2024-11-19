@@ -57,4 +57,5 @@ jobs:
           docker stop server || true
           docker container prune -f
           docker run -d --name server -p 8080:8080 \
+          --env-file ./.env \
           ${{ secrets.DOCKERHUB_USERNAME }}/spaceme-dev:latest
