@@ -1,6 +1,6 @@
 package com.spaceme.User.Domain;
 
-import com.spaceme.Galaxy.Domain.Galaxy;
+import com.spaceme.galaxy.domain.Galaxy;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

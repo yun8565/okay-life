@@ -146,6 +146,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "intl",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/intl-0.19.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "js",
       "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/js-0.7.1",
       "packageUri": "lib/",
@@ -428,6 +434,12 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "toggle_switch",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/toggle_switch-2.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "typed_data",
       "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/typed_data-1.4.0",
       "packageUri": "lib/",
@@ -512,7 +524,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2024-11-17T07:54:46.142484Z",
+  "generated": "2024-11-19T01:55:37.993429Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.24.4/flutter",
