@@ -27,14 +27,10 @@ public class PlanetService {
             .toList();
     }
 
-    public void updatePlanet(Long planetId, PlanetModifyRequest request) {
+    public void updatePlanet(Long userId, Long planetId, PlanetModifyRequest request) {
         Planet planet = planetRepository.findById(planetId)
                 .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
 
         planet.updateTitle(request.title());
-    }
-
-    public void deletePlanet(Long planetId) {
-        planetRepository.deleteById(planetId);
     }
 }

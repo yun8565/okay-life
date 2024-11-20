@@ -30,7 +30,8 @@ public class MissionService {
                 .toList();
     }
 
-    public void saveMission(MissionCreateRequest request) {
+    //TODO: 아래 4개 사용자 검증 어떻게 할지 생각
+    public void saveMission(Long userId, MissionCreateRequest request) {
         Planet planet = planetRepository.findById(request.planetId())
                 .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
 
@@ -43,18 +44,18 @@ public class MissionService {
         missionRepository.save(mission);
     }
 
-    public void modifyMission(Long missionId, MissionModifyRequest request) {
+    public void modifyMission(Long userId, Long missionId, MissionModifyRequest request) {
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."));
 
         mission.updateContent(request.content());
     }
 
-    public void deleteMission(Long missionId) {
+    public void deleteMission(Long userId, Long missionId) {
         missionRepository.deleteById(missionId);
     }
 
-    public void setMissionStatusAsClear(Long missionId) {
+    public void setMissionStatusAsClear(Long userId, Long missionId) {
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."));
 

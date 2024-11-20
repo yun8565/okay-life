@@ -1,5 +1,6 @@
 package com.spaceme.planet.controller;
 
+import com.spaceme.auth.domain.Auth;
 import com.spaceme.planet.dto.request.PlanetModifyRequest;
 import com.spaceme.planet.dto.response.PlanetResponse;
 import com.spaceme.planet.service.PlanetService;
@@ -17,15 +18,10 @@ public class PlanetController {
     @PutMapping("/{planetId}")
     public ResponseEntity<PlanetResponse> updatePlanet(
             @PathVariable Long planetId,
-            @RequestBody PlanetModifyRequest request
+            @RequestBody PlanetModifyRequest request,
+            @Auth Long userId
     ) {
-        planetService.updatePlanet(planetId, request);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{planetId}")
-    public ResponseEntity<Void> deletePlanet(@PathVariable Long planetId) {
-        planetService.deletePlanet(planetId);
+        planetService.updatePlanet(userId, planetId, request);
         return ResponseEntity.noContent().build();
     }
 }
