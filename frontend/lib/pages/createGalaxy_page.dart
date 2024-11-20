@@ -1,139 +1,313 @@
+import 'dart:async';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:okay_life_app/api/api_client.dart';
-import 'package:okay_life_app/pages/dashboard_page.dart';
-import 'package:toggle_switch/toggle_switch.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:okay_life_app/pages/galaxy_page.dart';
 
 class CreateGalaxyPage extends StatefulWidget {
-  final String result; // 전달받을 데이터
-
-  // 생성자
-  const CreateGalaxyPage({required this.result, Key? key}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() => _CreateGalaxyPageState();
 }
 
 class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
-  // 시작일과 종료일 변수
-  DateTime startDate = DateTime.now();
-  DateTime endDate = DateTime.now();
-  final TextEditingController _dateController = TextEditingController();
+  late PageController _pageController;
+  final List<Map<String, dynamic>> initialQuestions = [
+    {'question': '너의 우주를 정복하기 위한\n작은 목표를 적어줘', 'inputType': 'textField'},
+    {'question': '기간은 얼마나 생각하고 있어?', 'inputType': 'dateRangePicker'},
+    {
+      'question': '몇 단계로 나눠서\n달성하고 싶어?',
+      'inputType': 'button',
+      'options': ['3', '4', '5']
+    }
+  ];
 
-  final FocusNode _startDateFocus = FocusNode();
-  final FocusNode _endDateFocus = FocusNode();
-
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-
-  int selectedStep = 3;
-  final List<int> stepOptions = [3, 4, 5];
+  List<Map<String, dynamic>> questions = [];
+  bool isLoading = false;
+  String loadingText = "행성 생성을 위한\n추가 질문 생성 중";
+  int dotCount = 1;
+  late Timer _loadingTimer;
+  Map<String, String> answers = {}; // 사용자의 답변 저장
+  int? selectedIndex; // 버튼 상태를 추적
+  List<DateTime?> selectedDates = []; // 날짜 선택값
+  final int additionalQuestionsCount = 3; // 추가 질문 고정 개수
 
   @override
   void initState() {
     super.initState();
-    _startDateFocus.addListener(() {
-      setState(() {}); // 포커스 상태 변경 시 UI 업데이트
-    });
-    _endDateFocus.addListener(() {
-      setState(() {}); // 포커스 상태 변경 시 UI 업데이트
-    });
+    _pageController = PageController();
+    questions = List.from(initialQuestions);
+    _startLoadingAnimation();
   }
 
   @override
   void dispose() {
-    _startDateFocus.dispose();
-    _endDateFocus.dispose();
+    _pageController.dispose();
+    _loadingTimer.cancel();
     super.dispose();
   }
 
-  void _updateDateField() {
-    String formattedStartDate = DateFormat('yyyy/MM/dd').format(startDate);
-    String formattedEndDate = DateFormat('yyyy/MM/dd').format(endDate);
-    _dateController.text = "$formattedStartDate - $formattedEndDate";
-  }
-
-  Future<void> _selectDate(BuildContext context, bool isStart) async {
-    DateTime initialDate = isStart ? startDate : endDate;
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null) {
+  void _startLoadingAnimation() {
+    _loadingTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
       setState(() {
-        if (isStart) {
-          if (pickedDate.isAfter(endDate)) {
-            // 시작일이 종료일보다 크면 경고 표시
-            _showErrorDialog("시작일은 종료일보다 클 수 없습니다.");
-            return;
-          }
-          startDate = pickedDate;
-        } else {
-          if (pickedDate.isBefore(startDate)) {
-            // 종료일이 시작일보다 작으면 경고 표시
-            _showErrorDialog("종료일은 시작일보다 작을 수 없습니다.");
-            return;
-          }
-          endDate = pickedDate;
-        }
-        _updateDateField(); // 날짜 값 업데이트
+        dotCount = (dotCount % 3) + 1; // 1, 2, 3 반복
       });
-    }
+    });
   }
 
-  bool _isContainerFocused() {
-    return _startDateFocus.hasFocus || _endDateFocus.hasFocus;
+  Future<void> _useDummyQuestions() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    // 로딩 시뮬레이션 및 추가 질문 생성
+    await Future.delayed(Duration(seconds: 2));
+    _loadingTimer.cancel();
+
+    final dummyQuestions = [
+      {'question': '좋아하는 행성은?', 'inputType': 'textField'},
+      {'question': '하루 목표는?', 'inputType': 'textField'},
+      {'question': '최종 목표는?', 'inputType': 'textField'},
+    ];
+
+    setState(() {
+      isLoading = false;
+      questions.addAll(dummyQuestions); // 추가 질문 추가
+    });
+
+    // 추가 질문 첫 페이지로 이동
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _pageController.jumpToPage(initialQuestions.length);
+      }
+    });
   }
 
-  Future<void> postGalaxyData() async {
+  Future<void> _submitAnswers() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
-      // /galaxies에 보낼 데이터
-      final Map<String, dynamic> galaxyData = {
-        "title": _titleController.text,
-        "description": _descriptionController.text,
-        "start_date": DateFormat('yyyy-MM-dd').format(startDate),
-        "end_date": DateFormat('yyyy-MM-dd').format(endDate),
-        "step": selectedStep,
+      // 백엔드로 데이터 전송
+      final data = {
+        'goal': answers[initialQuestions[0]['question']],
+        'start_date': selectedDates.isNotEmpty && selectedDates[0] != null
+            ? selectedDates[0]!.toIso8601String()
+            : null,
+        'end_date': selectedDates.isNotEmpty && selectedDates[1] != null
+            ? selectedDates[1]!.toIso8601String()
+            : null,
+        'steps': answers[initialQuestions[2]['question']],
+        'additional_info': answers,
       };
 
-      // /users에 보낼 데이터
-      final Map<String, dynamic> userData = {
-        "user_type": widget.result, // 테스트 결과
+      print("보내는 데이터: $data");
+
+      // TODO: 실제 API 호출
+      // final response = await ApiClient.post('/submit-goal', data: data);
+      // final galaxyData = response['galaxy'];
+
+      // 더미 데이터 시뮬레이션
+      final galaxyData = {
+        'name': 'Milky Way',
+        'stars': 300000000000,
+        'description': '우리 은하수입니다.'
       };
 
-      // ApiClient로 데이터 전송
-      final galaxyResponse =
-          await ApiClient.post('/galaxies', data: galaxyData);
-      print("목표 데이터 전송 성공: ${galaxyResponse}");
+      setState(() {
+        isLoading = false;
+      });
 
-      final userResponse = await ApiClient.post('/users', data: userData);
-      print("사용자 데이터 전송 성공: ${userResponse}");
+      if (!mounted) return;
 
-      // 성공적으로 데이터 전송 후 다음 페이지로 이동
-      Navigator.pushReplacementNamed(context, '/galaxyPage');
-    } catch (error) {
-      // 에러 처리
-      _showErrorDialog("데이터 전송 중 오류 발생: $error");
+      // GalaxyPage로 이동
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GalaxyPage(galaxyData: galaxyData),
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print("에러 발생: $e");
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("오류 발생"),
+          content: Text("데이터 전송 중 문제가 발생했습니다. 다시 시도해주세요."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("확인"),
+            ),
+          ],
+        ),
+      );
     }
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("오류"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text("확인"),
+  Widget _buildLoadingWidget() {
+    return Stack(
+      children: [
+        Center(
+          child: Container(
+            width: 350,
+            height: 320,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Color(0xff6976b6).withOpacity(0.2)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "$loadingText${'.' * dotCount}",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 30),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          top: 550,
+          left: 270,
+          child: Hero(
+            tag: 'devil',
+            child: SvgPicture.asset(
+              "assets/devil.svg",
+              width: 150,
+              height: 150,
+            ),
+          ),
+        ),
+      ],
     );
+  }
+
+  Widget _buildTypingText(String text) {
+    return TypingEffect(
+      fullText: text,
+      typingSpeed: Duration(milliseconds: 80),
+    );
+  }
+
+  Widget _buildInputWidget(Map<String, dynamic> question) {
+    switch (question['inputType']) {
+      case 'textField':
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: TextField(
+            onChanged: (value) {
+              answers[question['question']] = value;
+            },
+            maxLength: 30,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Color(0xff0a1c4c),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.white, width: 2.0),
+              ),
+              counterText: '',
+            ),
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        );
+
+      case 'button':
+        return Wrap(
+          spacing: 10,
+          children: List.generate(
+            question['options'].length,
+            (index) => GestureDetector(
+              onTap: () {
+                setState(() {
+                  answers[question['question']] = question['options'][index];
+                  selectedIndex = index;
+                });
+              },
+              child: Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: selectedIndex == index
+                      ? Colors.white.withOpacity(0.8)
+                      : Color(0xff0a1c4c),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Text(
+                  question['options'][index],
+                  style: TextStyle(
+                    color: selectedIndex == index
+                        ? Color(0xff0a1c4c)
+                        : Colors.white.withOpacity(0.3),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+      case 'dateRangePicker':
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: ElevatedButton(
+            onPressed: () async {
+              var results = await showCalendarDatePicker2Dialog(
+                context: context,
+                config: CalendarDatePicker2WithActionButtonsConfig(
+                    calendarType: CalendarDatePicker2Type.range,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(Duration(days: 365)),
+                    selectedDayHighlightColor:
+                        Color(0xff0a1c4c).withOpacity(0.8),
+                    selectedDayTextStyle: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+                value: selectedDates,
+                dialogSize: const Size(325, 400),
+              );
+
+              if (results != null && results.length == 2) {
+                setState(() {
+                  selectedDates = results;
+                });
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xff0a1c4c),
+              foregroundColor: Colors.white.withOpacity(0.7),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+            child: Text(
+              selectedDates.isNotEmpty &&
+                      selectedDates[0] != null &&
+                      selectedDates[1] != null
+                  ? "${selectedDates[0]!.year}-${selectedDates[0]!.month}-${selectedDates[0]!.day} ~ ${selectedDates[1]!.year}-${selectedDates[1]!.month}-${selectedDates[1]!.day}"
+                  : "기간 설정",
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+        );
+
+      default:
+        return Container();
+    }
   }
 
   @override
@@ -141,279 +315,144 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // 배경 이미지
           Positioned.fill(
             child: Image.asset(
               'assets/dashboard_bg.png',
-              fit: BoxFit.cover, // 화면 전체에 꽉 채움
+              fit: BoxFit.cover,
             ),
           ),
-          // 중앙 컨테이너
-          Center(
-            child: Container(
-              width: 350,
-              height: 700,
-              decoration: BoxDecoration(
-                color: Color(0xff6976b6).withOpacity(0.62),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25, vertical: 5),
-                      child: Text(
-                        "목표",
-                        style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                    child: TextField(
-                      controller: _titleController,
-                      maxLength: 10,
-                      decoration: InputDecoration(
-                        hintText: "자격증 따기",
-                        hintStyle: TextStyle(
-                            color: Colors.white.withOpacity(0.5), fontSize: 20),
-                        filled: true,
-                        fillColor: Color(0xFF0A1C4C), // 배경색
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(
-                            color: Color(0xFFFFCF39), // 포커스 시 보더 색상
-                            width: 2.0, // 보더 두께
-                          ),
-                        ),
-                        counterText: '',
-                      ),
-                      style: TextStyle(color: Colors.white, fontSize: 22),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25, vertical: 5),
-                      child: Text(
-                        "목표 설명",
-                        style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                    child: TextField(
-                      controller: _descriptionController,
-                      maxLength: 100,
-                      decoration: InputDecoration(
-                        hintText: "정보 처리 기사 자격증따기",
-                        hintStyle: TextStyle(
-                            color: Colors.white.withOpacity(0.5), fontSize: 20),
-                        filled: true,
-                        fillColor: Color(0xFF0A1C4C), // 배경색
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(
-                            color: Color(0xFFFFCF39), // 포커스 시 보더 색상
-                            width: 2.0, // 보더 두께
-                          ),
-                        ),
-                        counterText: '',
-                      ),
-                      style: TextStyle(color: Colors.white, fontSize: 22),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25, vertical: 5),
-                      child: Text(
-                        "기간 설정",
-                        style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF0A1C4C),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: _isContainerFocused()
-                              ? Color(0xFFFFCF39) // 포커스 시 노란색 보더
-                              : Colors.transparent, // 기본 상태
-                          width: 2.0,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => _selectDate(context, true),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 16, horizontal: 12),
-                                child: Text(
-                                  textAlign: TextAlign.center,
-                                  "${DateFormat('yyyy/MM/dd').format(startDate)}",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
-                              ),
+          isLoading
+              ? _buildLoadingWidget()
+              : PageView.builder(
+                  controller: _pageController,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: questions.length,
+                  itemBuilder: (context, index) {
+                    final question = questions[index];
+                    return Stack(
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 350,
+                            height: 320,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Color(0xff6976b6).withOpacity(0.2),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildTypingText(question['question']),
+                                const SizedBox(height: 30),
+                                _buildInputWidget(question),
+                                const SizedBox(height: 30),
+                                GestureDetector(
+                                  onTap: () async {
+                                    if (index == initialQuestions.length - 1) {
+                                      // 초기 질문 끝나면 추가 질문 실행
+                                      await _useDummyQuestions();
+                                    } else if (index == questions.length - 1) {
+                                      // 추가 질문 끝나면 갤럭시 페이지 이동
+                                      await _submitAnswers();
+                                    } else {
+                                      // 다음 페이지로 이동
+                                      _pageController.nextPage(
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Color(0xff0a1c4c),
+                                    ),
+                                    child: Icon(
+                                      CupertinoIcons.arrowtriangle_right_fill,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           ),
-                          Container(
-                            child: Text(
-                              "-",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold),
+                        ),
+                        Positioned(
+                          top: 550,
+                          left: 270,
+                          child: Hero(
+                            tag: 'devil',
+                            child: SvgPicture.asset(
+                              "assets/devil.svg",
+                              width: 150,
+                              height: 150,
                             ),
                           ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => _selectDate(context, false),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 16, horizontal: 12),
-                                child: Text(
-                                  textAlign: TextAlign.center,
-                                  "${DateFormat('yyyy/MM/dd').format(endDate)}",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25, vertical: 5),
-                      child: Text(
-                        "단계 설정",
-                        style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color(0xFF0A1C4C),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 5),
-                      child: ToggleSwitch(
-                        customTextStyles: [TextStyle(fontSize: 18)],
-                        initialLabelIndex: 0,
-                        totalSwitches: 3,
-                        minWidth: 90.0,
-                        minHeight: 40.0,
-                        activeBgColor: [Color(0xff4b5ba5).withOpacity(0.8)],
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Color(0xff0a1c4c),
-                        inactiveFgColor: Color(0xff27367b),
-                        labels: ['3', '4', '5'],
-                        // animate: true,
-                        onToggle: (index) {
-                          print('switched to: $index');
-                          setState(() {
-                            selectedStep = stepOptions[index!];
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      await postGalaxyData();
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 190,
-                      height: 60,
-                      decoration: BoxDecoration(
-                          color: Color(0xff0a1c4c),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Text(
-                        "목표 생성",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DashboardPage()),
-                      );
-                    },
-                    child: Container(
-                      child: Text(
-                        "skip",
-                        style: TextStyle(color: Colors.white54, fontSize: 16),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
         ],
       ),
+    );
+  }
+}
+
+class TypingEffect extends StatefulWidget {
+  final String fullText;
+  final Duration typingSpeed;
+
+  TypingEffect({
+    required this.fullText,
+    this.typingSpeed = const Duration(milliseconds: 100),
+  });
+
+  @override
+  _TypingEffectState createState() => _TypingEffectState();
+}
+
+class _TypingEffectState extends State<TypingEffect> {
+  String displayedText = "";
+  int currentIndex = 0;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTyping();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startTyping() {
+    _timer = Timer.periodic(widget.typingSpeed, (timer) {
+      if (currentIndex < widget.fullText.length) {
+        setState(() {
+          displayedText += widget.fullText[currentIndex];
+          currentIndex++;
+        });
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      displayedText,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      textAlign: TextAlign.center,
     );
   }
 }

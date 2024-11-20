@@ -351,8 +351,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    CreateGalaxyPage(result: "게으른 자"),
+                                builder: (context) => CreateGalaxyPage(),
                               ),
                             );
                           },
