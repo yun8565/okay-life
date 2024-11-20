@@ -22,6 +22,7 @@ dependencies:
   kakao_flutter_sdk_user: ^1.9.6
   intl: ^0.19.0
   toggle_switch: ^2.3.0
+  calendar_date_picker2: ^1.1.7
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +54,7 @@ flutter:
     - assets/dashboard_bg.png
     - assets/sun-star.png
     - assets/test_planet.json
+    - assets/devil.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
