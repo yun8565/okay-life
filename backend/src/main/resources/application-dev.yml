@@ -13,3 +13,9 @@ spring:
         format_sql: false
         show_sql: false
     open-in-view: false
+
+security:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    access-expiration: ${ACCESS_EXPIRATION}
+    refresh-expiration: ${REFRESH_EXPIRATION}
