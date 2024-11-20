@@ -17,9 +17,13 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String nickname;
 
     private String deviceToken;
+
+    @Setter
+    private String spaceGoal;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
