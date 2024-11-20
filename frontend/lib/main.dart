@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // 디버그 배너 제거
       title: 'Okay Life App',
-      home: DashboardPage(),
+      home: TestPage(),
     );
   }
 }
