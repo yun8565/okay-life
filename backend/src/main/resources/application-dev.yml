@@ -13,3 +13,7 @@ spring:
         format_sql: false
         show_sql: false
     open-in-view: false
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
