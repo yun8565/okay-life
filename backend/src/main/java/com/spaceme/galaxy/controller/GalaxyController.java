@@ -1,6 +1,6 @@
 package com.spaceme.galaxy.controller;
 
-import com.spaceme.galaxy.dto.request.GalaxyModifyRequest;
+import com.spaceme.auth.domain.Auth;
 import com.spaceme.galaxy.dto.request.GalaxyRequest;
 import com.spaceme.galaxy.dto.response.GalaxyResponse;
 import com.spaceme.galaxy.service.GalaxyService;
@@ -18,28 +18,16 @@ public class GalaxyController {
     private final GalaxyService galaxyService;
 
     @GetMapping
-    public ResponseEntity<List<GalaxyResponse>> findGalaxies() {
-        return ResponseEntity.ok(galaxyService.findGalaxies());
+    public ResponseEntity<List<GalaxyResponse>> findGalaxies(@Auth Long userId) {
+        return ResponseEntity.ok(galaxyService.findGalaxies(userId));
     }
 
     @PostMapping
-    public ResponseEntity<Void> createGalaxy(@RequestBody GalaxyRequest request) {
-        galaxyService.saveGalaxy(request);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{galaxyId}")
-    public ResponseEntity<Void> modifyGalaxy(
-            @PathVariable Long galaxyId,
-            @RequestBody GalaxyModifyRequest request
+    public ResponseEntity<Void> createGalaxy(
+            @RequestBody GalaxyRequest request,
+            @Auth Long userId
     ) {
-        galaxyService.modifyGalaxy(galaxyId, request);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{galaxyId}")
-    public ResponseEntity<Void> deleteGalaxy(@PathVariable Long galaxyId) {
-        galaxyService.deleteGalaxy(galaxyId);
+        galaxyService.saveGalaxy(userId, request);
         return ResponseEntity.noContent().build();
     }
 }

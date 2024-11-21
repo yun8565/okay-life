@@ -1,6 +1,6 @@
 package com.spaceme.galaxy.domain;
 
-import com.spaceme.User.domain.User;
+import com.spaceme.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +24,9 @@ public class Galaxy {
 
     @Column(nullable = false)
     private LocalDate endDate;
+
+    @Column(nullable = false)
+    private Long createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PlanetRepository extends CrudRepository<Planet, Long> {
     List<Planet> findByGalaxyId(Long galaxyId);
+    boolean existsByIdAndCreatedBy(Long planetId, Long userId);
 }

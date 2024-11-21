@@ -17,3 +17,17 @@ spring:
 openai:
   api:
     key: ${OPENAI_API_KEY}
+
+security:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    access-expiration: ${ACCESS_EXPIRATION}
+    refresh-expiration: ${REFRESH_EXPIRATION}
+
+oauth2:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    grant-type: authorization_code
+    token-uri: https://kauth.kakao.com/oauth/token
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+    redirect-uri: ${KAKAO_REDIRECT_URI}

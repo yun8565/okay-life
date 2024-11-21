@@ -1,4 +1,4 @@
-package com.spaceme.chatGPT.config;
+package com.spaceme.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -30,6 +30,9 @@ public class Mission {
     @Builder.Default
     private Status status = SOON;
 
+    @Column(nullable = false)
+    private Long createdBy;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Planet planet;
 
