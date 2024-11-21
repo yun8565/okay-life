@@ -1,4 +1,4 @@
-package com.spaceme.user.domain;
+package com.spaceme.User.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,6 +12,9 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private String goal;
 
     private String nickname;
 }
