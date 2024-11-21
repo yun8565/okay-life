@@ -55,6 +55,8 @@ flutter:
     - assets/sun-star.png
     - assets/test_planet.json
     - assets/devil.svg
+    - assets/lucky.svg
+    - assets/pyramid.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
