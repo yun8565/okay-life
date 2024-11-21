@@ -31,6 +31,9 @@ public class Planet {
     @Builder.Default
     private Status status = SOON;
 
+    @Column(nullable = false)
+    private Long createdBy;
+
     public void updateStatus(Status status) {
         this.status = status;
     }

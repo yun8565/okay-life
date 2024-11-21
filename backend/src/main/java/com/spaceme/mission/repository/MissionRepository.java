@@ -11,4 +11,5 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
     List<Mission> findAllByDate(LocalDate date);
     List<Mission> findAllByStatusAndDate(Status status, LocalDate date);
     List<Mission> findAllByPlanetId(Long planetId);
+    boolean existsByIdAndCreatedBy(Long id, Long createdBy);
 }

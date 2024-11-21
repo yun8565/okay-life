@@ -5,7 +5,6 @@ import com.spaceme.galaxy.domain.Galaxy;
 import com.spaceme.galaxy.dto.request.GalaxyRequest;
 import com.spaceme.galaxy.dto.response.GalaxyResponse;
 import com.spaceme.galaxy.repository.GalaxyRepository;
-import com.spaceme.planet.repository.PlanetRepository;
 import com.spaceme.planet.service.PlanetService;
 import com.spaceme.user.domain.User;
 import com.spaceme.user.repository.UserRepository;

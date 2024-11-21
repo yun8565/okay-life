@@ -25,6 +25,9 @@ public class Galaxy {
     @Column(nullable = false)
     private LocalDate endDate;
 
+    @Column(nullable = false)
+    private Long createdBy;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
