@@ -1,5 +1,6 @@
 package com.spaceme.galaxy.service;
 
+import com.spaceme.chatGPT.service.ChatGPTService;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.galaxy.domain.Galaxy;
 import com.spaceme.galaxy.dto.request.GalaxyRequest;
@@ -22,6 +23,7 @@ public class GalaxyService {
     private final GalaxyRepository galaxyRepository;
     private final UserRepository userRepository;
     private final PlanetService planetService;
+    private final ChatGPTService chatGPTService;
 
     @Transactional(readOnly = true)
     public List<GalaxyResponse> findGalaxies(Long userId) {
@@ -31,6 +33,13 @@ public class GalaxyService {
                     planetService.findAllByGalaxyId(galaxy.getId())
             ))
             .toList();
+    }
+
+    public List<String> createQuestion(String goal){
+
+        List<String> questions = chatGPTService.generateQuestions(goal);
+
+        return questions;
     }
 
     public void saveGalaxy(Long userId, GalaxyRequest request) {
