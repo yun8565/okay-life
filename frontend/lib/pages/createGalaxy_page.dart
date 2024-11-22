@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
@@ -11,304 +10,36 @@ class CreateGalaxyPage extends StatefulWidget {
 }
 
 class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
-  late PageController _pageController;
-  final List<Map<String, dynamic>> initialQuestions = [
-    {'question': '너의 우주를 정복하기 위한\n작은 목표를 적어줘', 'inputType': 'textField'},
-    {'question': '기간은 얼마나 생각하고 있어?', 'inputType': 'dateRangePicker'},
-    {
-      'question': '몇 단계로 나눠서\n달성하고 싶어?',
-      'inputType': 'button',
-      'options': ['3', '4', '5']
-    }
-  ];
-
-  List<Map<String, dynamic>> questions = [];
+  int currentQuestionIndex = 0;
+  final TextEditingController goalController = TextEditingController();
+  List<DateTime?> selectedDates = [];
+  int? selectedIndex;
+  final List<String?> selectedDay = [];
   bool isLoading = false;
-  String loadingText = "행성 생성을 위한\n추가 질문 생성 중";
-  int dotCount = 1;
-  late Timer _loadingTimer;
-  Map<String, String> answers = {}; // 사용자의 답변 저장
-  int? selectedIndex; // 버튼 상태를 추적
-  List<DateTime?> selectedDates = []; // 날짜 선택값
-  final int additionalQuestionsCount = 3; // 추가 질문 고정 개수
+  int currentPage = 0;
+
+  PageController pageController = PageController();
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
-    questions = List.from(initialQuestions);
-    _startLoadingAnimation();
+
+    // PageController의 변화를 감지하여 현재 페이지를 업데이트
+    pageController.addListener(() {
+      setState(() {
+        currentPage = pageController.page!.round(); // 현재 페이지를 추적
+      });
+    });
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
-    _loadingTimer.cancel();
+    pageController.dispose();
     super.dispose();
   }
 
-  void _startLoadingAnimation() {
-    _loadingTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      setState(() {
-        dotCount = (dotCount % 3) + 1; // 1, 2, 3 반복
-      });
-    });
-  }
-
-  Future<void> _useDummyQuestions() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    // 로딩 시뮬레이션 및 추가 질문 생성
-    await Future.delayed(Duration(seconds: 2));
-    _loadingTimer.cancel();
-
-    final dummyQuestions = [
-      {'question': '좋아하는 행성은?', 'inputType': 'textField'},
-      {'question': '하루 목표는?', 'inputType': 'textField'},
-      {'question': '최종 목표는?', 'inputType': 'textField'},
-    ];
-
-    setState(() {
-      isLoading = false;
-      questions.addAll(dummyQuestions); // 추가 질문 추가
-    });
-
-    // 추가 질문 첫 페이지로 이동
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _pageController.jumpToPage(initialQuestions.length);
-      }
-    });
-  }
-
-  Future<void> _submitAnswers() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      // 백엔드로 데이터 전송
-      final data = {
-        'goal': answers[initialQuestions[0]['question']],
-        'start_date': selectedDates.isNotEmpty && selectedDates[0] != null
-            ? selectedDates[0]!.toIso8601String()
-            : null,
-        'end_date': selectedDates.isNotEmpty && selectedDates[1] != null
-            ? selectedDates[1]!.toIso8601String()
-            : null,
-        'steps': answers[initialQuestions[2]['question']],
-        'additional_info': answers,
-      };
-
-      print("보내는 데이터: $data");
-
-      // TODO: 실제 API 호출
-      // final response = await ApiClient.post('/submit-goal', data: data);
-      // final galaxyData = response['galaxy'];
-
-      // 더미 데이터 시뮬레이션
-      final galaxyData = {
-        'name': 'Milky Way',
-        'stars': 300000000000,
-        'description': '우리 은하수입니다.'
-      };
-
-      setState(() {
-        isLoading = false;
-      });
-
-      if (!mounted) return;
-
-      // GalaxyPage로 이동
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GalaxyPage(galaxyData: galaxyData),
-        ),
-      );
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      print("에러 발생: $e");
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("오류 발생"),
-          content: Text("데이터 전송 중 문제가 발생했습니다. 다시 시도해주세요."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("확인"),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  Widget _buildLoadingWidget() {
-    return Stack(
-      children: [
-        Center(
-          child: Container(
-            width: 350,
-            height: 320,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Color(0xff6976b6).withOpacity(0.2)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "$loadingText${'.' * dotCount}",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 30),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          top: 550,
-          left: 270,
-          child: Hero(
-            tag: 'devil',
-            child: SvgPicture.asset(
-              "assets/devil.svg",
-              width: 150,
-              height: 150,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTypingText(String text) {
-    return TypingEffect(
-      fullText: text,
-      typingSpeed: Duration(milliseconds: 80),
-    );
-  }
-
-  Widget _buildInputWidget(Map<String, dynamic> question) {
-    switch (question['inputType']) {
-      case 'textField':
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: TextField(
-            onChanged: (value) {
-              answers[question['question']] = value;
-            },
-            maxLength: 30,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Color(0xff0a1c4c),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: Colors.white, width: 2.0),
-              ),
-              counterText: '',
-            ),
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-        );
-
-      case 'button':
-        return Wrap(
-          spacing: 10,
-          children: List.generate(
-            question['options'].length,
-            (index) => GestureDetector(
-              onTap: () {
-                setState(() {
-                  answers[question['question']] = question['options'][index];
-                  selectedIndex = index;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: selectedIndex == index
-                      ? Colors.white.withOpacity(0.8)
-                      : Color(0xff0a1c4c),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Text(
-                  question['options'][index],
-                  style: TextStyle(
-                    color: selectedIndex == index
-                        ? Color(0xff0a1c4c)
-                        : Colors.white.withOpacity(0.3),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-
-      case 'dateRangePicker':
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: ElevatedButton(
-            onPressed: () async {
-              var results = await showCalendarDatePicker2Dialog(
-                context: context,
-                config: CalendarDatePicker2WithActionButtonsConfig(
-                    calendarType: CalendarDatePicker2Type.range,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(Duration(days: 365)),
-                    selectedDayHighlightColor:
-                        Color(0xff0a1c4c).withOpacity(0.8),
-                    selectedDayTextStyle: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-                value: selectedDates,
-                dialogSize: const Size(325, 400),
-              );
-
-              if (results != null && results.length == 2) {
-                setState(() {
-                  selectedDates = results;
-                });
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xff0a1c4c),
-              foregroundColor: Colors.white.withOpacity(0.7),
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-            ),
-            child: Text(
-              selectedDates.isNotEmpty &&
-                      selectedDates[0] != null &&
-                      selectedDates[1] != null
-                  ? "${selectedDates[0]!.year}-${selectedDates[0]!.month}-${selectedDates[0]!.day} ~ ${selectedDates[1]!.year}-${selectedDates[1]!.month}-${selectedDates[1]!.day}"
-                  : "기간 설정",
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-        );
-
-      default:
-        return Container();
-    }
-  }
+  List<String> additionalQuestions = [];
+  List<TextEditingController> additionalAnswers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -317,86 +48,554 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/dashboard_bg.png',
+              "assets/dashboard_bg.png",
               fit: BoxFit.cover,
             ),
           ),
-          isLoading
-              ? _buildLoadingWidget()
-              : PageView.builder(
-                  controller: _pageController,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: questions.length,
-                  itemBuilder: (context, index) {
-                    final question = questions[index];
-                    return Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            width: 350,
-                            height: 320,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Color(0xff6976b6).withOpacity(0.2),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildTypingText(question['question']),
-                                const SizedBox(height: 30),
-                                _buildInputWidget(question),
-                                const SizedBox(height: 30),
-                                GestureDetector(
-                                  onTap: () async {
-                                    if (index == initialQuestions.length - 1) {
-                                      // 초기 질문 끝나면 추가 질문 실행
-                                      await _useDummyQuestions();
-                                    } else if (index == questions.length - 1) {
-                                      // 추가 질문 끝나면 갤럭시 페이지 이동
-                                      await _submitAnswers();
-                                    } else {
-                                      // 다음 페이지로 이동
-                                      _pageController.nextPage(
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    }
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: Color(0xff0a1c4c),
-                                    ),
-                                    child: Icon(
-                                      CupertinoIcons.arrowtriangle_right_fill,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 550,
-                          left: 270,
-                          child: Hero(
-                            tag: 'devil',
-                            child: SvgPicture.asset(
-                              "assets/devil.svg",
-                              width: 150,
-                              height: 150,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+          Center(
+            child: isLoading
+                ? _buildLoadingPage() // 로딩 중일 때 로딩 화면 표시
+                : additionalQuestions.isEmpty
+                    ? _buildInitialQuestions() // 초기 질문 화면
+                    : _buildAdditionalQuestions(), // 추가 질문 화면
+          ),
+          if (additionalQuestions.isEmpty)
+            Positioned(
+              top: 670,
+              left: 250,
+              child: SvgPicture.asset(
+                "assets/lucky.svg",
+                width: 180,
+                height: 180,
+              ),
+            ),
+          if (additionalQuestions.isNotEmpty)
+            Positioned(
+              top: 560,
+              left: 250,
+              child: SvgPicture.asset(
+                "assets/lucky.svg",
+                width: 180,
+                height: 180,
+              ),
+            )
         ],
       ),
     );
+  }
+
+  Widget _buildLoadingPage() {
+    return Container(
+      width: 350,
+      height: 620,
+      decoration: BoxDecoration(
+        color: Color(0xff6976b6).withOpacity(0.2),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Center(
+        child: Text(
+          "추가 질문 생성 중 ...",
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdditionalQuestions() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 70, bottom: 10),
+          child: SizedBox(
+            height: 30,
+            width: 100,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: (currentPage + 2).toString(), // pageNum만 오퍼시티 100
+                    style: TextStyle(
+                      color: Colors.white, // 완전한 불투명 색상
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold, // 필요한 경우 추가
+                    ),
+                  ),
+                  TextSpan(
+                    text: " / 4", // 나머지 텍스트
+                    style: TextStyle(
+                      color: Colors.white38, // 오퍼시티 38
+                      fontSize: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 360,
+          width: 320,
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: additionalQuestions.length,
+            physics: NeverScrollableScrollPhysics(), // 사용자 스크롤 방지
+            itemBuilder: (context, index) {
+              if (additionalAnswers.length < additionalQuestions.length) {
+                // 텍스트 컨트롤러 추가 및 리스너 등록
+                additionalAnswers.add(TextEditingController()
+                  ..addListener(() {
+                    setState(() {}); // 텍스트 변경 시 UI 업데이트
+                  }));
+              }
+              return Container(
+                decoration: BoxDecoration(
+                  color: Color(0xff6976b6).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 150,
+                      width: 250,
+                      child: Center(
+                        child: TypingEffect(
+                          fullText:
+                              "한 가지만 더 물어볼게\n${additionalQuestions[index]}",
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextField(
+                        controller: additionalAnswers[index],
+                        maxLength: 100,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Color(0xff0a1c4c),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide:
+                                BorderSide(color: Colors.white, width: 2.0),
+                          ),
+                          counterText: '',
+                        ),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        if (additionalAnswers[index].text.isNotEmpty) {
+                          if (index < additionalQuestions.length - 1) {
+                            pageController.nextPage(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          } else {
+                            _finishAdditionalQuestions(); // 추가 질문 완료 처리
+                          }
+                        }
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(top: 30, bottom: 20),
+                        alignment: Alignment.center,
+                        width: 100,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: Color(0xff0a1c4c),
+                        ),
+                        child: Text(
+                          index < additionalQuestions.length - 1 ? "다음" : "완료",
+                          style: TextStyle(
+                            color: additionalAnswers[index].text.isNotEmpty
+                                ? Colors.white // 텍스트 필드에 값이 있으면 하얀색
+                                : Colors.white30, // 값이 없으면 회색
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInitialQuestions() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: 10),
+          child: SizedBox(
+            height: 30,
+            width: 100,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: "1", // pageNum만 오퍼시티 100
+                    style: TextStyle(
+                      color: Colors.white, // 완전한 불투명 색상
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold, // 필요한 경우 추가
+                    ),
+                  ),
+                  TextSpan(
+                    text: " / 4", // 나머지 텍스트
+                    style: TextStyle(
+                      color: Colors.white38, // 오퍼시티 38
+                      fontSize: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Container(
+          width: 350,
+          height: 620,
+          decoration: BoxDecoration(
+            color: Color(0xff6976b6).withOpacity(0.2),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (currentQuestionIndex >= 0)
+                _buildQuestion(
+                  "우주를 정복하기 위한 작은 목표를 적어줘",
+                  _buildGoalInput(),
+                  0,
+                ),
+              if (currentQuestionIndex >= 1)
+                _buildQuestion(
+                  "기간은 얼마나 생각하고 있어?",
+                  _buildDatePicker(),
+                  1,
+                ),
+              if (currentQuestionIndex >= 2)
+                _buildQuestion(
+                  "몇 단계로 나눠서 이루고 싶어?",
+                  _buildStepButtons(),
+                  2,
+                ),
+              if (currentQuestionIndex >= 3)
+                _buildQuestion(
+                  "언제 실행하고 싶어?",
+                  _buildDayButtons(),
+                  3,
+                ),
+              if (currentQuestionIndex >= 3)
+                GestureDetector(
+                  onTap: _canProceed()
+                      ? () {
+                          _submitInitialData(); // 초기 데이터 제출 및 추가 질문 활성화
+                        }
+                      : null,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 30),
+                    alignment: Alignment.center,
+                    width: 100,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Color(0xff0a1c4c),
+                    ),
+                    child: Text(
+                      "다음",
+                      style: TextStyle(
+                          color: _canProceed() ? Colors.white : Colors.white30,
+                          fontSize: 20),
+                    ),
+                  ),
+                )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuestion(String question, Widget child, int index) {
+    return AnimatedOpacity(
+      opacity: currentQuestionIndex >= index ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 500),
+      child: Visibility(
+        visible: currentQuestionIndex >= index,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                question,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              child,
+            ],
+          ),
+        ),
+        replacement: SizedBox(height: 70),
+      ),
+    );
+  }
+
+  Widget _buildGoalInput() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextField(
+        controller: goalController,
+        maxLength: 30,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Color(0xff0a1c4c),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide.none),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: Colors.white, width: 2.0)),
+          counterText: '',
+        ),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+        ),
+        onSubmitted: (_) {
+          setState(() {
+            currentQuestionIndex++;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildDatePicker() {
+    return ElevatedButton(
+      onPressed: () async {
+        var results = await showCalendarDatePicker2Dialog(
+            context: context,
+            config: CalendarDatePicker2WithActionButtonsConfig(
+                calendarType: CalendarDatePicker2Type.range,
+                firstDate: DateTime.now(),
+                lastDate: DateTime.now().add(Duration(days: 365)),
+                selectedDayHighlightColor: Color(0xff0a1c4c).withOpacity(0.8),
+                selectedDayTextStyle: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+            value: selectedDates,
+            dialogSize: Size(325, 400));
+        if (results != null && results.length == 2) {
+          setState(() {
+            selectedDates = results;
+          });
+        }
+        setState(() {
+          currentQuestionIndex++;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Color(0xff0a1c4c),
+        foregroundColor: Colors.white.withOpacity(0.8),
+        padding: EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+      ),
+      child: Text(
+        selectedDates.isNotEmpty
+            ? "${selectedDates[0]!.year}-${selectedDates[0]!.month}-${selectedDates[0]!.day} ~ ${selectedDates[1]!.year}-${selectedDates[1]!.month}-${selectedDates[1]!.day}"
+            : "기간 설정",
+        style: TextStyle(fontSize: 18),
+      ),
+    );
+  }
+
+  Widget _buildStepButtons() {
+    return Wrap(
+      spacing: 10,
+      children: [3, 4, 5].map((step) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedIndex = step;
+              currentQuestionIndex++;
+            });
+          },
+          child: Container(
+            margin: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: selectedIndex == step
+                  ? Colors.white.withOpacity(0.8)
+                  : Color(0xff0a1c4c),
+            ),
+            child: Text(
+              step.toString(),
+              style: TextStyle(
+                color: selectedIndex == step
+                    ? Color(0xff0a1c4c)
+                    : Colors.white.withOpacity(0.3),
+                fontSize: 18,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDayButtons() {
+    return Wrap(
+      spacing: 10,
+      children: ["월", "화", "수", "목", "금", "토", "일"].map((day) {
+        final isSelected = selectedDay.contains(day); // 현재 버튼의 선택 상태 확인
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              if (isSelected) {
+                selectedDay.remove(day); // 선택된 상태라면 리스트에서 제거
+              } else {
+                selectedDay.add(day); // 선택되지 않은 상태라면 리스트에 추가
+              }
+            });
+          },
+          child: Container(
+            margin: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: isSelected
+                  ? Colors.white.withOpacity(0.8)
+                  : Color(0xff0a1c4c), // 선택 여부에 따라 색상 변경
+            ),
+            child: Text(
+              day,
+              style: TextStyle(
+                color: isSelected
+                    ? Color(0xff0a1c4c)
+                    : Colors.white.withOpacity(0.3), // 선택 여부에 따라 텍스트 색상 변경
+                fontSize: 18,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  bool _canProceed() {
+    return goalController.text.isNotEmpty &&
+        selectedDates.length == 2 &&
+        selectedIndex != null &&
+        selectedDay.isNotEmpty;
+  }
+
+  // 초기 데이터 제출
+  Future<void> _submitInitialData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //delay
+    await Future.delayed(Duration(milliseconds: 3000));
+
+    setState(() {
+      additionalQuestions = ['추가 질문 1', '추가 질문 2', '추가 질문 3'];
+      isLoading = false;
+    });
+
+    // Sample API call
+    // final response = await http.post(
+    //   Uri.parse('https://your-backend-api.com/initial-data'),
+    //   body: {
+    //     'goal': goalController.text,
+    //     'dateRange': selectedDates.isNotEmpty
+    //         ? '${selectedDates[0]} - ${selectedDates[1]}'
+    //         : '',
+    //     'steps': selectedIndex?.toString() ?? '',
+    //     'days': selectedDay.join(','),
+    //   },
+    // );
+
+    // if (response.statusCode == 200) {
+    //   setState(() {
+    //     additionalQuestions = ['추가 질문 1', '추가 질문 2', '추가 질문 3'];
+    //     isLoading = false;
+    //   });
+    // }
+  }
+
+  void _finishAdditionalQuestions() async {
+    // 데이터 수집
+    final goal = goalController.text;
+    final dateRange = selectedDates.isNotEmpty
+        ? "${selectedDates[0]} - ${selectedDates[1]}"
+        : "";
+    final steps = selectedIndex?.toString() ?? "";
+    final days = selectedDay.join(',');
+    final additionalAnswersText =
+        additionalAnswers.map((controller) => controller.text).toList();
+
+    try {
+      // 예제: 백엔드 호출
+      // final response = await http.post(
+      //   Uri.parse('https://your-backend-api.com/submit'),
+      //   body: {
+      //     'goal': goal,
+      //     'dateRange': dateRange,
+      //     'steps': steps,
+      //     'days': days,
+      //     'additionalAnswers': additionalAnswersText.join(','),
+      //   },
+      // );
+
+      // 예제 응답 처리
+      // if (response.statusCode == 200) {
+      //   // 성공 처리
+      // } else {
+      //   throw Exception("데이터 전송 실패");
+      // }
+
+      await Future.delayed(Duration(seconds: 2)); // 예제: 서버 호출 대신 지연
+
+      // 성공 시 GalaxyPage로 전환
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GalaxyPage(), // 우주 전체 페이지
+        ),
+      );
+    } catch (error) {
+      // 에러 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("데이터 전송 중 오류가 발생했습니다."),
+        ),
+      );
+    } finally {
+      setState(() {
+        isLoading = false; // 로딩 상태 해제
+      });
+    }
   }
 }
 
