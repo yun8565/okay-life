@@ -1,14 +1,16 @@
 package com.spaceme.chatGPT.service;
 
-import com.spaceme.chatGPT.dto.response.ChatGPTResponse;
 import com.spaceme.chatGPT.dto.request.GoalRequest;
 import com.spaceme.chatGPT.dto.request.PlanRequest;
 import com.spaceme.chatGPT.dto.response.PlanResponse;
 import com.spaceme.chatGPT.dto.response.ThreeResponse;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.galaxy.service.GalaxyService;
+import com.spaceme.user.domain.User;
+import com.spaceme.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class ChatGPTService {
 
 
 
-    public ThreeResponse generateQuestions(Long userId) {
+    public ThreeResponse generateRoadMap(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -48,7 +50,7 @@ public class ChatGPTService {
                 .bodyToMono(ThreeResponse.class)
                 .block();
     }
-//이라는 목표를 세웠는데, 목표 달성 계획을 세우는데 필요한 3가지 질문을 생성해서, 다른 말은 하지 말고 Spring에서 List<String>으로 받을 수 있는 형태로 알려줘.
+
     public ThreeResponse generateQuestions(Long userId, GoalRequest goalRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
@@ -71,8 +73,11 @@ public class ChatGPTService {
                 .block();
     }
 
-    public void generatePlan(Long userId, PlanRequest planRequest) {
-        String combinedInput = "목표는 " + planRequest.title() + "이야 \n 아래 질의응답을 참고해서 계획을 짜줘 " + String.join("\n", answers);
+    @Transactional
+    public Long generatePlan(Long userId, PlanRequest planRequest) {
+        String combinedInput = "목표는 " + planRequest.title() + "이야 \n 아래 질의응답을 참고해서 계획을 짜줘 "
+                + planRequest.answers().stream()
+                .map(answer -> answer.question() + ": " + answer.answer());
 
 
 
@@ -91,8 +96,6 @@ public class ChatGPTService {
                 .bodyToMono(PlanResponse.class)
                 .block();
 
-
-
-        galaxyService.saveGalaxy(userId, planResponse, planRequest);
+        return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
 }

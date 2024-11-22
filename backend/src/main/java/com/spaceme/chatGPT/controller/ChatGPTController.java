@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/chat")
 public class ChatGPTController {
@@ -28,7 +30,7 @@ public class ChatGPTController {
 
     @PostMapping("/goal")
     public ResponseEntity<ThreeResponse> goalChatGPT(@Auth Long userId) {
-        return ResponseEntity.ok(chatGPTService.createRoadMap(userId));
+        return ResponseEntity.ok(chatGPTService.generateRoadMap(userId));
     }
 
     @PostMapping("/question")
@@ -38,7 +40,7 @@ public class ChatGPTController {
 
     @PostMapping("/final")
     public ResponseEntity<Void> ChatGPT(@Auth Long userId, @RequestBody PlanRequest planRequest) {
-        return ResponseEntity.created(chatGPTService.generatePlan(userId, planRequest));
+        return ResponseEntity.created(URI.create("chat/"+chatGPTService.generatePlan(userId, planRequest))).build();
     }
 
 

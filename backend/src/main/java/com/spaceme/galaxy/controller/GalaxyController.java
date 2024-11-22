@@ -1,7 +1,8 @@
 package com.spaceme.galaxy.controller;
 
 import com.spaceme.auth.domain.Auth;
-import com.spaceme.galaxy.dto.request.GalaxyRequest;
+import com.spaceme.chatGPT.dto.request.PlanRequest;
+import com.spaceme.chatGPT.dto.response.PlanResponse;
 import com.spaceme.galaxy.dto.response.GalaxyResponse;
 import com.spaceme.galaxy.service.GalaxyService;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,11 @@ public class GalaxyController {
 
     @PostMapping
     public ResponseEntity<Void> createGalaxy(
-            @RequestBody GalaxyRequest request,
-            @Auth Long userId
+            @Auth Long userId,
+            @RequestBody PlanResponse planResponse,
+            @RequestBody PlanRequest planRequest
     ) {
-        galaxyService.saveGalaxy(userId, request);
+        galaxyService.saveGalaxy(userId, planResponse, planRequest);
         return ResponseEntity.noContent().build();
     }
 }

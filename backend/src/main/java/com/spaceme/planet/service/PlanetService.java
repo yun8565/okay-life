@@ -9,6 +9,7 @@ import com.spaceme.planet.dto.response.PlanetResponse;
 import com.spaceme.planet.repository.PlanetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class PlanetService {
     private final PlanetRepository planetRepository;
     private final MissionService missionService;
 
+    @Transactional(readOnly = true)
     public List<PlanetResponse> findAllByGalaxyId(Long galaxyId) {
         return planetRepository.findByGalaxyId(galaxyId).stream()
             .map(planet -> PlanetResponse.of(
@@ -37,6 +39,7 @@ public class PlanetService {
         planet.updateTitle(request.title());
     }
 
+    @Transactional(readOnly = true)
     public void validatePlanet(Long userId, Long planetId) {
         Optional.of(planetRepository.existsByIdAndCreatedBy(planetId, userId))
                 .filter(Boolean::booleanValue)
