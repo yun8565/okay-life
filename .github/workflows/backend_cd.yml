@@ -59,3 +59,4 @@ jobs:
           docker run -d --name server -p 8080:8080 \
           --env-file ./.env \
           ${{ secrets.DOCKERHUB_USERNAME }}/spaceme-dev:latest
+          docker rmi $(docker images -f "dangling=true" -q)

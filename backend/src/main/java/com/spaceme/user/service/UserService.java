@@ -4,11 +4,13 @@ import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.user.domain.User;
 import com.spaceme.user.dto.SpaceGoalRequest;
 import com.spaceme.user.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;

@@ -1,4 +1,4 @@
-package com.spaceme.chatGPT.dto;
+package com.spaceme.chatGPT.dto.response;
 
 import lombok.Data;
 
