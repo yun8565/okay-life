@@ -34,10 +34,18 @@ public class GalaxyService {
     public List<GalaxyResponse> findGalaxies(Long userId) {
         return galaxyRepository.findAllByUserId(userId).stream()
             .map(galaxy -> GalaxyResponse.of(
-                    galaxy,
-                    planetService.findAllByGalaxyId(galaxy.getId())
+                    galaxy, planetService.findAllByGalaxyId(galaxy.getId())
             ))
             .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public GalaxyResponse findGalaxy(Long galaxyId) {
+        return galaxyRepository.findById(galaxyId)
+                .map(galaxy -> GalaxyResponse.of(
+                        galaxy, planetService.findAllByGalaxyId(galaxyId)
+                ))
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 은하수입니다."));
     }
 
     public Long saveGalaxy(Long userId, PlanResponse planResponse, PlanRequest planRequest) {
