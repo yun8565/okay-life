@@ -13,7 +13,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
   int currentQuestionIndex = 0;
   final TextEditingController goalController = TextEditingController();
   List<DateTime?> selectedDates = [];
-  int? selectedIndex;
+  late int selectedIndex;
   final List<String?> selectedDay = [];
   bool isLoading = false;
   int currentPage = 0;
@@ -550,7 +550,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
     final dateRange = selectedDates.isNotEmpty
         ? "${selectedDates[0]} - ${selectedDates[1]}"
         : "";
-    final steps = selectedIndex?.toString() ?? "";
+    final int steps = selectedIndex;
     final days = selectedDay.join(',');
     final additionalAnswersText =
         additionalAnswers.map((controller) => controller.text).toList();
@@ -581,7 +581,10 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GalaxyPage(), // 우주 전체 페이지
+          builder: (context) => GalaxyPage(
+            planetCount: steps,
+            progress: 0.6,
+          ), // 우주 전체 페이지
         ),
       );
     } catch (error) {
