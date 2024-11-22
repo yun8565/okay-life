@@ -25,4 +25,13 @@ public class GalaxyController {
     public ResponseEntity<GalaxyResponse> findGalaxy(@PathVariable Long galaxyId) {
         return ResponseEntity.ok(galaxyService.findGalaxy(galaxyId));
     }
+
+    @PatchMapping("/{galaxyId}")
+    public ResponseEntity<GalaxyResponse> rerollGalaxyTheme(
+            @PathVariable Long galaxyId,
+            @Auth Long userId
+    ) {
+        galaxyService.reroll(userId, galaxyId);
+        return ResponseEntity.ok(galaxyService.findGalaxy(galaxyId));
+    }
 }

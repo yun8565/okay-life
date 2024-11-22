@@ -103,6 +103,17 @@ public class GalaxyService {
                 .build();
     }
 
+    public void reroll(Long userId, Long galaxyId) {
+        validateGalaxy(userId, galaxyId);
+        Galaxy galaxy = galaxyRepository.findById(galaxyId)
+                .orElseThrow(() -> new NotFoundException("은하수를 찾을 수 없습니다."));
+
+        galaxy.updateGalaxyTheme(themeGenerator.getRandomGalaxyTheme());
+        planetRepository.findByGalaxyId(galaxyId).forEach(planet ->
+                planet.updatePlanetTheme(themeGenerator.getRandomPlanetTheme())
+        );
+    }
+
     @Transactional(readOnly = true)
     public void validateGalaxy(Long userId, Long galaxyId) {
         Optional.of(galaxyRepository.existsByIdAndUserId(galaxyId, userId))
