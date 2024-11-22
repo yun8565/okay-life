@@ -23,7 +23,8 @@ public class AuthService {
 
     public AccessTokenResponse login(String providerType, LoginRequest loginRequest) {
         OauthClient provider = oauthProviderComposite.matchProvider(providerType);
-        OauthUser oauthUser = provider.requestUserInfo(loginRequest.authorizationCode());
+        OauthUser oauthUser = provider.requestUserInfo(loginRequest.accessToken());
+      
         User user = findOrRegister(
                 oauthUser.email(),
                 oauthUser.nickname(),

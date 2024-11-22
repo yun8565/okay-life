@@ -52,8 +52,6 @@ public class GalaxyService {
                 .endDate(planRequest.endDate())
                 .build();
 
-        Long galaxyId  =galaxyRepository.save(galaxy).getId();
-
         planResponse.planets().forEach(planet -> {
             Planet newPlanet = planetRepository.save(
                     Planet.builder()
@@ -74,6 +72,6 @@ public class GalaxyService {
             );
         });
 
-        return galaxyId;
+        return galaxyRepository.save(galaxy).getId();
     }
 }

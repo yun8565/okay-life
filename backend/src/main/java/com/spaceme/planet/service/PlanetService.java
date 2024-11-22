@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PlanetService {
 
     private final PlanetRepository planetRepository;
