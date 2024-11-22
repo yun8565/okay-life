@@ -57,7 +57,20 @@ flutter:
     - assets/devil.svg
     - assets/lucky.svg
     - assets/pyramid.svg
-
+    - assets/planet1.png
+    - assets/planet2.png
+    - assets/planet3.png
+    - assets/planet4.png
+    - assets/planet5.png
+    - assets/planet3_route1.svg
+    - assets/planet3_route2.svg
+    - assets/planet4_route1.svg
+    - assets/planet4_route2.svg
+    - assets/planet4_route3.svg
+    - assets/planet5_route1.svg
+    - assets/planet5_route2.svg
+    - assets/planet5_route3.svg
+    - assets/planet5_route4.svg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
