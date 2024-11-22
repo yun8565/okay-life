@@ -7,10 +7,7 @@ import com.spaceme.chatGPT.dto.response.ThreeResponse;
 import com.spaceme.chatGPT.service.ChatGPTService;
 import com.spaceme.galaxy.service.GalaxyService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -28,7 +25,7 @@ public class ChatGPTController {
         this.galaxyService = galaxyService;
     }
 
-    @PostMapping("/goal")
+    @GetMapping("/goal")
     public ResponseEntity<ThreeResponse> goalChatGPT(@Auth Long userId) {
         return ResponseEntity.ok(chatGPTService.generateRoadMap(userId));
     }
@@ -38,8 +35,8 @@ public class ChatGPTController {
         return ResponseEntity.ok(chatGPTService.generateQuestions(userId, goalRequest));
     }
 
-    @PostMapping("/final")
-    public ResponseEntity<Void> ChatGPT(@Auth Long userId, @RequestBody PlanRequest planRequest) {
+    @PostMapping("/plan")
+    public ResponseEntity<Void> planChatGPT(@Auth Long userId, @RequestBody PlanRequest planRequest) {
         return ResponseEntity.created(URI.create("chat/"+chatGPTService.generatePlan(userId, planRequest))).build();
     }
 
