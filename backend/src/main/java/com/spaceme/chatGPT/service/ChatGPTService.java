@@ -2,6 +2,7 @@ package com.spaceme.chatGPT.service;
 
 import com.spaceme.chatGPT.dto.request.GoalRequest;
 import com.spaceme.chatGPT.dto.request.PlanRequest;
+import com.spaceme.chatGPT.dto.response.ChatGPTResponse;
 import com.spaceme.chatGPT.dto.response.PlanResponse;
 import com.spaceme.chatGPT.dto.response.ThreeResponse;
 import com.spaceme.common.exception.NotFoundException;
@@ -22,8 +23,6 @@ public class ChatGPTService {
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final GalaxyService galaxyService;
-
-
 
     public ThreeResponse generateRoadMap(Long userId) {
         User user = userRepository.findById(userId)
@@ -47,8 +46,9 @@ public class ChatGPTService {
                         "max_tokens", 1000
                 ))
                 .retrieve()
-                .bodyToMono(ThreeResponse.class)
-                .block();
+                .bodyToMono(ChatGPTResponse.class)
+                .block()
+                .toResponse(ThreeResponse.class);
     }
 
     public ThreeResponse generateQuestions(Long userId, GoalRequest goalRequest) {
@@ -69,8 +69,9 @@ public class ChatGPTService {
                         "max_tokens", 1000
                 ))
                 .retrieve()
-                .bodyToMono(ThreeResponse.class)
-                .block();
+                .bodyToMono(ChatGPTResponse.class)
+                .block()
+                .toResponse(ThreeResponse.class);
     }
 
     @Transactional
@@ -80,21 +81,20 @@ public class ChatGPTService {
                 .map(answer -> answer.question() + ": " + answer.answer());
 
 
-
-
          PlanResponse planResponse = webClient.post()
-                .uri("/chat/completions")
-                .bodyValue(Map.of(
+                 .uri("/chat/completions")
+                 .bodyValue(Map.of(
                         "model", "gpt-4o-mini",
                         "messages", List.of(
                                 Map.of("role", "system", "content", "너는 사용자의 목표와 질문에 대한 답변에 맞게 계획을 짜주는 전문가야."),
                                 Map.of("role", "user", "content", combinedInput)
                         ),
                         "max_tokens", 1500
-                ))
-                .retrieve()
-                .bodyToMono(PlanResponse.class)
-                .block();
+                 ))
+                 .retrieve()
+                 .bodyToMono(ChatGPTResponse.class)
+                 .block()
+                 .toResponse(PlanResponse.class);
 
         return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }

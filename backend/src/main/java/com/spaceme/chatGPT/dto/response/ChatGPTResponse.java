@@ -1,11 +1,15 @@
 package com.spaceme.chatGPT.dto.response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spaceme.common.exception.InternalServerException;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class ChatGPTResponse {
+
+    private static final String CODE_FORMAT = "^```json|```$";
 
     private String id;
     private String object;
@@ -32,5 +36,17 @@ public class ChatGPTResponse {
         private int prompt_tokens;
         private int completion_tokens;
         private int total_tokens;
+    }
+
+    public <T> T toResponse(Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String content = choices.get(0).message.getContent().replaceAll(CODE_FORMAT,"").trim();
+
+        try {
+            return mapper.readValue(content, clazz);
+        } catch (Exception e) {
+            throw new InternalServerException("ChatGPT 응답 매핑에 실패했습니다.");
+        }
     }
 }
