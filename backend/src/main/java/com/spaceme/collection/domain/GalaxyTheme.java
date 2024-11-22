@@ -1,4 +1,4 @@
-package com.spaceme.galaxy.domain;
+package com.spaceme.collection.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,5 +13,8 @@ public class GalaxyTheme {
     private Long id;
 
     @Column(nullable = false)
-    private String theme;
+    private int weight;
+
+    @Column(nullable = false)
+    private String name;
 }

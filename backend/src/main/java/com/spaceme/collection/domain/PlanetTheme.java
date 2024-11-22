@@ -1,6 +1,5 @@
-package com.spaceme.planet.domain;
+package com.spaceme.collection.domain;
 
-import com.spaceme.galaxy.domain.GalaxyTheme;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -11,9 +10,12 @@ public class PlanetTheme {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private GalaxyTheme galaxyTheme;
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
-    private String theme;
+    private int weight;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private GalaxyTheme galaxyTheme;
 }

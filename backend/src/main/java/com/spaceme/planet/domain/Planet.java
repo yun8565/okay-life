@@ -1,5 +1,6 @@
 package com.spaceme.planet.domain;
 
+import com.spaceme.collection.domain.PlanetTheme;
 import com.spaceme.galaxy.domain.Galaxy;
 import com.spaceme.common.Status;
 import jakarta.persistence.*;
@@ -40,5 +41,9 @@ public class Planet {
 
     public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public void updatePlanetTheme(PlanetTheme planetTheme) {
+        this.planetTheme = planetTheme;
     }
 }
