@@ -7,7 +7,5 @@ public interface OauthClient {
 
     ProviderType getType();
 
-    OauthUser requestUserInfo(String code);
-
-    String requestAccessToken(String code);
+    OauthUser requestUserInfo(String accessToken);
 }
