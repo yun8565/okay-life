@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:okay_life_app/api/api_client.dart';
@@ -11,51 +12,64 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
   final TextEditingController _testController = TextEditingController();
   bool isFilled = false;
+  final List<String> hintTexts = [
+    "전 세계 30개국 여행하기",
+    "1년 안에 1000만원 모으기",
+    "유튜브 채널 30만 구독자 모으기",
+    "유명 이모티콘 작가 되기",
+    "6개월 내 체지방률 20% 이하 만들기",
+    "부지런한 생활 습관 만들기"
+  ];
+  int _currentHintIndex = 0;
+  Timer? _hintTimer;
 
   @override
   void initState() {
     super.initState();
 
+    // 텍스트 필드 변경 상태 감지
     _testController.addListener(() {
       setState(() {
         isFilled = _testController.text.isNotEmpty;
+      });
+    });
+
+    // 힌트 텍스트 순환 타이머
+    _hintTimer = Timer.periodic(Duration(seconds: 2), (timer) {
+      setState(() {
+        _currentHintIndex = (_currentHintIndex + 1) % hintTexts.length;
       });
     });
   }
 
   @override
   void dispose() {
-    // 애니메이션 컨트롤러 해제
+    _hintTimer?.cancel(); // 타이머 정리
     _testController.dispose();
     super.dispose();
   }
 
-  // 시작 버튼 로직
   Future<void> _submitData() async {
-    if (!isFilled) return; // 입력값이 없으면 동작하지 않음
+    if (!isFilled) return;
 
     final inputText = _testController.text;
 
     try {
-      // ApiClient를 통해 POST 요청
       final response = await ApiClient.post(
         '/users',
-        data: {'value': inputText}, // 서버로 보낼 데이터
+        data: {'value': inputText},
       );
 
-      // 성공 메시지 출력
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text("Data sent successfully: ${response['message']}")),
       );
 
-      // 입력 필드 초기화
       setState(() {
         _testController.clear();
         isFilled = false;
       });
     } catch (error) {
-      // 에러 처리
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send data: $error")),
       );
@@ -65,24 +79,21 @@ class _TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // 키보드 표시 시 레이아웃 조정
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // 배경 이미지
           Positioned.fill(
             child: Image.asset(
               'assets/background.png',
-              fit: BoxFit.cover, // 배경 이미지를 화면 전체에 채움
+              fit: BoxFit.cover,
             ),
           ),
-          // 메인 콘텐츠
           Center(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // 질문 텍스트
                   Text(
                     "당신의 우주를\n알려주세요",
                     textAlign: TextAlign.center,
@@ -92,22 +103,29 @@ class _TestPageState extends State<TestPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  Text(
+                    "5년 안에 달성하고 싶은 구체적인 목표를\n작성하는 것이 좋습니다 :)",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.4),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 40),
-                  // 애니메이션 (Ripple + Lottie)
                   SizedBox(
                     width: 250,
                     height: 250,
                     child: Lottie.asset("assets/test_planet.json"),
                   ),
                   const SizedBox(height: 40),
-                  // 입력 필드
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 60),
                     child: TextField(
                       controller: _testController,
                       maxLength: 20,
                       decoration: InputDecoration(
-                        hintText: "제일 돈 많이 버는 개발자 되기",
+                        hintText: hintTexts[_currentHintIndex], // 힌트 텍스트
                         hintStyle: TextStyle(
                           color: Colors.white.withOpacity(0.5),
                           fontSize: 17,
@@ -131,7 +149,6 @@ class _TestPageState extends State<TestPage> {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  // 제출 버튼
                   GestureDetector(
                     onTap: isFilled
                         ? () {
