@@ -12,8 +12,10 @@ import com.spaceme.galaxy.dto.response.GalaxyResponse;
 import com.spaceme.galaxy.repository.GalaxyRepository;
 import com.spaceme.mission.domain.Mission;
 import com.spaceme.mission.repository.MissionRepository;
+import com.spaceme.mission.service.MissionScheduler;
 import com.spaceme.planet.domain.Planet;
 import com.spaceme.planet.repository.PlanetRepository;
+import com.spaceme.planet.service.PlanetScheduler;
 import com.spaceme.planet.service.PlanetService;
 import com.spaceme.user.domain.User;
 import com.spaceme.user.repository.UserRepository;
@@ -34,6 +36,8 @@ public class GalaxyService {
     private final PlanetService planetService;
     private final MissionRepository missionRepository;
     private final PlanetRepository planetRepository;
+    private final PlanetScheduler planetScheduler;
+    private final MissionScheduler missionScheduler;
     private final DynamicProbabilityGenerator themeGenerator;
 
     @Transactional(readOnly = true)
@@ -69,6 +73,9 @@ public class GalaxyService {
             Planet newPlanet = savePlanet(galaxy, planet);
             saveMissions(newPlanet, planet.missions());
         });
+
+        planetScheduler.checkPlanetStatusDaily();
+        missionScheduler.checkMissionStatusDaily();
     }
 
     private Planet savePlanet(Galaxy galaxy, ChatGPTPlanetResponse planetResponse) {
