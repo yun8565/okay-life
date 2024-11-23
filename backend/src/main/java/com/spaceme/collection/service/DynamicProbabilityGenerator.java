@@ -52,4 +52,10 @@ public class DynamicProbabilityGenerator {
                 PlanetTheme::getWeight
         );
     }
+
+    public boolean acquirePlanetTheme(double probability) {
+        double randomValue = random.nextDouble();
+
+        return randomValue <= probability;
+    }
 }
