@@ -1,7 +1,10 @@
 package com.spaceme.planet.service;
 
+import com.spaceme.collection.service.DynamicProbabilityGenerator;
+import com.spaceme.common.exception.BadRequestException;
 import com.spaceme.common.exception.ForbiddenException;
 import com.spaceme.common.exception.NotFoundException;
+import com.spaceme.mission.repository.MissionRepository;
 import com.spaceme.mission.service.MissionService;
 import com.spaceme.planet.domain.Planet;
 import com.spaceme.planet.dto.request.PlanetModifyRequest;
@@ -14,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static com.spaceme.common.Status.CLEAR;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,6 +26,8 @@ public class PlanetService {
 
     private final PlanetRepository planetRepository;
     private final MissionService missionService;
+    private final MissionRepository missionRepository;
+    private final DynamicProbabilityGenerator probabilityGenerator;
 
     @Transactional(readOnly = true)
     public List<PlanetResponse> findAllByGalaxyId(Long galaxyId) {
@@ -38,6 +45,32 @@ public class PlanetService {
                 .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
 
         planet.updateTitle(request.title());
+    }
+
+    public boolean acquirePlanet(Long userId, Long planetId) {
+        validatePlanet(userId, planetId);
+
+        double probability = getProbability(planetId);
+        boolean hasAcquired = probabilityGenerator.acquirePlanetTheme(probability);
+
+        if(hasAcquired) {
+            Planet planet = planetRepository.findById(planetId)
+                    .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
+            planet.updateStatus(CLEAR);
+        }
+        return hasAcquired;
+    }
+
+    private double getProbability(Long planetId) {
+        Long totalCount = missionRepository.countByPlanetId(planetId);
+
+        if(totalCount == 0)
+            throw new BadRequestException("행성에 속한 미션을 찾을 수 없습니다.");
+
+        long clearedCount = missionService.findAllMissionByPlanetId(planetId).stream()
+                .filter(mission -> mission.status().equals(CLEAR))
+                .count();
+        return (double) clearedCount / totalCount;
     }
 
     @Transactional(readOnly = true)

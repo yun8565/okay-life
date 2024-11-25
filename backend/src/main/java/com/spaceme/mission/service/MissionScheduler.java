@@ -1,6 +1,8 @@
 package com.spaceme.mission.service;
 
+import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.mission.repository.MissionRepository;
+import com.spaceme.planet.domain.Planet;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static com.spaceme.common.Status.FAILED;
-import static com.spaceme.common.Status.ON_PROGRESS;
+import static com.spaceme.common.Status.*;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)

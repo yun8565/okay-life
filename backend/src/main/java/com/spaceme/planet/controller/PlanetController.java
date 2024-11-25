@@ -24,4 +24,14 @@ public class PlanetController {
         planetService.updatePlanet(userId, planetId, request);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{planetId}")
+    public ResponseEntity<Void> acquirePlanet(
+            @PathVariable Long planetId,
+            @Auth Long userId
+    ) {
+        return planetService.acquirePlanet(userId, planetId)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
+    }
 }

@@ -15,7 +15,7 @@ public record GalaxyResponse(
     public static GalaxyResponse of(Galaxy galaxy, List<PlanetResponse> planets) {
         return new GalaxyResponse(
                 galaxy.getTitle(),
-                galaxy.getId(),
+                planets.get(0).planetThemeId(),
                 planets,
                 galaxy.getEndDate()
         );

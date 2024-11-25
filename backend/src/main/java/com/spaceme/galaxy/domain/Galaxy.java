@@ -1,5 +1,6 @@
 package com.spaceme.galaxy.domain;
 
+import com.spaceme.collection.domain.GalaxyTheme;
 import com.spaceme.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,5 +42,9 @@ public class Galaxy {
 
     public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public void updateGalaxyTheme(GalaxyTheme galaxyTheme) {
+        this.galaxyTheme = galaxyTheme;
     }
 }
