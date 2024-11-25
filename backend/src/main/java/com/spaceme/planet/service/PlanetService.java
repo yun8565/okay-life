@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static com.spaceme.common.Status.ACQUIRABLE;
 import static com.spaceme.common.Status.CLEAR;
 
 @Service
@@ -49,6 +50,7 @@ public class PlanetService {
 
     public boolean acquirePlanet(Long userId, Long planetId) {
         validatePlanet(userId, planetId);
+        checkIfAcquirable(planetId);
 
         double probability = getProbability(planetId);
         boolean hasAcquired = probabilityGenerator.acquirePlanetTheme(probability);
@@ -71,6 +73,12 @@ public class PlanetService {
                 .filter(mission -> mission.status().equals(CLEAR))
                 .count();
         return (double) clearedCount / totalCount;
+    }
+
+    private void checkIfAcquirable(Long planetId) {
+        planetRepository.findById(planetId)
+                .filter(planet -> planet.getStatus().equals(ACQUIRABLE))
+                .orElseThrow(() -> new BadRequestException("행성을 정복할 수 없는 상태입니다."));
     }
 
     @Transactional(readOnly = true)
