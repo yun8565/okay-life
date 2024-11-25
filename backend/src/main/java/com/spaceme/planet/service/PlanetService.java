@@ -46,4 +46,10 @@ public class PlanetService {
                 .filter(Boolean::booleanValue)
                 .orElseThrow(() -> new ForbiddenException("접근 권한이 없습니다."));
     }
+
+    @Transactional(readOnly = true)
+    public Planet getPlanetById(Long planetId) {
+        return planetRepository.findById(planetId)
+                .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
+    }
 }
