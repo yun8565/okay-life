@@ -25,7 +25,7 @@ public class PlanetController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("{/planetId}")
+    @PostMapping("/{planetId}")
     public ResponseEntity<Void> acquirePlanet(
             @PathVariable Long planetId,
             @Auth Long userId

@@ -11,7 +11,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleException(Exception e) {
-        log.warn("messageL {}", e.getMessage());
+        log.warn("message: {}", e.getMessage());
         return ProblemDetail.forStatusAndDetail(e.getHttpStatus(), e.getMessage());
     }
 }
