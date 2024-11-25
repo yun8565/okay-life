@@ -8,6 +8,7 @@ public record PlanRequest(
         LocalDate startDate,
         LocalDate endDate,
         int step,
+        List<String> days,
         List<AnswerRequest> answers
 ) {
 }

@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		blTJjK2cnBrnolVOBlml5b2Q+6A=
+		UJywnzssaMSIKkG4nigSmHoo/4Y=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		M/AiZw66z3QrGg9tP1Gx69fuPVg=
+		L/uZ1RDSUB69nXc6mjM0EG0AEIQ=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -80,6 +80,62 @@
 		<data>
 		F9CMY8rE3kYV+/mn0lopD7ovzyQ=
 		</data>
+		<key>flutter_assets/assets/planet1.png</key>
+		<data>
+		dZptGQQZXAhrOeX66shir+VHCXA=
+		</data>
+		<key>flutter_assets/assets/planet2.png</key>
+		<data>
+		6YGYw/wXQEcfCOKyYhcvAdl4VSQ=
+		</data>
+		<key>flutter_assets/assets/planet3.png</key>
+		<data>
+		ftN0t77SsSx1fEQZZbX+ackFsmo=
+		</data>
+		<key>flutter_assets/assets/planet3_route1.svg</key>
+		<data>
+		JTsRNfX4wy/VITVm2iOfkvOzSKQ=
+		</data>
+		<key>flutter_assets/assets/planet3_route2.svg</key>
+		<data>
+		I9p/x3AkUzK2CuwQKNmLzgb4ARw=
+		</data>
+		<key>flutter_assets/assets/planet4.png</key>
+		<data>
+		NOqbufKTHF1WxY37nHx3cwa0YPM=
+		</data>
+		<key>flutter_assets/assets/planet4_route1.svg</key>
+		<data>
+		RgX5mUfquWfyCwVElzZwH8NdjDk=
+		</data>
+		<key>flutter_assets/assets/planet4_route2.svg</key>
+		<data>
+		Hkes9iTCFMt8prRZmQIf3PV8uBs=
+		</data>
+		<key>flutter_assets/assets/planet4_route3.svg</key>
+		<data>
+		P0nfMMoXytlQWg6oezmbuct2fY0=
+		</data>
+		<key>flutter_assets/assets/planet5.png</key>
+		<data>
+		ZzXYHQDF669KKW22cAwE/zeXzbo=
+		</data>
+		<key>flutter_assets/assets/planet5_route1.svg</key>
+		<data>
+		RgX5mUfquWfyCwVElzZwH8NdjDk=
+		</data>
+		<key>flutter_assets/assets/planet5_route2.svg</key>
+		<data>
+		AARReXyGSkhx+Yj6mZHyIuWDxUw=
+		</data>
+		<key>flutter_assets/assets/planet5_route3.svg</key>
+		<data>
+		ssyK9FJL6WnUSFE5/8GdApTscZc=
+		</data>
+		<key>flutter_assets/assets/planet5_route4.svg</key>
+		<data>
+		iL+g3vx1Y7XZhTz27Yz7Gk1l4lo=
+		</data>
 		<key>flutter_assets/assets/planet_bg.png</key>
 		<data>
 		avJ4m86mPFU/c6d/8PFqiIRu9/4=
@@ -110,7 +166,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		q13XDkkmiolPWLvuN+6FBUZgvN4=
+		qX6jaYYQ0Vs04KWkY4HWp8TmvcE=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -131,14 +187,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			vTthZtAYC36+5xzzVa1smIbB8Qx+DT+JDUthYQazJzY=
+			1qosdVwqwp+d5C9qAsSRm4WbolKJW+Le37cKg5VN8wk=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			WikdbQ+FhtvTzpJwuoJRTdwopALwPGDV6Ygs05aZZYo=
+			na3ogskQW8JkwCrPiQEDdFp+T2rRNrEAFkfvzYbKDdg=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -253,6 +309,104 @@
 			hNAK578uJxZcZIW2DqHtfrmvRgpI0lRIOuDZ3CQzaII=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/planet1.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			1VdEccuq9o+xeYIoN8GqVaVwXrbi8XYvAPbJ5LYEdS8=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet2.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			TPHS4VoEItqxbcA71BQgVbAM3elrqEvmCRDR6mEaFGE=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet3.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			7Yyh7+vuONez0K0E/gKa2MDqPh5DdyVPnL9VM7MKZlE=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet3_route1.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			NBkax22FhlHYsZ9i+X3ubI6Ut2TAHKz8flEOU75TlPw=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet3_route2.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Pe0bnU7JeUDgyEi0uzbj2K+SGsv6csl+MIi161XMR8M=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet4.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			wVV7PJDEjokOKY81+R6YRiSOav0ZtdINW6bLAVQaTzI=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet4_route1.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			jD6tHMrOMVme3WAsBnLJTFnUUSGiIK7auvr8sCmeziM=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet4_route2.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			YJ0222H+TVVvKMO4kouJeC8YFvsAUV+hWucRdH9PSQo=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet4_route3.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Ang7cqIXnlKOTevrF4Zs/qMN2cw4Px0niWFx+SWzhXA=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet5.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			AyyQJMXptIOHAamGfmtBWxqlbPmbKrqo8RveRZdaiy0=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet5_route1.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			jD6tHMrOMVme3WAsBnLJTFnUUSGiIK7auvr8sCmeziM=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet5_route2.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			RDA0oZIAcQNArVDTApHWtKo0/HR/L7CxYVEwXvXbK4o=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet5_route3.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			gVYTsCl1HTpB+0+ZEEQkNBFVZIfC1xUGkpGZrWR0lu0=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/planet5_route4.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			muv6TTaZO7F1VJu2HYnbeoCjzA6LO3Q6XSm8fwXR2/4=
+			</data>
+		</dict>
 		<key>flutter_assets/assets/planet_bg.png</key>
 		<dict>
 			<key>hash2</key>
@@ -306,7 +460,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			GxZ9epF3bfcEAmbxa6Jm7D3/zbTuQ9ViJRICxedWxNE=
+			ELGxC2h6wELhlFVE/OJl+4tkuEgFukU7XzieEYfcXzU=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>

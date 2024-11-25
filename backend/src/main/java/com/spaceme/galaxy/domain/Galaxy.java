@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +26,10 @@ public class Galaxy {
 
     @Column(nullable = false)
     private LocalDate endDate;
+
+    @ElementCollection
+    @Column(nullable = false)
+    private List<String> days;
 
     @Column(nullable = false)
     private Long createdBy;

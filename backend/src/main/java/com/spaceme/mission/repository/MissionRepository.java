@@ -2,6 +2,7 @@ package com.spaceme.mission.repository;
 
 import com.spaceme.mission.domain.Mission;
 import com.spaceme.common.Status;
+import com.spaceme.planet.domain.Planet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

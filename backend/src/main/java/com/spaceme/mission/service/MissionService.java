@@ -1,5 +1,6 @@
 package com.spaceme.mission.service;
 
+import com.spaceme.common.Status;
 import com.spaceme.common.exception.ForbiddenException;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.mission.domain.Mission;
@@ -71,5 +72,16 @@ public class MissionService {
         Optional.of(missionRepository.existsByIdAndCreatedBy(missionId, userId))
                 .filter(Boolean::booleanValue)
                 .orElseThrow(() -> new ForbiddenException("접근 권한이 없습니다."));
+    }
+
+
+    @Transactional(readOnly = true)
+    public double getClearRatio(Planet planet) {
+        long totalMissions = missionRepository.countByPlanet(planet);
+        if (totalMissions == 0) {
+            return 0.0; // No missions, return 0%
+        }
+        long clearMissions = missionRepository.countByPlanetAndStatus(planet, Status.CLEAR);
+        return (double) clearMissions / totalMissions;
     }
 }
