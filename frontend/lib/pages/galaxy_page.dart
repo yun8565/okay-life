@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
@@ -15,6 +17,54 @@ class GalaxyPage extends StatefulWidget {
 
 class _GalaxyPageState extends State<GalaxyPage> {
   List<List<XmlElement>> routeCircles = []; // 각 SVG의 원(circle) 목록
+  List<String> userAnswers = [];
+
+  bool showPopup = false; // 팝업 표시 여부
+  int currentPopupIndex = 0; // 현재 보여지는 팝업 인덱스
+
+  // 팝업 내용을 관리하는 리스트
+  final List<Map<String, dynamic>> popupContent = [
+    {
+      "title": "",
+      "contents": "'컨텐츠 퀄리티 향상'\n100% 달성",
+      "description": "",
+      "input": false,
+    },
+    {
+      "title": "",
+      "contents": "비숑 행성\n정복 성공",
+      "description": "정복한 행성은 도감에서 볼 수 있어요!",
+      "input": false,
+    },
+    {
+      "title": "Keep",
+      "contents": "목표 달성 기간동안\n잘했다고\n생각했던 점이 있어?",
+      "description": "",
+      "input": true,
+      "inputType": "text"
+    },
+    {
+      "title": "Problem",
+      "contents": "목표 달성 기간동안\n개선이 필요하다고\n생각했던 점이 있어?",
+      "description": "",
+      "input": true,
+      "inputType": "text"
+    },
+    {
+      "title": "Try",
+      "contents": "다음에는 달성률을\n높이기 위해\n어떤 시도를\n해볼 수 있을까?",
+      "description": "",
+      "input": true,
+      "inputType": "text"
+    },
+    {
+      "title": "",
+      "contents": "이번 목표의\n난이도는 어땠어?",
+      "description": "",
+      "input": true,
+      "inputType": "button"
+    },
+  ];
 
   @override
   void initState() {
@@ -96,11 +146,193 @@ class _GalaxyPageState extends State<GalaxyPage> {
             Positioned(
               left: _getPlanetPosition(i).dx, // 행성 x 좌표
               top: _getPlanetPosition(i).dy, // 행성 y 좌표
-              child: Planet(
-                imagePath: 'assets/planet${i + 1}.png',
-                size: 150,
-                isFirst: i == 0,
-                isLast: i == widget.planetCount - 1,
+              child: Stack(
+                children: [
+                  Planet(
+                    imagePath: 'assets/planet${i + 1}.png',
+                    size: 150,
+                    isFirst: i == 0,
+                    isLast: i == widget.planetCount - 1,
+                  ),
+                  if (_isConquestDay(i))
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50, left: 10),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            showPopup = true;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: Size(130, 40),
+                          backgroundColor: Colors.white.withOpacity(0.9),
+                        ),
+                        child: Text(
+                          "정복하기",
+                          style:
+                              TextStyle(color: Color(0xff0a1c4c), fontSize: 18),
+                        ),
+                      ),
+                    )
+                ],
+              ),
+            ),
+          if (showPopup)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(
+                    color: Color(0xff507583).withOpacity(0.3),
+                  ),
+                  Center(
+                    child: Container(
+                      width: 320,
+                      height: 350,
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (popupContent[currentPopupIndex]["title"] != "")
+                            Text(
+                              textAlign: TextAlign.center,
+                              popupContent[currentPopupIndex]["title"],
+                              style: TextStyle(
+                                  color: Color(0xff566181), fontSize: 15),
+                            ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          TypingEffect(// 고유한 키 추가
+                            fullText: popupContent[currentPopupIndex]["contents"],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          if (popupContent[currentPopupIndex]["description"] !=
+                              "")
+                            Text(
+                              popupContent[currentPopupIndex]["description"],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Color(0xff566181), fontSize: 15),
+                            ),
+                          if (popupContent[currentPopupIndex]["input"])
+                            if (popupContent[currentPopupIndex]["inputType"] ==
+                                "text")
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: TextField(
+                                  onSubmitted: (value) {
+                                    if (value.isNotEmpty) {
+                                      setState(() {
+                                        userAnswers.add(value);
+                                        currentPopupIndex += 1;
+                                        if (currentPopupIndex >=
+                                            popupContent.length) {
+                                          showPopup = false;
+                                          currentPopupIndex = 0;
+                                        }
+                                      });
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 17,
+                                    ),
+                                    filled: true,
+                                    fillColor: const Color(0xffd9d9d9)
+                                        .withOpacity(0.2),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ),
+                          if (popupContent[currentPopupIndex]["input"])
+                            if (popupContent[currentPopupIndex]["inputType"] ==
+                                "button")
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ...[
+                                    "어려웠어",
+                                    "괜찮았어",
+                                    "쉬웠어"
+                                  ].map((buttonText) => GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            userAnswers.add(buttonText);
+                                            showPopup = false;
+                                            currentPopupIndex = 0;
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 180,
+                                          height: 40,
+                                          margin:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          decoration: BoxDecoration(
+                                              color: Color(0xff0a1c4c),
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            buttonText,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
+                                        ),
+                                      )),
+                                ],
+                              ),
+                          if (popupContent[currentPopupIndex]["inputType"] !=
+                              "button")
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (currentPopupIndex <
+                                      popupContent.length - 1) {
+                                    setState(() {
+                                      currentPopupIndex += 1;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      showPopup = false;
+                                      currentPopupIndex = 0;
+                                    });
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xff0a1c4c)),
+                                child: Text(
+                                  "다음",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                      top: 550,
+                      right: -10,
+                      child: Image.asset(
+                        "assets/lucky.png",
+                        width: 190,
+                      ))
+                ],
               ),
             ),
         ],
@@ -206,5 +438,83 @@ class _GalaxyPageState extends State<GalaxyPage> {
       ][index];
     }
     return Offset.zero;
+  }
+
+  // 행성 종료 조건 확인
+  bool _isConquestDay(int planetIndex) {
+    // 예제: 특정 조건에서만 "정복하기" 버튼 표시
+    return planetIndex == 0; // 세 번째 행성만 정복 가능
+  }
+}
+
+class TypingEffect extends StatefulWidget {
+  final String fullText;
+  final Duration typingSpeed;
+
+  TypingEffect({
+    required this.fullText,
+    this.typingSpeed = const Duration(milliseconds: 100),
+  });
+
+  @override
+  _TypingEffectState createState() => _TypingEffectState();
+}
+
+class _TypingEffectState extends State<TypingEffect> {
+  String displayedText = "";
+  int currentIndex = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTyping();
+  }
+
+  @override
+  void didUpdateWidget(TypingEffect oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // fullText가 변경되면 상태 초기화
+    if (widget.fullText != oldWidget.fullText) {
+      _resetTyping();
+      _startTyping();
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTyping() {
+    _timer = Timer.periodic(widget.typingSpeed, (timer) {
+      if (currentIndex < widget.fullText.length) {
+        setState(() {
+          displayedText += widget.fullText[currentIndex];
+          currentIndex++;
+        });
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  void _resetTyping() {
+    _timer?.cancel(); // 기존 타이머 중단
+    setState(() {
+      displayedText = ""; // 표시된 텍스트 초기화
+      currentIndex = 0;   // 인덱스 초기화
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      displayedText,
+      style: TextStyle(
+          color: Color(0xff1f2e5c), fontSize: 20, fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
+    );
   }
 }
