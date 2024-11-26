@@ -1,6 +1,9 @@
 package com.spaceme.review.dto.request;
 
 public record ReviewRequest(
-        String answer
+        Long planetId,
+        String keep,
+        String problem,
+        String tryNext
 ) {
 }

@@ -3,6 +3,7 @@ package com.spaceme.planet.controller;
 import com.spaceme.auth.domain.Auth;
 import com.spaceme.planet.dto.request.PlanetModifyRequest;
 import com.spaceme.planet.dto.response.PlanetResponse;
+import com.spaceme.planet.dto.response.RatioResponse;
 import com.spaceme.planet.service.PlanetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +27,10 @@ public class PlanetController {
     }
 
     @PostMapping("/{planetId}")
-    public ResponseEntity<Void> acquirePlanet(
+    public ResponseEntity<RatioResponse> acquirePlanet(
             @PathVariable Long planetId,
             @Auth Long userId
     ) {
-        return planetService.acquirePlanet(userId, planetId)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(planetService.acquirePlanet(userId, planetId));
     }
 }

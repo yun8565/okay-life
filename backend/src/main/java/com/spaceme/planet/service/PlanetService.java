@@ -9,6 +9,7 @@ import com.spaceme.mission.service.MissionService;
 import com.spaceme.planet.domain.Planet;
 import com.spaceme.planet.dto.request.PlanetModifyRequest;
 import com.spaceme.planet.dto.response.PlanetResponse;
+import com.spaceme.planet.dto.response.RatioResponse;
 import com.spaceme.planet.repository.PlanetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class PlanetService {
         planet.updateTitle(request.title());
     }
 
-    public boolean acquirePlanet(Long userId, Long planetId) {
+    public RatioResponse acquirePlanet(Long userId, Long planetId) {
         validatePlanet(userId, planetId);
         checkIfAcquirable(planetId);
 
@@ -60,7 +61,7 @@ public class PlanetService {
                     .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
             planet.updateStatus(CLEAR);
         }
-        return hasAcquired;
+        return RatioResponse.of(hasAcquired, (int)(probability*100));
     }
 
     private double getProbability(Long planetId) {
@@ -86,11 +87,5 @@ public class PlanetService {
         Optional.of(planetRepository.existsByIdAndCreatedBy(planetId, userId))
                 .filter(Boolean::booleanValue)
                 .orElseThrow(() -> new ForbiddenException("접근 권한이 없습니다."));
-    }
-
-    @Transactional(readOnly = true)
-    public Planet getPlanetById(Long planetId) {
-        return planetRepository.findById(planetId)
-                .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
     }
 }
