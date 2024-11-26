@@ -5,6 +5,7 @@ import 'package:okay_life_app/data/auth_state.dart';
 import 'package:okay_life_app/pages/createGalaxy_page.dart';
 import 'package:okay_life_app/pages/dashboard_page.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
+import 'package:okay_life_app/pages/galaxy_tutorial_page.dart';
 import 'package:okay_life_app/pages/login_page.dart';
 import 'package:okay_life_app/pages/onboarding_page.dart';
 import 'package:okay_life_app/pages/planet_page.dart';
@@ -37,9 +38,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false, // 디버그 배너 제거
         title: 'Okay Life App',
-        home: PlanetPage(
-          isFirst: true,
-          isLast: false,
-        ));
+        home: GalaxyTutorialPage(galaxyId: 2,));
   }
 }

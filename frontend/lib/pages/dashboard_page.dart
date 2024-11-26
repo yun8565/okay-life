@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:okay_life_app/pages/createGalaxy_page.dart';
+import 'package:okay_life_app/pages/galaxy_page.dart';
+import 'package:okay_life_app/pages/galaxy_tutorial_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -8,6 +11,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   late Future<String> _userName;
+  bool isFirstGalaxyVisit = true;
 
   Map<String, dynamic>? currentGalaxy; // 현재 은하수
   List<Map<String, dynamic>> otherGalaxies = []; // 다른 은하수 목록
@@ -18,6 +22,23 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _userName = fetchUserName();
     fetchGalaxyData();
+    _checkFirstVisit();
+  }
+
+  Future<void> _checkFirstVisit() async {
+    // SharedPreferences 초기화 및 방문 여부 확인
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hasVisitedGalaxy = prefs.getBool('visitedGalaxy') ?? false;
+
+    setState(() {
+      isFirstGalaxyVisit = !hasVisitedGalaxy; // 방문하지 않았다면 true
+    });
+  }
+
+    Future<void> _setFirstVisit() async {
+    // 방문 상태를 저장
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('visitedGalaxy', true);
   }
 
   Future<String> fetchUserName() async {
@@ -37,13 +58,11 @@ class _DashboardPageState extends State<DashboardPage> {
           "galaxy_title": "독서 100권",
           "created_date": "2024-01-01",
           "end_date": "2024-12-31",
-          "total_planets": 10,
+          "total_planets": 4,
           "completed_planets": 2,
           "current_planet": {
             "title": "책 10권 읽기",
             "daily_routines": [
-              {"id": 101, "title": "한 시간 독서"},
-              {"id": 102, "title": "독서 메모 작성"},
               {"id": 103, "title": "책 목록 정리"}
             ]
           },
@@ -60,8 +79,6 @@ class _DashboardPageState extends State<DashboardPage> {
             "title": "3일 안에 2kg 감량",
             "daily_routines": [
               {"id": 104, "title": "물 2L 마시기"},
-              {"id": 105, "title": "30분 걷기"},
-              {"id": 106, "title": "칼로리 기록"}
             ]
           },
           "image_url": "assets/sun-star.png"
@@ -100,6 +117,37 @@ class _DashboardPageState extends State<DashboardPage> {
             List<bool>.filled(dailyRoutines?.length ?? 0, false);
       }
     });
+  }
+
+  void openGalaxyPage(Map<String, dynamic> galaxy) async {
+    if (isFirstGalaxyVisit) {
+      // 첫 방문이라면 설명 페이지로 이동
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GalaxyTutorialPage(galaxyId: galaxy['id'],)
+        ),
+      );
+
+      // 방문 상태 저장
+      await _setFirstVisit();
+
+      // 방문 상태 업데이트
+      setState(() {
+        isFirstGalaxyVisit = false;
+      });
+    } else {
+      // 이미 방문했다면 해당 은하수 설명 페이지로 이동
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GalaxyPage(
+            planetCount: galaxy['total_planets'],
+            progress: galaxy['completed_planets'] / galaxy['total_planets'],
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> updateMissionStatus(int missionId, bool completed) async {
@@ -173,14 +221,19 @@ class _DashboardPageState extends State<DashboardPage> {
                   },
                 ),
                 IntrinsicHeight(
-                  child: Container(
-                    width: 350,
-                    padding: EdgeInsets.only(bottom: 40, left: 20, right: 20),
-                    decoration: BoxDecoration(
-                      color: Color(0xffebebeb),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
+                  child: GestureDetector(
+                    onTap: () {
+                      // 은하수 페이지로 이동
+                      openGalaxyPage(currentGalaxy!);
+                    },
+                    child:Container(
+                  width: 350,
+                  padding: EdgeInsets.only(bottom: 40, left: 20, right: 20),
+                  decoration: BoxDecoration(
+                    color: Color(0xffebebeb),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
                       children: [
                         Align(
                           alignment: Alignment.centerRight,
@@ -190,17 +243,17 @@ class _DashboardPageState extends State<DashboardPage> {
                               "${currentGalaxy?['galaxy_title']}",
                               textAlign: TextAlign.right,
                               style: TextStyle(
-                                  fontSize: 28,
-                                  color: Color(0xff0a1c4c),
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 28,
+                                color: Color(0xff0a1c4c),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                         Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             child: Text.rich(
                               TextSpan(
                                 children: [
@@ -228,9 +281,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Text.rich(
                               TextSpan(
                                 children: [
@@ -243,8 +294,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        "${currentGalaxy?['completed_planets']} ", // 마감 기한 텍스트
+                                    text: "${currentGalaxy?['completed_planets']} ",
                                     style: TextStyle(
                                       color: Color(0xFF0A1C4C),
                                       fontWeight: FontWeight.bold,
@@ -252,8 +302,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        "/ ${currentGalaxy?['total_planets']} ", // 마감 기한 텍스트
+                                    text: "/ ${currentGalaxy?['total_planets']} ",
                                     style: TextStyle(
                                       color: Color(0xFFa3a3a3),
                                       fontWeight: FontWeight.bold,
@@ -268,70 +317,67 @@ class _DashboardPageState extends State<DashboardPage> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
-                            padding:
-                                EdgeInsets.only(top: 15, bottom: 8, left: 20),
+                            padding: EdgeInsets.only(top: 15, bottom: 8, left: 20),
                             child: Text(
                               "오늘의 할 일",
                               style: TextStyle(
-                                  color: Color(0xff0a1c4c).withOpacity(0.8),
-                                  fontSize: 15),
+                                color: Color(0xff0a1c4c).withOpacity(0.8),
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ),
-                        Container(
-                          padding: EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: Color(0xffd9d9d9).withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Column(
-                            children: List.generate(
-                              currentGalaxy?['current_planet']['daily_routines']
-                                      ?.length ??
-                                  0,
-                              (index) {
-                                final mission = currentGalaxy?['current_planet']
-                                    ['daily_routines'][index];
-                                final missionTitle = mission?['title'] ?? "";
-                                final missionId = mission?['id'];
+                        AbsorbPointer( // 체크박스 이벤트 분리
+                          absorbing: false,
+                          child: Container(
+                            padding: EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: Color(0xffd9d9d9).withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Column(
+                              children: List.generate(
+                                currentGalaxy?['current_planet']['daily_routines']?.length ?? 0,
+                                (index) {
+                                  final mission = currentGalaxy?['current_planet']
+                                      ['daily_routines'][index];
+                                  final missionTitle = mission?['title'] ?? "";
+                                  final missionId = mission?['id'];
 
-                                final galaxyId = currentGalaxy?['id'];
+                                  final galaxyId = currentGalaxy?['id'];
 
-                                return CheckboxListTile(
-                                  title: Text(
-                                    missionTitle,
-                                    style: TextStyle(
+                                  return CheckboxListTile(
+                                    title: Text(
+                                      missionTitle,
+                                      style: TextStyle(
                                         fontSize: 21,
-                                        color: (routineChecks[galaxyId]
-                                                    ?[index] ??
-                                                false)
+                                        color: (routineChecks[galaxyId]?[index] ?? false)
                                             ? Colors.grey
-                                            : Color(0xff0a1c4c)),
-                                  ),
-                                  checkColor: Colors.white, // 체크박스 내부 색
-                                  activeColor: Color(0xff0a1c4c), // 체크 시 남색
-                                  controlAffinity:
-                                      ListTileControlAffinity.leading,
-                                  value:
-                                      routineChecks[galaxyId]?[index] ?? false,
-                                  onChanged: (value) async {
-                                    if (value != null && missionId != null) {
-                                      setState(() {
-                                        routineChecks[galaxyId]?[index] = value;
-                                      });
-
-                                      await updateMissionStatus(
-                                          missionId, value);
-                                    }
-                                  },
-                                );
-                              },
+                                            : Color(0xff0a1c4c),
+                                      ),
+                                    ),
+                                    checkColor: Colors.white,
+                                    activeColor: Color(0xff0a1c4c),
+                                    controlAffinity: ListTileControlAffinity.leading,
+                                    value: routineChecks[galaxyId]?[index] ?? false,
+                                    onChanged: (value) async {
+                                      if (value != null && missionId != null) {
+                                        setState(() {
+                                          routineChecks[galaxyId]?[index] = value;
+                                        });
+                                        await updateMissionStatus(missionId, value);
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
+                )
                 ),
                 SizedBox(height: 20),
                 Flexible(
@@ -417,3 +463,4 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
+
