@@ -24,6 +24,7 @@ dependencies:
   toggle_switch: ^2.3.0
   calendar_date_picker2: ^1.1.7
   table_calendar: ^3.1.2
+  scaled_list: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,7 @@ flutter:
     - assets/planet3.png
     - assets/planet4.png
     - assets/planet5.png
+    - assets/question_planet.png
     - assets/planet3_route1.svg
     - assets/planet3_route2.svg
     - assets/planet4_route1.svg

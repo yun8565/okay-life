@@ -69,8 +69,8 @@ class _GalaxyPageState extends State<GalaxyPage> {
             ),
           ),
           Positioned(
-              top: 80,
-              right: 40,
+              top: 70,
+              right: 10,
               child: Container(
                 decoration: BoxDecoration(
                     color: Color(0xff6976b6).withOpacity(0.2),
@@ -78,7 +78,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Text(
-                    "Galaxy",
+                    "유튜브 구독자 1만 달성",
                     style: TextStyle(color: Colors.white, fontSize: 22),
                   ),
                 ),
@@ -99,7 +99,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
               child: Planet(
                 imagePath: 'assets/planet${i + 1}.png',
                 size: 150,
-                isFirst: i==0,
+                isFirst: i == 0,
                 isLast: i == widget.planetCount - 1,
               ),
             ),

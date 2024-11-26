@@ -4,6 +4,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk_template.dart';
 import 'package:okay_life_app/data/auth_state.dart';
 import 'package:okay_life_app/pages/createGalaxy_page.dart';
 import 'package:okay_life_app/pages/dashboard_page.dart';
+import 'package:okay_life_app/pages/galaxy_dex_page.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
 import 'package:okay_life_app/pages/galaxy_tutorial_page.dart';
 import 'package:okay_life_app/pages/login_page.dart';
@@ -38,6 +39,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false, // 디버그 배너 제거
         title: 'Okay Life App',
-        home: GalaxyTutorialPage(galaxyId: 2,));
+        home: DashboardPage());
   }
 }

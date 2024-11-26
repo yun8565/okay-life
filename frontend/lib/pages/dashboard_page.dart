@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:okay_life_app/pages/createGalaxy_page.dart';
+import 'package:okay_life_app/pages/galaxy_dex_page.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
 import 'package:okay_life_app/pages/galaxy_tutorial_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,7 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
     });
   }
 
-    Future<void> _setFirstVisit() async {
+  Future<void> _setFirstVisit() async {
     // 방문 상태를 저장
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('visitedGalaxy', true);
@@ -125,8 +127,9 @@ class _DashboardPageState extends State<DashboardPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GalaxyTutorialPage(galaxyId: galaxy['id'],)
-        ),
+            builder: (context) => GalaxyTutorialPage(
+                  galaxyId: galaxy['id'],
+                )),
       );
 
       // 방문 상태 저장
@@ -221,19 +224,19 @@ class _DashboardPageState extends State<DashboardPage> {
                   },
                 ),
                 IntrinsicHeight(
-                  child: GestureDetector(
-                    onTap: () {
-                      // 은하수 페이지로 이동
-                      openGalaxyPage(currentGalaxy!);
-                    },
-                    child:Container(
-                  width: 350,
-                  padding: EdgeInsets.only(bottom: 40, left: 20, right: 20),
-                  decoration: BoxDecoration(
-                    color: Color(0xffebebeb),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
+                    child: GestureDetector(
+                  onTap: () {
+                    // 은하수 페이지로 이동
+                    openGalaxyPage(currentGalaxy!);
+                  },
+                  child: Container(
+                    width: 350,
+                    padding: EdgeInsets.only(bottom: 40, left: 20, right: 20),
+                    decoration: BoxDecoration(
+                      color: Color(0xffebebeb),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
                       children: [
                         Align(
                           alignment: Alignment.centerRight,
@@ -253,7 +256,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
                             child: Text.rich(
                               TextSpan(
                                 children: [
@@ -294,7 +298,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: "${currentGalaxy?['completed_planets']} ",
+                                    text:
+                                        "${currentGalaxy?['completed_planets']} ",
                                     style: TextStyle(
                                       color: Color(0xFF0A1C4C),
                                       fontWeight: FontWeight.bold,
@@ -302,7 +307,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: "/ ${currentGalaxy?['total_planets']} ",
+                                    text:
+                                        "/ ${currentGalaxy?['total_planets']} ",
                                     style: TextStyle(
                                       color: Color(0xFFa3a3a3),
                                       fontWeight: FontWeight.bold,
@@ -317,7 +323,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
-                            padding: EdgeInsets.only(top: 15, bottom: 8, left: 20),
+                            padding:
+                                EdgeInsets.only(top: 15, bottom: 8, left: 20),
                             child: Text(
                               "오늘의 할 일",
                               style: TextStyle(
@@ -327,7 +334,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                           ),
                         ),
-                        AbsorbPointer( // 체크박스 이벤트 분리
+                        AbsorbPointer(
+                          // 체크박스 이벤트 분리
                           absorbing: false,
                           child: Container(
                             padding: EdgeInsets.all(3),
@@ -337,10 +345,14 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                             child: Column(
                               children: List.generate(
-                                currentGalaxy?['current_planet']['daily_routines']?.length ?? 0,
+                                currentGalaxy?['current_planet']
+                                            ['daily_routines']
+                                        ?.length ??
+                                    0,
                                 (index) {
-                                  final mission = currentGalaxy?['current_planet']
-                                      ['daily_routines'][index];
+                                  final mission =
+                                      currentGalaxy?['current_planet']
+                                          ['daily_routines'][index];
                                   final missionTitle = mission?['title'] ?? "";
                                   final missionId = mission?['id'];
 
@@ -351,21 +363,27 @@ class _DashboardPageState extends State<DashboardPage> {
                                       missionTitle,
                                       style: TextStyle(
                                         fontSize: 21,
-                                        color: (routineChecks[galaxyId]?[index] ?? false)
+                                        color: (routineChecks[galaxyId]
+                                                    ?[index] ??
+                                                false)
                                             ? Colors.grey
                                             : Color(0xff0a1c4c),
                                       ),
                                     ),
                                     checkColor: Colors.white,
                                     activeColor: Color(0xff0a1c4c),
-                                    controlAffinity: ListTileControlAffinity.leading,
-                                    value: routineChecks[galaxyId]?[index] ?? false,
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    value: routineChecks[galaxyId]?[index] ??
+                                        false,
                                     onChanged: (value) async {
                                       if (value != null && missionId != null) {
                                         setState(() {
-                                          routineChecks[galaxyId]?[index] = value;
+                                          routineChecks[galaxyId]?[index] =
+                                              value;
                                         });
-                                        await updateMissionStatus(missionId, value);
+                                        await updateMissionStatus(
+                                            missionId, value);
                                       }
                                     },
                                   );
@@ -377,8 +395,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ],
                     ),
                   ),
-                )
-                ),
+                )),
                 SizedBox(height: 20),
                 Flexible(
                   child: GridView.builder(
@@ -458,9 +475,35 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
+          Positioned(
+              bottom: 50,
+              right: 50,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  print("도감 페이지로 이동");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GalaxyDexPage(),
+                    ),
+                  );
+                },
+                child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xff6976b6).withOpacity(0.5),
+                    ),
+                    child: Icon(
+                      CupertinoIcons.rocket_fill,
+                      color: Colors.white,
+                      size: 35,
+                    )),
+              )),
         ],
       ),
     );
   }
 }
-
