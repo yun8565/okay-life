@@ -123,7 +123,7 @@
     },
     {
       "name": "flutter_svg",
-      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/flutter_svg-2.0.14",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/flutter_svg-2.0.15",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -398,6 +398,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "simple_gesture_detector",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/simple_gesture_detector-0.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "sky_engine",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.24.4/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
@@ -428,6 +434,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "table_calendar",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/table_calendar-3.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "term_glyph",
       "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/term_glyph-1.2.1",
       "packageUri": "lib/",
@@ -453,7 +465,7 @@
     },
     {
       "name": "vector_graphics",
-      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/vector_graphics-1.1.14",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/vector_graphics-1.1.15",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -465,7 +477,7 @@
     },
     {
       "name": "vector_graphics_compiler",
-      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/vector_graphics_compiler-1.1.15",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/vector_graphics_compiler-1.1.16",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -507,7 +519,7 @@
     },
     {
       "name": "webview_flutter_wkwebview",
-      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.16.2",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.16.3",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -530,10 +542,10 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2024-11-22T08:05:06.629858Z",
+  "generated": "2024-11-26T02:35:59.348743Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.24.4/flutter",
-  "flutterVersion": "3.24.4",
+  "flutterVersion": "3.24.5",
   "pubCache": "file:///Users/rlnrlnworld/.pub-cache"
 }

@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                       margin: EdgeInsets.only(bottom: 20),
                       child: Text(
-                        "괜생",
+                        "우주 정복",
                         style: TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.w700,

@@ -104,7 +104,7 @@ class _TestPageState extends State<TestPage> {
                     ),
                   ),
                   Text(
-                    "5년 안에 달성하고 싶은 구체적인 목표를\n작성하는 것이 좋습니다 :)",
+                    "당신의 5년 뒤가 더욱 빛날 수 있도록\n중단기적 목표를 입력해주세요.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.4),
