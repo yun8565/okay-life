@@ -99,6 +99,8 @@ class _GalaxyPageState extends State<GalaxyPage> {
               child: Planet(
                 imagePath: 'assets/planet${i + 1}.png',
                 size: 150,
+                isFirst: i==0,
+                isLast: i == widget.planetCount - 1,
               ),
             ),
         ],

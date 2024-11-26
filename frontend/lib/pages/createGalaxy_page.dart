@@ -13,7 +13,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
   int currentQuestionIndex = 0;
   final TextEditingController goalController = TextEditingController();
   List<DateTime?> selectedDates = [];
-  late int selectedIndex;
+  int selectedIndex = -1;
   final List<String?> selectedDay = [];
   bool isLoading = false;
   int currentPage = 0;
@@ -429,39 +429,40 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
   }
 
   Widget _buildStepButtons() {
-    return Wrap(
-      spacing: 10,
-      children: [3, 4, 5].map((step) {
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedIndex = step;
-              currentQuestionIndex++;
-            });
-          },
-          child: Container(
-            margin: EdgeInsets.only(top: 10),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: selectedIndex == step
-                  ? Colors.white.withOpacity(0.8)
-                  : Color(0xff0a1c4c),
-            ),
-            child: Text(
-              step.toString(),
-              style: TextStyle(
-                color: selectedIndex == step
-                    ? Color(0xff0a1c4c)
-                    : Colors.white.withOpacity(0.3),
-                fontSize: 18,
-              ),
+  return Wrap(
+    spacing: 10,
+    children: [3, 4, 5].map((step) {
+      final isSelected = selectedIndex == step; // 선택 여부 확인
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            selectedIndex = step;
+            currentQuestionIndex++;
+          });
+        },
+        child: Container(
+          margin: EdgeInsets.only(top: 10),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: isSelected
+                ? Colors.white.withOpacity(0.8)
+                : Color(0xff0a1c4c),
+          ),
+          child: Text(
+            step.toString(),
+            style: TextStyle(
+              color: isSelected
+                  ? Color(0xff0a1c4c)
+                  : Colors.white.withOpacity(0.3),
+              fontSize: 18,
             ),
           ),
-        );
-      }).toList(),
-    );
-  }
+        ),
+      );
+    }).toList(),
+  );
+}
 
   Widget _buildDayButtons() {
     return Wrap(
@@ -519,7 +520,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
     await Future.delayed(Duration(milliseconds: 3000));
 
     setState(() {
-      additionalQuestions = ['추가 질문 1', '추가 질문 2', '추가 질문 3'];
+      additionalQuestions = ['물은 평소에 얼마나 마셔?', '물은 얼마나 좋아해?', '생활 패턴이 어떻게 돼?'];
       isLoading = false;
     });
 
