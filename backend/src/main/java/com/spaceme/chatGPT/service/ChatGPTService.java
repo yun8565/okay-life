@@ -145,6 +145,8 @@ public class ChatGPTService {
                 "2. 현실적인 계획을 수립해줘\n" +
                 "3. 실현 가능한 계획을 수립해줘\n" +
                 "4. 문장을 명사로 종결해줘\n" +
+                "5. 하나의 세부 목표당 계획이" + dateGroupResponse.dateGroup().size() + "개인지 다시한번 확인해줘." +
+                "만약" dateGroupResponse.dateGroup().size() + "개가 아니라면 추가적인 계획을 생성해서" + dateGroupResponse.dateGroup().size() + "개로 개수를 맞춰줘." +
                 "p3. 세부 목표와 계획을 json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "{\"planets\" : [\n" +
                 "\"title\" : 세부 목표,\n" +
