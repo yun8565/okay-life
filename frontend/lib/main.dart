@@ -39,9 +39,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false, // 디버그 배너 제거
         title: 'Okay Life App',
-        home: GalaxyPage(
-          planetCount: 3,
-          progress: 0.3,
-        ));
+        home: LoginPage
+        ());
   }
 }

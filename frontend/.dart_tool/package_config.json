@@ -140,6 +140,42 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "google_identity_services_web",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/google_identity_services_web-0.3.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "google_sign_in",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/google_sign_in-6.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "google_sign_in_android",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/google_sign_in_android-6.1.33",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
+      "name": "google_sign_in_ios",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/google_sign_in_ios-5.7.8",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "google_sign_in_platform_interface",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/google_sign_in_platform_interface-2.4.5",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "google_sign_in_web",
+      "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/google_sign_in_web-0.12.4+3",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "http",
       "rootUri": "file:///Users/rlnrlnworld/.pub-cache/hosted/pub.dev/http-1.2.2",
       "packageUri": "lib/",
@@ -548,7 +584,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2024-11-26T08:15:22.558649Z",
+  "generated": "2024-11-27T05:18:32.370976Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.24.4/flutter",
