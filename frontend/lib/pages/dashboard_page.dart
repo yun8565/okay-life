@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/createGalaxy_page.dart';
 import 'package:okay_life_app/pages/galaxy_dex_page.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
 import 'package:okay_life_app/pages/galaxy_tutorial_page.dart';
+import 'package:okay_life_app/pages/setting_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -40,7 +43,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _setFirstVisit() async {
     // 방문 상태를 저장
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('visitedGalaxy', true);
+    await prefs.setBool('visitedGalaxy', true);
   }
 
   Future<String> fetchUserName() async {
@@ -50,61 +53,36 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> fetchGalaxyData() async {
-    await Future.delayed(Duration(seconds: 1));
+    try {
+      // /galaxies API 호출
+      final response = await ApiClient.get('/galaxies');
 
-    // 테스트 데이터
-    final Map<String, dynamic> mockData = {
-      "galaxies": [
-        {
-          "id": 1,
-          "galaxy_title": "독서 100권",
-          "created_date": "2024-01-01",
-          "end_date": "2024-12-31",
-          "total_planets": 4,
-          "completed_planets": 2,
-          "current_planet": {
-            "title": "책 10권 읽기",
-            "daily_routines": [
-              {"id": 103, "title": "책 목록 정리"}
-            ]
-          },
-          "image_url": "assets/sun-star.png"
-        },
-        {
-          "id": 2,
-          "galaxy_title": "10kg 감량",
-          "created_date": "2024-02-15",
-          "end_date": "2024-12-31",
-          "total_planets": 5,
-          "completed_planets": 3,
-          "current_planet": {
-            "title": "3일 안에 2kg 감량",
-            "daily_routines": [
-              {"id": 104, "title": "물 2L 마시기"},
-            ]
-          },
-          "image_url": "assets/sun-star.png"
+      // 'galaxies' 키에서 데이터를 추출
+      final List<Map<String, dynamic>> galaxies =
+          List<Map<String, dynamic>>.from(response['galaxies']);
+
+      // 가장 최근 생성된 은하수 기준으로 정렬
+      galaxies.sort((a, b) =>
+          DateTime.parse(b['endDate']).compareTo(DateTime.parse(a['endDate'])));
+
+      setState(() {
+        currentGalaxy = galaxies.first; // 가장 최근 은하수
+        otherGalaxies = galaxies; // 전체 은하수 목록 저장
+
+        // 초기화된 routineChecks 설정
+        for (var galaxy in galaxies) {
+          final id = galaxy['planetThemeIdRepresenting'];
+          final planets = galaxy['planets'] as List<dynamic>;
+          routineChecks[id] =
+              List<bool>.filled(planets.length, false); // 초기값 false
         }
-      ]
-    };
-
-    final List<Map<String, dynamic>> galaxies =
-        List<Map<String, dynamic>>.from(mockData['galaxies']);
-    galaxies.sort((a, b) => DateTime.parse(b['created_date'])
-        .compareTo(DateTime.parse(a['created_date'])));
-
-    setState(() {
-      currentGalaxy = galaxies.first; // 가장 최근 생성된 은하수 선택
-      otherGalaxies = galaxies; // 전체 은하수 목록 저장
-
-      // 초기화된 routineChecks 설정
-      for (var galaxy in galaxies) {
-        final id = galaxy['id'];
-        final dailyRoutines = galaxy['current_planet']['daily_routines'];
-        routineChecks[id] =
-            List<bool>.filled(dailyRoutines.length, false); // 초기값 false
-      }
-    });
+      });
+    } catch (error) {
+      // 에러 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("은하수 데이터를 가져오지 못했습니다: $error")),
+      );
+    }
   }
 
   void selectGalaxy(int id) {
@@ -122,37 +100,54 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void openGalaxyPage(Map<String, dynamic> galaxy) async {
-    if (isFirstGalaxyVisit) {
-      // 첫 방문이라면 설명 페이지로 이동
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => GalaxyTutorialPage(
-                  galaxyId: galaxy['id'],
-                )),
-      );
+  // 로컬 스토리지에서 방문 여부 확인
+  await _checkFirstVisit();
 
-      // 방문 상태 저장
-      await _setFirstVisit();
+  if (isFirstGalaxyVisit) {
+    // 방문한 적이 없으면 설명 페이지로 이동
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => GalaxyTutorialPage(
+                galaxyId: galaxy['id'],
+              )),
+    );
 
-      // 방문 상태 업데이트
-      setState(() {
-        isFirstGalaxyVisit = false;
-      });
-    } else {
-      // 이미 방문했다면 해당 은하수 설명 페이지로 이동
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GalaxyPage(
-            planetCount: galaxy['total_planets'],
-            progress: galaxy['completed_planets'] / galaxy['total_planets'],
-          ),
-        ),
-      );
-    }
+    // 방문 기록 저장
+    await _setFirstVisit();
+
+    // 플래그 업데이트
+    setState(() {
+      isFirstGalaxyVisit = false;
+    });
+  } else {
+    // 이미 방문한 적이 있으면 은하수 페이지로 바로 이동
+    _fetchGalaxyDetailsAndNavigate(galaxy['id']);
   }
+}
 
+  Future<void> _fetchGalaxyDetailsAndNavigate(int galaxyId) async {
+    try {
+    // API 호출로 데이터 가져오기
+    final response = await ApiClient.get('/galaxies/$galaxyId');
+
+    // GalaxyPage로 데이터 전달
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GalaxyPage(
+          galaxyData: response, // Fetch된 데이터 전달
+        ),
+      ),
+    );
+  } catch (error) {
+    // 에러 처리
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("은하수 데이터를 가져오지 못했습니다: $error")),
+    );
+  }
+  }
+  
   Future<void> updateMissionStatus(int missionId, bool completed) async {
     // 체크박스 업데이트를 가정한 API 호출 (테스트용)
     await Future.delayed(Duration(milliseconds: 500));
@@ -475,33 +470,55 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
-          Positioned(
-              bottom: 50,
-              right: 50,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  print("도감 페이지로 이동");
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GalaxyDexPage(),
-                    ),
-                  );
-                },
-                child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xff6976b6).withOpacity(0.5),
-                    ),
-                    child: Icon(
-                      CupertinoIcons.rocket_fill,
-                      color: Colors.white,
-                      size: 35,
-                    )),
-              )),
+        ],
+      ),
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ExpandableFab(
+        type: ExpandableFabType.fan,
+        distance: 120.0,
+        openButtonBuilder: DefaultFloatingActionButtonBuilder(
+          fabSize: ExpandableFabSize.large,
+          child: Icon(
+            CupertinoIcons.bars,
+            color: Colors.white,
+            size: 30,
+          ),
+          backgroundColor: Color(0xff324199).withOpacity(0.3),
+          foregroundColor: Colors.white,
+        ),
+        closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+          fabSize: ExpandableFabSize.large,
+          child: Icon(
+            CupertinoIcons.clear,
+            color: Colors.white,
+            size: 30,
+          ),
+          backgroundColor: Color(0xff324199).withOpacity(0.3),
+          foregroundColor: Colors.white,
+        ),
+        children: [
+          FloatingActionButton.large(
+            backgroundColor: Color(0xff324199).withOpacity(0.7),
+            child: Icon(
+              CupertinoIcons.settings,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SettingPage()));
+            },
+          ),
+          FloatingActionButton.large(
+            backgroundColor: Color(0xff324199).withOpacity(0.7),
+            child: Icon(
+              CupertinoIcons.rocket_fill,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => GalaxyDexPage()));
+            },
+          )
         ],
       ),
     );

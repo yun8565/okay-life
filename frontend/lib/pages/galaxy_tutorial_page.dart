@@ -214,15 +214,14 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
                                     )
                                   : ElevatedButton(
                                       onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => GalaxyPage(
-                                              planetCount: 4,
-                                              progress: 0.5,
-                                            ),
-                                          ),
-                                        );
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) => GalaxyPage(
+                                              
+                                        //     ),
+                                        //   ),
+                                        // );
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Color(0xff0a1c4c),

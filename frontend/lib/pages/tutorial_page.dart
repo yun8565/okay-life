@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/createGalaxy_page.dart';
 
 class TutorialPage extends StatefulWidget {
@@ -40,23 +41,42 @@ class _TutorialPageState extends State<TutorialPage> {
   }
 
   // 데이터 로딩
-  Future<void> _fetchPyramidData() async {
+  // 데이터 로딩
+Future<void> _fetchPyramidData() async {
+  setState(() {
+    isLoading = true; // 로딩 시작
+  });
+
+  try {
+    // GET 요청으로 데이터 가져오기
+    final response = await ApiClient.get('/chat/goal');
+    
+    // 응답 데이터 처리
+    if (response != null && response['three'] != null) {
+      setState(() {
+        pyramidData = List<String>.from(response['three']); // 'three' 필드의 데이터
+        isLoading = false; // 로딩 종료
+      });
+
+      // 자동으로 피라미드 페이지로 이동
+      _pageController.jumpToPage(
+        _pageController.page!.toInt() + 1,
+      );
+    } else {
+      throw Exception("Invalid response format");
+    }
+  } catch (error) {
     setState(() {
-      isLoading = true;
+      isLoading = false; // 로딩 종료
     });
-
-    await Future.delayed(Duration(seconds: 3)); // 데이터 가져오는 시간 시뮬레이션
-
-    setState(() {
-      isLoading = false;
-      pyramidData = ["시장 조사하기", "전략 세우기", "실행 계획"];
-    });
-
-    // 자동으로 피라미드 페이지로 이동
-    _pageController.jumpToPage(
-      _pageController.page!.toInt() + 1,
+    // 에러 처리
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("피라미드 데이터를 가져오는데 실패했습니다: $error"),
+      ),
     );
   }
+}
 
   // 페이지 컨텐츠 생성
   Widget _buildPageContent({

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/start_page.dart';
+import 'package:okay_life_app/pages/tutorial_page.dart';
 
 class TestPage extends StatefulWidget {
   @override
@@ -50,31 +51,41 @@ class _TestPageState extends State<TestPage> {
   }
 
   Future<void> _submitData() async {
-    if (!isFilled) return;
+  if (!isFilled) return;
 
-    final inputText = _testController.text;
+  final inputText = _testController.text;
 
-    try {
-      final response = await ApiClient.post(
-        '/users',
-        data: {'value': inputText},
-      );
+  try {
+    // API 호출
+    final response = await ApiClient.post(
+      '/users/goal', // 수정된 경로
+      data: {'spaceGoal': inputText}, // SpaceGoalRequest 데이터 구조
+    );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("Data sent successfully: ${response['message']}")),
-      );
+    // 성공 처리
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("우주 목표가 성공적으로 등록되었습니다!"),
+      ),
+    );
 
-      setState(() {
-        _testController.clear();
-        isFilled = false;
-      });
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send data: $error")),
-      );
-    }
+    // 입력 필드 초기화 및 페이지 이동
+    setState(() {
+      _testController.clear();
+      isFilled = false;
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TutorialPage()),
+    );
+  } catch (error) {
+    // 에러 처리
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("우주 목표 등록에 실패했습니다: $error")),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -153,10 +164,6 @@ class _TestPageState extends State<TestPage> {
                     onTap: isFilled
                         ? () {
                             _submitData();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => StartPage()));
                           }
                         : null,
                     child: Container(
