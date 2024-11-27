@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
+import 'package:okay_life_app/pages/overview_plan_page.dart';
 
 class CreateGalaxyPage extends StatefulWidget {
   @override
@@ -429,40 +431,40 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
   }
 
   Widget _buildStepButtons() {
-  return Wrap(
-    spacing: 10,
-    children: [3, 4, 5].map((step) {
-      final isSelected = selectedIndex == step; // 선택 여부 확인
-      return GestureDetector(
-        onTap: () {
-          setState(() {
-            selectedIndex = step;
-            currentQuestionIndex++;
-          });
-        },
-        child: Container(
-          margin: EdgeInsets.only(top: 10),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: isSelected
-                ? Colors.white.withOpacity(0.8)
-                : Color(0xff0a1c4c),
-          ),
-          child: Text(
-            step.toString(),
-            style: TextStyle(
+    return Wrap(
+      spacing: 10,
+      children: [3, 4, 5].map((step) {
+        final isSelected = selectedIndex == step; // 선택 여부 확인
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedIndex = step;
+              currentQuestionIndex++;
+            });
+          },
+          child: Container(
+            margin: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
               color: isSelected
-                  ? Color(0xff0a1c4c)
-                  : Colors.white.withOpacity(0.3),
-              fontSize: 18,
+                  ? Colors.white.withOpacity(0.8)
+                  : Color(0xff0a1c4c),
+            ),
+            child: Text(
+              step.toString(),
+              style: TextStyle(
+                color: isSelected
+                    ? Color(0xff0a1c4c)
+                    : Colors.white.withOpacity(0.3),
+                fontSize: 18,
+              ),
             ),
           ),
-        ),
-      );
-    }).toList(),
-  );
-}
+        );
+      }).toList(),
+    );
+  }
 
   Widget _buildDayButtons() {
     return Wrap(
@@ -513,92 +515,115 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
   // 초기 데이터 제출
   Future<void> _submitInitialData() async {
     setState(() {
-      isLoading = true;
+      isLoading = true; // 로딩 상태 활성화
     });
-
-    //delay
-    await Future.delayed(Duration(milliseconds: 3000));
-
-    setState(() {
-      additionalQuestions = ['물은 평소에 얼마나 마셔?', '물은 얼마나 좋아해?', '생활 패턴이 어떻게 돼?'];
-      isLoading = false;
-    });
-
-    // Sample API call
-    // final response = await http.post(
-    //   Uri.parse('https://your-backend-api.com/initial-data'),
-    //   body: {
-    //     'goal': goalController.text,
-    //     'dateRange': selectedDates.isNotEmpty
-    //         ? '${selectedDates[0]} - ${selectedDates[1]}'
-    //         : '',
-    //     'steps': selectedIndex?.toString() ?? '',
-    //     'days': selectedDay.join(','),
-    //   },
-    // );
-
-    // if (response.statusCode == 200) {
-    //   setState(() {
-    //     additionalQuestions = ['추가 질문 1', '추가 질문 2', '추가 질문 3'];
-    //     isLoading = false;
-    //   });
-    // }
-  }
-
-  void _finishAdditionalQuestions() async {
-    // 데이터 수집
-    final goal = goalController.text;
-    final dateRange = selectedDates.isNotEmpty
-        ? "${selectedDates[0]} - ${selectedDates[1]}"
-        : "";
-    final int steps = selectedIndex;
-    final days = selectedDay.join(',');
-    final additionalAnswersText =
-        additionalAnswers.map((controller) => controller.text).toList();
 
     try {
-      // 예제: 백엔드 호출
-      // final response = await http.post(
-      //   Uri.parse('https://your-backend-api.com/submit'),
-      //   body: {
-      //     'goal': goal,
-      //     'dateRange': dateRange,
-      //     'steps': steps,
-      //     'days': days,
-      //     'additionalAnswers': additionalAnswersText.join(','),
-      //   },
-      // );
+      // 초기 질문 데이터를 저장
+      final initialData = {
+        "title": goalController.text,
+        "startDate": selectedDates.isNotEmpty
+            ? "${selectedDates[0]!.year}-${selectedDates[0]!.month}-${selectedDates[0]!.day}"
+            : "",
+        "endDate": selectedDates.length > 1
+            ? "${selectedDates[1]!.year}-${selectedDates[1]!.month}-${selectedDates[1]!.day}"
+            : "",
+        "step": selectedIndex,
+        "days": selectedDay,
+      };
 
-      // 예제 응답 처리
-      // if (response.statusCode == 200) {
-      //   // 성공 처리
-      // } else {
-      //   throw Exception("데이터 전송 실패");
-      // }
-
-      await Future.delayed(Duration(seconds: 2)); // 예제: 서버 호출 대신 지연
-
-      // 성공 시 GalaxyPage로 전환
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GalaxyPage(
-            planetCount: steps,
-            progress: 0.6,
-          ), // 우주 전체 페이지
-        ),
+      // 목표만 /chat/question으로 전송
+      final response = await ApiClient.post(
+        '/chat/question',
+        data: {"goal": initialData["title"]},
       );
+
+      // 응답에서 추가 질문 가져오기
+      if (response != null && response['three'] != null) {
+        setState(() {
+          additionalQuestions = List<String>.from(response['three']);
+          isLoading = false; // 로딩 상태 비활성화
+        });
+      } else {
+        throw Exception("Invalid response format");
+      }
     } catch (error) {
+      setState(() {
+        isLoading = false; // 로딩 상태 비활성화
+      });
+
       // 에러 처리
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("데이터 전송 중 오류가 발생했습니다."),
+          content: Text("추가 질문을 가져오지 못했습니다: $error"),
         ),
       );
-    } finally {
+    }
+  }
+
+  void _finishAdditionalQuestions() async {
+    setState(() {
+      isLoading = true; // 로딩 상태 활성화
+    });
+
+    try {
+      // 초기 질문 + 추가 질문 데이터 결합
+      final allData = {
+        "title": goalController.text,
+        "startDate": selectedDates.isNotEmpty
+            ? "${selectedDates[0]!.year}-${selectedDates[0]!.month}-${selectedDates[0]!.day}"
+            : "",
+        "endDate": selectedDates.length > 1
+            ? "${selectedDates[1]!.year}-${selectedDates[1]!.month}-${selectedDates[1]!.day}"
+            : "",
+        "step": selectedIndex,
+        "days": selectedDay,
+        "answers": List.generate(
+          additionalQuestions.length,
+          (index) => {
+            "question": additionalQuestions[index],
+            "answer": additionalAnswers[index].text,
+          },
+        ),
+      };
+
+      // /chat/plan로 데이터 전송
+      final response = await ApiClient.post(
+        '/chat/plan',
+        data: allData,
+      );
+
+      // /chat/plan의 응답에서 galaxyId 추출
+      final galaxyId = response['galaxyId'];
+      if (galaxyId == null) {
+        throw Exception("Invalid response: Missing galaxyId");
+      }
+
+      // /galaxies/{galaxyId}로 은하수 데이터 조회
+      final galaxyData = await ApiClient.get('/galaxies/$galaxyId');
+
+      // 성공적으로 데이터를 가져왔으면 overview 페이지로 이동
       setState(() {
         isLoading = false; // 로딩 상태 해제
       });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OverviewPlanPage(galaxyData: galaxyData,),
+        ),
+      );
+    } catch (error) {
+      setState(() {
+        isLoading = false; // 로딩 상태 해제
+      });
+
+      // 에러 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("데이터 처리 중 오류가 발생했습니다: $error"),
+        ),
+      );
     }
   }
 }
