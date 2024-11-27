@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
 import 'package:okay_life_app/pages/onboarding_page.dart';
+import 'package:okay_life_app/pages/test_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -30,9 +32,40 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _loginWithGoogle() async {
+    // GoogleSignIn 객체 초기화
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: [
+        'email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+      ],
+    );
+
+    try {
+      // 사용자가 Google 계정으로 로그인
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      // 로그인 성공 시 액세스 토큰 가져오기
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        // 액세스 토큰 출력
+        print('Access Token: ${googleAuth.accessToken}');
+        print('ID Token: ${googleAuth.idToken}');
+
+        // 원하는 추가 로직 처리
+      } else {
+        print('Google sign-in canceled by user.');
+      }
+    } catch (error) {
+      print('Google sign-in error: $error');
+    }
+  }
+
   void _navigateToNextPage() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => OnboardingPage()),
+      MaterialPageRoute(builder: (context) => TestPage()),
     );
   }
 
@@ -41,8 +74,8 @@ class _LoginPageState extends State<LoginPage> {
       onTap: () async {
         if (socialType == "Kakao") {
           await _loginWithKaKao();
-        } else {
-          print('$socialType 로그인 기능 미구현');
+        } else if (socialType == "Google") {
+          await _loginWithGoogle();
         }
       },
       child: Container(
