@@ -28,12 +28,14 @@ public class ChatGPTService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
-        String prompt = user.getSpaceGoal() + "을 위한 로드맵을 3단계로 제시해줘.\n" +
-                "형식에 대한 예시는 아래와 같아.\n" +
-                "외고 진학\n" +
-                "영어영문과 입학\n" +
-                "학원 강사 취업 "+
-                "Json 형식으로 three라는 key에 value로 단계별 내용만 넣어줘. 내용을 최대 30자로 해줘.";
+        String prompt = user.getSpaceGoal() + "을 위한 구체적인 로드맵을 3단계로 제시해줘.\n" +
+                "로드맵의 예시는 다음과 같아.\n" +
+                "예를 들어 '수능영어 1타강사'라는 목표를 이루기 위한 로드맵은" +
+                "1. 외고 진학\n" +
+                "2. 영어영문과 입학\n" +
+                "3. 학원 강사 취업 "+
+                "json 형식으로 three라는 key에 value로 단계별 내용만 넣어줘." +
+                "로드맵의 각 단계별 내용은 최대 30자로 해줘.";
 
         return webClient.post()
                 .uri("/chat/completions")
