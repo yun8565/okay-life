@@ -62,6 +62,9 @@ public class ChatGPTService {
                 + "너가 해야할 일은 다음과 같아.\n"
                 + "사용자의 상황을 구체적으로 파악하고, 사용자에게 맞는 세부 목표를 세우기 위해 필요한 정보를 얻기 위해 사용자와 질의응답을 진행할거야.\n"
                 + "이 사용자의 목표는" + goalRequest.goal() + "(이)야.\n"
+                + "사용자는 이 목표를 실현하기 위해" +
+                + goalRequest.startDate + "~" + goalRequest.endDate
+                + "동안 노력할거야."
                 + "이때 사용자를 파악할 수 있는 3개의 질문을 생성해줘.\n"
                 + "json 형식으로 key는 three, value는 질문 내용만";
 
