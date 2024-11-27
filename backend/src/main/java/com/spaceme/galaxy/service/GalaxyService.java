@@ -63,37 +63,41 @@ public class GalaxyService {
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
         Galaxy galaxy = createGalaxy(planRequest, user);
-        savePlanetsAndMissions(planResponse, galaxy);
+        Long galaxyId = galaxyRepository.save(galaxy).getId();
 
-        return galaxyRepository.save(galaxy).getId();
+        savePlanetsAndMissions(userId, planResponse, galaxy);
+
+        return galaxyId;
     }
 
-    private void savePlanetsAndMissions(PlanResponse planResponse, Galaxy galaxy) {
+    private void savePlanetsAndMissions(Long userId, PlanResponse planResponse, Galaxy galaxy) {
         planResponse.planets().forEach(planet -> {
-            Planet newPlanet = savePlanet(galaxy, planet);
-            saveMissions(newPlanet, planet.missions());
+            Planet newPlanet = savePlanet(userId, galaxy, planet);
+            saveMissions(userId, newPlanet, planet.missions());
         });
 
         planetScheduler.checkPlanetStatusDaily();
         missionScheduler.checkMissionStatusDaily();
     }
 
-    private Planet savePlanet(Galaxy galaxy, ChatGPTPlanetResponse planetResponse) {
+    private Planet savePlanet(Long userId, Galaxy galaxy, ChatGPTPlanetResponse planetResponse) {
         return planetRepository.save(
                 Planet.builder()
                         .galaxy(galaxy)
                         .planetTheme(themeGenerator.getRandomPlanetTheme())
+                        .createdBy(userId)
                         .title(planetResponse.title())
                         .build()
         );
     }
 
-    private void saveMissions(Planet planet, List<ChatGPTMissionResponse> missions) {
+    private void saveMissions(Long userId, Planet planet, List<ChatGPTMissionResponse> missions) {
         missions.forEach(mission ->
                 missionRepository.save(
                         Mission.builder()
                                 .planet(planet)
                                 .date(mission.date())
+                                .createdBy(userId)
                                 .content(mission.content())
                                 .build()
                 )
