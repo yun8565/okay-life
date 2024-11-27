@@ -6,11 +6,14 @@ import com.spaceme.auth.domain.OauthUser;
 import com.spaceme.auth.domain.ProviderType;
 import com.spaceme.auth.dto.request.LoginRequest;
 import com.spaceme.auth.dto.response.AccessTokenResponse;
+import com.spaceme.notification.service.FCMService;
 import com.spaceme.user.domain.User;
 import com.spaceme.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.spaceme.common.AlienConcept.DEFAULT;
 
 @Service
 @RequiredArgsConstructor
@@ -20,18 +23,20 @@ public class AuthService {
     private final UserRepository userRepository;
     private final OauthProviderComposite oauthProviderComposite;
     private final JwtProvider jwtProvider;
+    private final FCMService fcmService;
 
-    public AccessTokenResponse login(String providerType, LoginRequest loginRequest) {
+    public AccessTokenResponse login(String providerType, LoginRequest loginRequest, String deviceToken) {
         OauthClient provider = oauthProviderComposite.matchProvider(providerType);
         OauthUser oauthUser = provider.requestUserInfo(loginRequest.accessToken());
       
         User user = findOrRegister(
                 oauthUser.email(),
                 oauthUser.nickname(),
-                loginRequest.deviceToken(),
+                deviceToken,
                 ProviderType.from(providerType)
         );
 
+        fcmService.subscribeTopic(DEFAULT, deviceToken);
         return AccessTokenResponse.of(jwtProvider.createToken(user.getId().toString()));
     }
 
