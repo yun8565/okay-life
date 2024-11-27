@@ -2,9 +2,7 @@ package com.spaceme.chatGPT.service;
 
 import com.spaceme.chatGPT.dto.request.GoalRequest;
 import com.spaceme.chatGPT.dto.request.PlanRequest;
-import com.spaceme.chatGPT.dto.response.ChatGPTResponse;
-import com.spaceme.chatGPT.dto.response.PlanResponse;
-import com.spaceme.chatGPT.dto.response.ThreeResponse;
+import com.spaceme.chatGPT.dto.response.*;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.galaxy.service.GalaxyService;
 import com.spaceme.user.domain.User;
@@ -85,11 +83,11 @@ public class ChatGPTService {
     }
 
     @Transactional
-    public Long generateDays(Long userId, PlanRequest planRequest) {
+    public DateGroupResponse generateDays(Long userId, PlanRequest planRequest) {
         String combinedInput = "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"중" + planRequest.days()+ "에 해당하는 일자만 남겨\n" +
                 "p2. 남은 일자들을 "+ planRequest.step() +"개의 그룹으로 나눠. 이때 각 그룹별로 포함되어있는 일자 개수가 동일해야해. 등분되지 않는 날짜는 버림처리해줘.\n" +
                 "p3.  json 형태로 반환해. 형태는 다음과 같아.\n" +
-                "{\n" +
+                "dateGroup : {\n" +
                 "\"title\" : group,\n" +
                 "\"dates\" : [{\"date\" : \"날짜\"}]\n" +
                 "}\n" +
@@ -97,13 +95,12 @@ public class ChatGPTService {
                 ;
 
 
-        PlanResponse planResponse = webClient.post()
+        DateGroupResponse dateGroupResponse = webClient.post()
                 .uri("/chat/completions")
                 .bodyValue(Map.of(
                         "model", "gpt-4o-mini",
                         "messages", List.of(
-                                Map.of("role", "system", "content", "너는 목표를 달성하고 싶은 사용자를 위해 단계별 세부 목표와 계획을 수립해주는 전문가야.\n" +
-                                        "사용자의 input을 고려해서 단계별 세부 목표와 계획을 수립해줘.\n"),
+                                Map.of("role", "system", "content", "너는 기간 안에 있는 만족하는 일자들을 일정한 갯수로 그룹화하는데 전문가야."),
                                 Map.of("role", "user", "content", combinedInput)
                         ),
                         "max_tokens", 1500
@@ -111,26 +108,37 @@ public class ChatGPTService {
                 .retrieve()
                 .bodyToMono(ChatGPTResponse.class)
                 .block()
-                .toResponse(PlanResponse.class);
+                .toResponse(DateGroupResponse.class);
 
-        return galaxyService.saveGalaxy(userId, planResponse, planRequest);
+
+
+        return dateGroupResponse;
+
+
     }
 
 
 
     @Transactional
     public Long generatePlan(Long userId, PlanRequest planRequest) {
+
+
+        DateGroupResponse dateGroupResponse = generateDays(userId, planRequest);
+
+
         String combinedInput =  "input은 다음과 같아.\n" +
                 "1. 목표(String) :"+ planRequest.title() +
                 "\n 2. 질의응답 (질문(String) : 답변 (String))"
                 + planRequest.answers().stream()
                 .map(answer -> answer.question() + ": " + answer.answer())+
                 "\n" +
+                "채워야 될 날짜는 아래와 같아.\n"+
+                dateGroupResponse +
                 "너가 해야할 일은 다음과 같아.\n" +
                 "let’s think step by step."+
                 "p1. 사용자의 목표를 달성하는데 필요한 세부 목표를 총" + planRequest.step() +
                 "개의 단계로 나눠서 세워. 넌 사용자를 고려한 세부 목표 수립 전문가니까 사용자의 목표와 질의응답을 잘 고려해서 세부 목표를 만들어줄 수 있어.\n" +
-                "p2. 각 세부 목표를 이루기 위한 " + planRequest.days() +
+                "p2. 각 세부 목표를 이루기 위한 " + dateGroupResponse.dateGroup().size() +
                 "개의 계획을 생성해줘. 넌 사용자를 고려한 계획 수립 전문가니까 세부 목표와 질의응답 내용을 잘 고려해서 계획을 만들어줄 수 있어." +
                 "계획을 세울 때 고려해야하는 점들은 다음과 같아.\n" +
                 "1. 각 계획을 하루에 하나씩 실천할 것이라는 점을 고려해줘\n" +
@@ -140,9 +148,11 @@ public class ChatGPTService {
                 "p3. 세부 목표와 계획을 json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "{\"planets\" : [\n" +
                 "\"title\" : 세부 목표,\n" +
-                "\"missions\" : [{\"content\" : \"계획\"}]\n" +
+                "\"missions\" : [{\"content\" : \"계획\", \"date\" : \"2025-01-01\"}]\n" +
                 "]}\n" +
                 "json 값만 반환해줘.";
+
+        System.out.println("!!!!!!!!날짜 매핑 성공!!!!!!!!!!!!");
 
 
          PlanResponse planResponse = webClient.post()
@@ -160,6 +170,7 @@ public class ChatGPTService {
                  .bodyToMono(ChatGPTResponse.class)
                  .block()
                  .toResponse(PlanResponse.class);
+
 
         return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
