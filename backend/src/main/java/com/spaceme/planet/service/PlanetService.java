@@ -36,7 +36,13 @@ public class PlanetService {
         return planetRepository.findByGalaxyId(galaxyId).stream()
             .map(planet -> PlanetResponse.of(
                     planet,
-                    missionService.findAllMissionByPlanetId(planet.getId())
+                    missionService.findAllMissionByPlanetId(planet.getId()),
+                    missionRepository.findFirstByPlanetId(planet.getId())
+                            .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."))
+                            .getDate(),
+                    missionRepository.findLastByPlanetId(planet.getId())
+                            .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."))
+                            .getDate()
             ))
             .toList();
     }

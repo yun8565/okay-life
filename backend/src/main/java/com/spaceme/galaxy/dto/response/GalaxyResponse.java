@@ -10,6 +10,7 @@ public record GalaxyResponse(
         String title,
         Long planetThemeIdRepresenting,
         List<PlanetResponse> planets,
+        LocalDate startDate,
         LocalDate endDate
 ) {
     public static GalaxyResponse of(Galaxy galaxy, List<PlanetResponse> planets) {
@@ -17,6 +18,7 @@ public record GalaxyResponse(
                 galaxy.getTitle(),
                 planets.get(0).planetThemeId(),
                 planets,
+                galaxy.getStartDate(),
                 galaxy.getEndDate()
         );
     }

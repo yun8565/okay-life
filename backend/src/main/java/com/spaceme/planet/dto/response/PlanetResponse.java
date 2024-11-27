@@ -4,6 +4,7 @@ import com.spaceme.common.Status;
 import com.spaceme.mission.dto.response.MissionResponse;
 import com.spaceme.planet.domain.Planet;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record PlanetResponse(
@@ -11,14 +12,22 @@ public record PlanetResponse(
         String title,
         Status status,
         Long planetThemeId,
+        LocalDate startDate,
+        LocalDate endDate,
         List<MissionResponse> missions
 ) {
-    public static PlanetResponse of(Planet planet, List<MissionResponse> missions) {
+    public static PlanetResponse of(Planet planet,
+                                    List<MissionResponse> missions,
+                                    LocalDate startDate,
+                                    LocalDate endDate
+    ) {
         return new PlanetResponse(
                 planet.getId(),
                 planet.getTitle(),
                 planet.getStatus(),
                 planet.getPlanetTheme().getId(),
+                startDate,
+                endDate,
                 missions
         );
     }

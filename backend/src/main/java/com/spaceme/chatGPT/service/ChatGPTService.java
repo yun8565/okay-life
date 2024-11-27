@@ -52,16 +52,16 @@ public class ChatGPTService {
     }
 
     public ThreeResponse generateQuestions(Long userId, GoalRequest goalRequest) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+        if(userRepository.existsById(userId))
+                throw new NotFoundException("사용자를 찾을 수 없습니다.");
 
         String prompt = "너는 목표를 달성하고 싶은 사용자를 위해 세부 목표와 계획을 수립해주는 전문가야.\n"
                 + "사용자의 목표 달성에 필요한 세부 목표와 계획을 잘 세워주기 위해서는 사용자의 상황을 정확히 파악해야 해.\n"
                 + "너가 해야할 일은 다음과 같아.\n"
                 + "사용자의 상황을 구체적으로 파악하고, 사용자에게 맞는 세부 목표를 세우기 위해 필요한 정보를 얻기 위해 사용자와 질의응답을 진행할거야.\n"
                 + "이 사용자의 목표는" + goalRequest.goal() + "(이)야.\n"
-                + "사용자는 이 목표를 실현하기 위해" +
-                + goalRequest.startDate + "~" + goalRequest.endDate
+                + "사용자는 이 목표를 실현하기 위해"
+                + goalRequest.startDate() + "~" + goalRequest.endDate()
                 + "동안 노력할거야."
                 + "이때 사용자를 파악할 수 있는 3개의 질문을 생성해줘.\n"
                 + "json 형식으로 key는 three, value는 질문 내용만";
@@ -94,7 +94,6 @@ public class ChatGPTService {
                 "json 값만 반환해줘."
                 ;
 
-
         DateGroupResponse dateGroupResponse = webClient.post()
                 .uri("/chat/completions")
                 .bodyValue(Map.of(
@@ -110,21 +109,17 @@ public class ChatGPTService {
                 .block()
                 .toResponse(DateGroupResponse.class);
 
-
-
         return dateGroupResponse;
-
-
     }
-
-
 
     @Transactional
     public Long generatePlan(Long userId, PlanRequest planRequest) {
 
-
         DateGroupResponse dateGroupResponse = generateDays(userId, planRequest);
 
+        int totalDates = dateGroupResponse.dateGroup().stream()
+                .mapToInt(dates -> dates.dates().size())
+                .sum();
 
         String combinedInput =  "input은 다음과 같아.\n" +
                 "1. 목표(String) :"+ planRequest.title() +
@@ -138,24 +133,21 @@ public class ChatGPTService {
                 "let’s think step by step."+
                 "p1. 사용자의 목표를 달성하는데 필요한 세부 목표를 총" + planRequest.step() +
                 "개의 단계로 나눠서 세워. 넌 사용자를 고려한 세부 목표 수립 전문가니까 사용자의 목표와 질의응답을 잘 고려해서 세부 목표를 만들어줄 수 있어.\n" +
-                "p2. 각 세부 목표를 이루기 위한 " + dateGroupResponse.dateGroup().size() +
+                "p2. 각 세부 목표를 이루기 위한 " + totalDates +
                 "개의 계획을 생성해줘. 넌 사용자를 고려한 계획 수립 전문가니까 세부 목표와 질의응답 내용을 잘 고려해서 계획을 만들어줄 수 있어." +
                 "계획을 세울 때 고려해야하는 점들은 다음과 같아.\n" +
                 "1. 각 계획을 하루에 하나씩 실천할 것이라는 점을 고려해줘\n" +
                 "2. 현실적인 계획을 수립해줘\n" +
                 "3. 실현 가능한 계획을 수립해줘\n" +
                 "4. 문장을 명사로 종결해줘\n" +
-                "5. 하나의 세부 목표당 계획이" + dateGroupResponse.dateGroup().size() + "개인지 다시한번 확인해줘." +
-                "만약" dateGroupResponse.dateGroup().size() + "개가 아니라면 추가적인 계획을 생성해서" + dateGroupResponse.dateGroup().size() + "개로 개수를 맞춰줘." +
+                "5. 하나의 세부 목표당 계획이" + totalDates + "개인지 다시한번 확인해줘." +
+                "만약" + totalDates + "개가 아니라면 추가적인 계획을 생성해서" + totalDates + "개로 개수를 맞춰줘." +
                 "p3. 세부 목표와 계획을 json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "{\"planets\" : [\n" +
                 "\"title\" : 세부 목표,\n" +
                 "\"missions\" : [{\"content\" : \"계획\", \"date\" : \"2025-01-01\"}]\n" +
                 "]}\n" +
                 "json 값만 반환해줘.";
-
-        System.out.println("!!!!!!!!날짜 매핑 성공!!!!!!!!!!!!");
-
 
          PlanResponse planResponse = webClient.post()
                  .uri("/chat/completions")
@@ -172,7 +164,6 @@ public class ChatGPTService {
                  .bodyToMono(ChatGPTResponse.class)
                  .block()
                  .toResponse(PlanResponse.class);
-
 
         return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
