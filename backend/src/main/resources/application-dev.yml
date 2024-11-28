@@ -26,5 +26,3 @@ security:
 
 firebase:
   admin-key: ${FIREBASE_ADMIN_SDK}
-server:
-  port: 8081
