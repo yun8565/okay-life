@@ -110,8 +110,8 @@ public class GalaxyService {
                 .title(planRequest.title())
                 .galaxyTheme(themeGenerator.getRandomGalaxyTheme())
                 .user(user)
-                .startDate(planRequest.startDate())
-                .endDate(planRequest.endDate())
+                .startDate(LocalDate.parse(planRequest.startDate()))
+                .endDate(LocalDate.parse(planRequest.endDate()))
                 .days(planRequest.days())
                 .build();
     }

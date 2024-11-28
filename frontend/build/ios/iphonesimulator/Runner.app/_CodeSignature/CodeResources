@@ -46,7 +46,19 @@
 		</data>
 		<key>Frameworks/App.framework/App</key>
 		<data>
+<<<<<<< HEAD
 		K7ISlQs7fTXTdThThfEIAGjKHs8=
+=======
+<<<<<<< HEAD
+		SOoRVhehQOXYJF2CYQgiyO8+Tmk=
+=======
+<<<<<<< HEAD
+		FsrzyeWbD1LUa4OUAbg315tV868=
+=======
+		YYg9Hb9M9Pdd/PUyhgwrGtaTRbM=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 		</data>
 		<key>Frameworks/App.framework/Info.plist</key>
 		<data>
@@ -54,7 +66,19 @@
 		</data>
 		<key>Frameworks/App.framework/_CodeSignature/CodeResources</key>
 		<data>
+<<<<<<< HEAD
 		IvpgIBQ8qbhzMSUFmTA4Rh2nE3M=
+=======
+<<<<<<< HEAD
+		RQVSYz6inwm8Wy9zBIqTDj3PN1s=
+=======
+<<<<<<< HEAD
+		lLbWHxg5onSNGx06lB4n0qDsw18=
+=======
+		4VqzefdAfCIYsgUmudizou557wM=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.bin</key>
 		<data>
@@ -71,6 +95,16 @@
 		<key>Frameworks/App.framework/flutter_assets/NOTICES.Z</key>
 		<data>
 		Y95yMcgs6KcqM1ajxbJ3B2priUE=
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+		Y95yMcgs6KcqM1ajxbJ3B2priUE=
+=======
+		FQ3hmiKGoWhH60WsI5o2yIM+K+k=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/assets/Apple.svg</key>
 		<data>
@@ -238,7 +272,19 @@
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/kernel_blob.bin</key>
 		<data>
+<<<<<<< HEAD
 		A4PNUYKjpZGmqlXxeq1kcYtB0fU=
+=======
+<<<<<<< HEAD
+		ag3sIQtbGzBlBeE8DU4CYz/fDfc=
+=======
+<<<<<<< HEAD
+		fqR8Iz1kdN8xrHg4NlT1DUcV7SU=
+=======
+		WJu5vIkpEFkyIWfxhRr0qx5BHSA=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -963,7 +1009,19 @@
 		<dict>
 			<key>hash2</key>
 			<data>
+<<<<<<< HEAD
 			tB1YmMEOd1PnXR71/ThJo7Q7rKENh2uSxLZ93qMO6pM=
+=======
+<<<<<<< HEAD
+			I7ryjiciT2Zzwc4hwqrKix3QsoE0VQebqjMxzIDjWyo=
+=======
+<<<<<<< HEAD
+			1MzOeqBSLLXy6KJvRvojKDhB/Y2t+tDyPoDrkGEBSso=
+=======
+			FGiyoTcHjrDIU90Qzuu6fQs4JdTvkekYmXLFh3wkwbs=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/Info.plist</key>
@@ -977,7 +1035,19 @@
 		<dict>
 			<key>hash2</key>
 			<data>
+<<<<<<< HEAD
 			EZOgf9+1k4QKL0gb0s6S3o9x3oMmX711DaheIGAA1mw=
+=======
+<<<<<<< HEAD
+			C5oN/S0Qy5i4A9dmgBD4XGHut9C3glEcAB+cijPoRsM=
+=======
+<<<<<<< HEAD
+			a3ilCnGsi2wZki9tBc83k/7HqiUJBdu2UDCM3X4Gr+Y=
+=======
+			V2L+1pFUkdiZokc8x6ZXYLia/J+DRdamBUy9Xj3hvkQ=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.bin</key>
@@ -1006,6 +1076,16 @@
 			<key>hash2</key>
 			<data>
 			YwRdyxsKC40IOh10kpKA95PljlBtfuARV6Uq6hEpMEo=
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+			YwRdyxsKC40IOh10kpKA95PljlBtfuARV6Uq6hEpMEo=
+=======
+			jJ3lLyo/bdKjHZULPXqKwI5EKxGptPOoVuAdsjMMbE0=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/assets/Apple.svg</key>
@@ -1299,7 +1379,19 @@
 		<dict>
 			<key>hash2</key>
 			<data>
+<<<<<<< HEAD
 			N2HRkHluhhiw5Oq3bvc7XzxQ/3dMnd1RI10JFnj/IJk=
+=======
+<<<<<<< HEAD
+			+RTtgwrGPAcDgMXknEs9bJtba2+MUfevhOfyNNFoTcY=
+=======
+<<<<<<< HEAD
+			XpLAGT/2jqYLmZJ0eqKirXMeCIE5hYbNCFkRJJj5liw=
+=======
+			nY8dpBbIDGjw1aFIWERtJS19S7PJhQPqn/QBUQiZRuk=
+>>>>>>> develop
+>>>>>>> develop
+>>>>>>> develop
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>

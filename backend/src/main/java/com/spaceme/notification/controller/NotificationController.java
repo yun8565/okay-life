@@ -1,5 +1,6 @@
 package com.spaceme.notification.controller;
 
+import com.spaceme.notification.dto.NotificationTestRequest;
 import com.spaceme.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,9 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping
-    public ResponseEntity<Void> test() {
-        notificationService.sendNotificationDaily();
+    @PostMapping
+    public ResponseEntity<Void> test(@RequestBody NotificationTestRequest request) {
+        notificationService.sendNotification(request.topic(), request.message());
         return ResponseEntity.noContent().build();
     }
 }

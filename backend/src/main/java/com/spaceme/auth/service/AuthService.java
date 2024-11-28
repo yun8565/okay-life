@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.spaceme.common.AlienConcept.DEFAULT;
+import static com.spaceme.user.domain.NotificationPreference.HOUR_9;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class AuthService {
                 ProviderType.from(providerType)
         );
 
-        fcmService.subscribeTopic(DEFAULT, deviceToken);
+        fcmService.subscribeTopic(HOUR_9.name()+"_"+DEFAULT.name(), deviceToken);
         return AccessTokenResponse.of(jwtProvider.createToken(user.getId().toString()));
     }
 

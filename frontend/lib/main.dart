@@ -97,6 +97,7 @@ Map<String, dynamic> _dummyGalaxyData() {
       {
         "planetId": 3,
         "title": "Final Destination",
+<<<<<<< HEAD
         "status": "SOON",
         "planetThemeName": "Challenge Theme",
         "startDate": "2024-12-11",
@@ -120,6 +121,9 @@ Map<String, dynamic> _dummyGalaxyData() {
         "planetId": 4,
         "title": "Final Destination",
         "status": "SOON",
+=======
+        "status": "FAILED",
+>>>>>>> develop
         "planetThemeName": "Challenge Theme",
         "startDate": "2024-12-11",
         "endDate": "2024-12-20",
