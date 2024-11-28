@@ -226,7 +226,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
               child: Stack(
                 children: [
                   Planet(
-                    imagePath: 'assets/planet${i + 1}.png',
+                    imagePath:'assets/planet${i + 1}.png',
                     size: 150,
                     isFirst: i == 0,
                     isLast: i == planetCount - 1,

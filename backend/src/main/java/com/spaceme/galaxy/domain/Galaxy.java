@@ -31,9 +31,6 @@ public class Galaxy {
     @Column(nullable = false)
     private List<String> days;
 
-    @Column(nullable = false)
-    private Long createdBy;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
