@@ -92,7 +92,11 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("사용자 설정 정보를 찾을 수 없습니다."));
     }
 
-    private String generateTopic(NotificationPreference notificationPreference, AlienConcept alienConcept) {
-        return notificationPreference.name() + alienConcept;
+    private String generateTopic(NotificationPreference preference, AlienConcept concept) {
+        return String.join("_",preference.name(), concept.name());
+    }
+
+    public boolean hasSubscribers(NotificationPreference preference, AlienConcept concept) {
+        return userPreferenceRepository.existsByAlienConceptAndNotificationPreference(concept, preference);
     }
 }

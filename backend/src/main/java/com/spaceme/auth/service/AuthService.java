@@ -37,7 +37,7 @@ public class AuthService {
                 ProviderType.from(providerType)
         );
 
-        fcmService.subscribeTopic(HOUR_9.name()+DEFAULT, deviceToken);
+        fcmService.subscribeTopic(HOUR_9.name()+"_"+DEFAULT.name(), deviceToken);
         return AccessTokenResponse.of(jwtProvider.createToken(user.getId().toString()));
     }
 

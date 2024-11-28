@@ -3,7 +3,6 @@ package com.spaceme.notification.service;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.spaceme.common.AlienConcept;
 import com.spaceme.common.exception.InternalServerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,7 @@ public class FCMService {
     private final FirebaseMessaging firebaseMessaging;
 
     @Transactional
-    public void sendPushNotification(AlienConcept alienConcept, String notificationMessage) {
+    public void sendPushNotification(String topic, String notificationMessage) {
         Message message = Message.builder()
                 .setNotification(
                         Notification.builder()
@@ -30,14 +29,14 @@ public class FCMService {
                                 .setBody(notificationMessage)
                                 .build()
                 )
-                .setTopic(alienConcept.name())
+                .setTopic(topic)
                 .build();
 
         try {
             firebaseMessaging.send(message);
-            log.info("FCM 메시지 전송 성공 -- TOPIC = {}", alienConcept.name());
+            log.info("FCM 메시지 전송 성공 -- TOPIC = {}", topic);
         } catch (Exception e) {
-            log.error("FCM 메시지 전송 실패 -- TOPIC = {}, ERROR = {}", alienConcept.name(), e.getMessage());
+            log.error("FCM 메시지 전송 실패 -- TOPIC = {}, ERROR = {}", topic, e.getMessage());
             throw new InternalServerException("FCM 메시지 전송 중 오류가 발생했습니다.");
         }
     }
