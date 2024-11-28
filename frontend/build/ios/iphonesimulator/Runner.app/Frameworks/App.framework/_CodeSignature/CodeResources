@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		Zu6wNqOuAO5hTAC1UGO3WfDON8Y=
+		Yk1oK4r7e+ahok01Z+gfHo0DY7Q=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		9NVzHN7B5zqXAEjMJsSMxTzdrFI=
+		bxVp4Le6ZbVbNBc2F/IEGcpHOZY=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,17 +22,7 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		Y95yMcgs6KcqM1ajxbJ3B2priUE=
-<<<<<<< HEAD
-=======
-=======
-<<<<<<< HEAD
-		Y95yMcgs6KcqM1ajxbJ3B2priUE=
-=======
-		FQ3hmiKGoWhH60WsI5o2yIM+K+k=
->>>>>>> develop
->>>>>>> develop
->>>>>>> develop
+		E4SllY5iaXab7RlRf07qFv0FDco=
 		</data>
 		<key>flutter_assets/assets/Apple.svg</key>
 		<data>
@@ -54,17 +44,9 @@
 		<data>
 		Nqr6T1YhhUbahhrLztMmfEhRV/I=
 		</data>
-		<key>flutter_assets/assets/data/auth.json</key>
-		<data>
-		ssXIWlc+N1+BLM6FnCCxJRYdPBo=
-		</data>
 		<key>flutter_assets/assets/devil.png</key>
 		<data>
 		sIoZ3RZE7Kg6x0dLrudEhmeqkCc=
-		</data>
-		<key>flutter_assets/assets/devil.svg</key>
-		<data>
-		RdUeFPGyrXdG/RXxwWrt2EgP4r4=
 		</data>
 		<key>flutter_assets/assets/galaxy_tutorial_bg_1.png</key>
 		<data>
@@ -81,10 +63,6 @@
 		<key>flutter_assets/assets/lucky.png</key>
 		<data>
 		gavn+ulZFzXN+MWkt7wH3k1ER4w=
-		</data>
-		<key>flutter_assets/assets/lucky.svg</key>
-		<data>
-		U8UHI4YCRXeisEmEz9hRYjQY/Yo=
 		</data>
 		<key>flutter_assets/assets/mascot.svg</key>
 		<data>
@@ -200,19 +178,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-<<<<<<< HEAD
-		A4PNUYKjpZGmqlXxeq1kcYtB0fU=
-=======
-<<<<<<< HEAD
-		ag3sIQtbGzBlBeE8DU4CYz/fDfc=
-=======
-<<<<<<< HEAD
-		fqR8Iz1kdN8xrHg4NlT1DUcV7SU=
-=======
-		WJu5vIkpEFkyIWfxhRr0qx5BHSA=
->>>>>>> develop
->>>>>>> develop
->>>>>>> develop
+		Ig6x67WqNI4k6Pfc/IDYifLd14o=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -233,14 +199,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			gvqmNt7BMVdzvG4C2RrGiCj/2WotmpqtiWsnskaJBAM=
+			qI/TuY05divj74ohBK3OS10L1O1McZyyZNJuvAuSlw4=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			nGNMD5IpLXK74h28M8P5ypPGZJDG5mgScsA0Rz7wYHk=
+			1dMiHp8VLp5Wc90kNzh1AsC22G+8Y6nOzW3yTw77lCQ=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -254,17 +220,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			YwRdyxsKC40IOh10kpKA95PljlBtfuARV6Uq6hEpMEo=
-<<<<<<< HEAD
-=======
-=======
-<<<<<<< HEAD
-			YwRdyxsKC40IOh10kpKA95PljlBtfuARV6Uq6hEpMEo=
-=======
-			jJ3lLyo/bdKjHZULPXqKwI5EKxGptPOoVuAdsjMMbE0=
->>>>>>> develop
->>>>>>> develop
->>>>>>> develop
+			qGZPNcY/MqBrs/nds8ZM/zDIo3HIhxkJtE4g8bv5oAk=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Apple.svg</key>
@@ -302,25 +258,11 @@
 			O0cHIWJEZ5RK667dU57Wp0fTz92DTZ+8X9YWB9G05OU=
 			</data>
 		</dict>
-		<key>flutter_assets/assets/data/auth.json</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			mPV1wc3C0nZSi/r7LvvHpAYKGO/+DnRqpcqekCw0IbA=
-			</data>
-		</dict>
 		<key>flutter_assets/assets/devil.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
 			Hi9baw99axWEebUyWqWL32qBuXE7iUHo2Wr7lgZwMXY=
-			</data>
-		</dict>
-		<key>flutter_assets/assets/devil.svg</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			4RCfL8Fmos3seaHtZP7/rzm3ab5IzgYKCFp+8UFBr68=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/galaxy_tutorial_bg_1.png</key>
@@ -349,13 +291,6 @@
 			<key>hash2</key>
 			<data>
 			nATGBhJDQAVAp53DPvxYDBQDQjGVdkwMyymfNr/quh4=
-			</data>
-		</dict>
-		<key>flutter_assets/assets/lucky.svg</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			J2D68dqa12B/on8tm+IyM02AAFBgNMZWLCJJ6sm1goE=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/mascot.svg</key>
@@ -558,19 +493,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-<<<<<<< HEAD
-			N2HRkHluhhiw5Oq3bvc7XzxQ/3dMnd1RI10JFnj/IJk=
-=======
-<<<<<<< HEAD
-			+RTtgwrGPAcDgMXknEs9bJtba2+MUfevhOfyNNFoTcY=
-=======
-<<<<<<< HEAD
-			XpLAGT/2jqYLmZJ0eqKirXMeCIE5hYbNCFkRJJj5liw=
-=======
-			nY8dpBbIDGjw1aFIWERtJS19S7PJhQPqn/QBUQiZRuk=
->>>>>>> develop
->>>>>>> develop
->>>>>>> develop
+			+WPyaEE8ajsUMauktfiswlqf4lZn0g0B4FPhCsTKGBU=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
