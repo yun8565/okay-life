@@ -59,7 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       // 'galaxies' 키에서 데이터를 추출
       final List<Map<String, dynamic>> galaxies =
-          List<Map<String, dynamic>>.from(response['galaxies']);
+          List<Map<String, dynamic>>.from(response?['galaxies']);
 
       // 가장 최근 생성된 은하수 기준으로 정렬
       galaxies.sort((a, b) =>

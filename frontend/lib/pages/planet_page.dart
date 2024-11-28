@@ -19,7 +19,7 @@ class PlanetPage extends StatefulWidget {
   final bool isFirst;
   final bool isLast;
   final int planetId;
-  final Map<String, dynamic> galaxyData;
+  final Map<String, dynamic>? galaxyData;
 
   PlanetPage({
     Key? key,
@@ -43,7 +43,7 @@ class _PlanetPageState extends State<PlanetPage> {
   @override
   void initState() {
     super.initState();
-    planets = widget.galaxyData['planets'];
+    planets = widget.galaxyData?['planets'];
     _initializePlanetData();
     _initializeEventSource();
   }

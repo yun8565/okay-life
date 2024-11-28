@@ -532,10 +532,16 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
         "days": selectedDay,
       };
 
+      print(initialData["title"]);
+      print(initialData["startDate"]);
+      print(initialData["endDate"]);
+
+      print(await ApiClient.getJwt());
+
       // 목표만 /chat/question으로 전송
       final response = await ApiClient.post(
         '/chat/question',
-        data: {"goal": initialData["title"]},
+        data: {"goal": initialData["title"], "startDate": initialData["startDate"], "endDate": initialData["endDate"]},
       );
 
       // 응답에서 추가 질문 가져오기
@@ -594,7 +600,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
       );
 
       // /chat/plan의 응답에서 galaxyId 추출
-      final galaxyId = response['galaxyId'];
+      final galaxyId = response?['galaxyId'];
       if (galaxyId == null) {
         throw Exception("Invalid response: Missing galaxyId");
       }
