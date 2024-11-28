@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:okay_life_app/api/api_client.dart';
+import 'package:okay_life_app/pages/test_page.dart';
 import 'package:provider/provider.dart';
 import 'package:okay_life_app/pages/dashboard_page.dart';
 import 'package:okay_life_app/pages/login_page.dart';
@@ -29,7 +30,7 @@ class _SplashPageState extends State<SplashPage> {
         authState.login(jwt, {});
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardPage()),
+          MaterialPageRoute(builder: (context) => TestPage()),
         );
       } else {
         // JWT가 없으면 로그인 페이지로 이동

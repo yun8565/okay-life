@@ -9,6 +9,7 @@ import 'package:okay_life_app/data/auth_state.dart';
 import 'package:okay_life_app/pages/createGalaxy_page.dart';
 import 'package:okay_life_app/pages/dashboard_page.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
+import 'package:okay_life_app/pages/setting_page.dart';
 import 'package:okay_life_app/pages/splash_page.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -46,6 +47,8 @@ void main() async {
     javaScriptAppKey: 'c85dd45dd6a8bc233775dd97496eeaad',
   );
 
+  ApiClient.deleteJwt();
+
   runApp(
     MultiProvider(
       providers: [
@@ -72,6 +75,7 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => DashboardPage(),
         '/createGalaxy': (context) => CreateGalaxyPage(),
         '/galaxyPage': (context) => GalaxyPage(galaxyData: _dummyGalaxyData()),
+        '/settings': (context) => SettingPage()
       },
     );
   }
@@ -120,12 +124,11 @@ class LocalPushNotifications {
   static Future<void> scheduleDailyNotification() async {
     try {
       // 백엔드에서 알림 내용 가져오기
-      final notificationData =
-          await ApiClient.get('/notifications'); // API 경로
+      final notificationData = await ApiClient.get('/notifications'); // API 경로
 
-      final String title = notificationData['title'] ?? '기본 제목';
-      final String body = notificationData['body'] ?? '기본 내용';
-      final String payload = notificationData['payload'] ?? 'dashboard';
+      final String title = notificationData?['title'] ?? '기본 제목';
+      final String body = notificationData?['body'] ?? '기본 내용';
+      final String payload = notificationData?['payload'] ?? 'dashboard';
 
       const DarwinNotificationDetails iosNotificationDetails =
           DarwinNotificationDetails();

@@ -53,6 +53,8 @@ flutter:
     - assets/login_bg.png
     - assets/Apple.svg
     - assets/Google.svg
+    - assets/modify.png
+    - assets/profile.png
     - assets/Kakao.svg
     - assets/onboarding_icon_1.json
     - assets/onboarding_icon_2.json

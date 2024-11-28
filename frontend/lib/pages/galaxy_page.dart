@@ -8,7 +8,7 @@ import 'package:xml/xml.dart';
 import 'package:okay_life_app/widgets/planet.dart';
 
 class GalaxyPage extends StatefulWidget {
-  final Map<String, dynamic> galaxyData;
+  final Map<String, dynamic>? galaxyData;
 
   GalaxyPage({required this.galaxyData});
 
@@ -79,16 +79,16 @@ class _GalaxyPageState extends State<GalaxyPage> {
   void _initializeConquestStatus() {
     // 각 행성의 정복 상태를 false로 초기화
     conquestStatus = List.generate(
-      widget.galaxyData['planets'].length,
+      widget.galaxyData?['planets'].length,
       (index) => false,
     );
   }
 
   void _handleConquest(int planetIndex) async {
-    final planetId = widget.galaxyData['planets'][planetIndex]['planetId'];
-    final planetTitle = widget.galaxyData['planets'][planetIndex]['title'];
+    final planetId = widget.galaxyData?['planets'][planetIndex]['planetId'];
+    final planetTitle = widget.galaxyData?['planets'][planetIndex]['title'];
     final planetTheme =
-        widget.galaxyData["planets"][planetIndex]["planetThemeName"];
+        widget.galaxyData?["planets"][planetIndex]["planetThemeName"];
 
     try {
       // POST 요청 보내기
@@ -132,7 +132,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
 
   Future<void> _loadRoutes() async {
     try {
-      final int planetCount = widget.galaxyData['planets'].length;
+      final int planetCount = widget.galaxyData?['planets'].length;
 
       // SVG 파일 리스트
       List<String> routes = List.generate(
@@ -180,7 +180,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final int planetCount = widget.galaxyData['planets'].length;
+    final int planetCount = widget.galaxyData?['planets'].length;
 
     return Scaffold(
       body: Stack(
@@ -205,7 +205,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
-                  widget.galaxyData["title"],
+                  widget.galaxyData?["title"],
                   style: TextStyle(color: Colors.white, fontSize: 22),
                 ),
               ),
@@ -227,12 +227,12 @@ class _GalaxyPageState extends State<GalaxyPage> {
               child: Stack(
                 children: [
                   Planet(
-                    imagePath: 'assets/${widget.galaxyData['planets'][i]["planetThemeName"]}.png',
+                    imagePath: 'assets/${widget.galaxyData?['planets'][i]["planetThemeName"]}.png',
                     size: 150,
                     isFirst: i == 0,
                     isLast: i == planetCount - 1,
-                    planetId: widget.galaxyData['planets'][i]['planetId'],
-                    status: widget.galaxyData['planets'][i]['status'],
+                    planetId: widget.galaxyData?['planets'][i]['planetId'],
+                    status: widget.galaxyData?['planets'][i]['status'],
                     galaxyData: widget.galaxyData, // 상태 전달
                   ),
                   if (_shouldShowConquestButton(i))
@@ -427,7 +427,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
   }
 
   bool _shouldShowConquestButton(int index) {
-    final planet = widget.galaxyData['planets'][index];
+    final planet = widget.galaxyData?['planets'][index];
     final now = DateTime.now();
     final endDate = DateTime.parse(planet['endDate']);
 
@@ -444,8 +444,8 @@ class _GalaxyPageState extends State<GalaxyPage> {
 
 
   Widget _buildCircle(int routeIndex, int circleIndex) {
-    final currentPlanet = widget.galaxyData['planets'][routeIndex];
-    final nextPlanet = widget.galaxyData['planets'][routeIndex + 1];
+    final currentPlanet = widget.galaxyData?['planets'][routeIndex];
+    final nextPlanet = widget.galaxyData?['planets'][routeIndex + 1];
 
     final double currentProgress = _calculatePlanetProgress(
       currentPlanet['startDate'],
@@ -487,7 +487,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
   }
 
   List<Offset> get routeOffsets {
-    final int planetCount = widget.galaxyData['planets'].length;
+    final int planetCount = widget.galaxyData?['planets'].length;
     if (planetCount == 3) {
       return [Offset(120, 180), Offset(100, 520)];
     } else if (planetCount == 4) {
@@ -508,7 +508,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
   }
 
   Offset _getPlanetPosition(int index) {
-    final int planetCount = widget.galaxyData['planets'].length;
+    final int planetCount = widget.galaxyData?['planets'].length;
 
     if (planetCount == 3) {
       return [Offset(20, 200), Offset(250, 400), Offset(100, 720)][index];

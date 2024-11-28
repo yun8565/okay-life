@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       // 액세스 토큰으로 JWT 요청 및 저장
-      await _fetchAndStoreJwt('Kakao', token.accessToken);
+      await _fetchAndStoreJwt('kakao', token.accessToken);
 
       // 로그인 성공 후 다음 페이지로 이동
       _navigateToNextPage();
@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         print('ID Token: ${googleAuth.idToken}');
 
         // 액세스 토큰으로 JWT 요청 및 저장
-        await _fetchAndStoreJwt('Google', googleAuth.accessToken);
+        await _fetchAndStoreJwt('google', googleAuth.accessToken);
 
         // 로그인 성공 후 다음 페이지로 이동
         _navigateToNextPage();
@@ -77,15 +77,15 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       // `/auth/login/{provider}`에 GET 요청
-      final response = await ApiClient.get(
+      final response = await ApiClient.post(
         '/auth/login/$provider',
-        queryParameters: {
+        data: {
           'accessToken': accessToken,
         },
       );
 
       // 서버에서 JWT 추출
-      final jwt = response['accessToken']; // 서버 응답의 JWT 필드 이름
+      final jwt = response?['accessToken']; // 서버 응답의 JWT 필드 이름
       if (jwt != null) {
         // JWT를 로컬 스토리지에 저장
         await ApiClient.setJwt(jwt);

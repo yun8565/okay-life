@@ -4,7 +4,7 @@ import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/dashboard_page.dart';
 
 class OverviewPlanPage extends StatefulWidget {
-  final Map<String, dynamic> galaxyData;
+  final Map<String, dynamic>? galaxyData;
 
   OverviewPlanPage({required this.galaxyData});
 
@@ -48,7 +48,7 @@ class _OverviewPlanPageState extends State<OverviewPlanPage> {
                   SizedBox(height: 20),
                   Expanded(
                     child:
-                        _buildPlanetToggleList(context, widget.galaxyData['planets']),
+                        _buildPlanetToggleList(context, widget.galaxyData?['planets']),
                   ),
                   SizedBox(height: 10),
                   GestureDetector(
@@ -206,7 +206,7 @@ class _OverviewPlanPageState extends State<OverviewPlanPage> {
     try {
       await ApiClient.put('/planets/$planetId', data: {'title': newTitle});
       setState(() {
-        widget.galaxyData['planets'].firstWhere((planet) => planet['planetId'] == planetId)['title'] = newTitle;
+        widget.galaxyData?['planets'].firstWhere((planet) => planet['planetId'] == planetId)['title'] = newTitle;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("행성 이름이 성공적으로 수정되었습니다!")),

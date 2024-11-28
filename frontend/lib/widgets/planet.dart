@@ -8,7 +8,7 @@ class Planet extends StatelessWidget {
   final bool isLast;
   final planetId;
   final String status; 
-  final Map<String, dynamic> galaxyData;
+  final Map<String, dynamic>? galaxyData;
 
   const Planet({
     Key? key,
