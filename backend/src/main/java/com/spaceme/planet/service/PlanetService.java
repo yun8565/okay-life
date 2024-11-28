@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,14 +38,22 @@ public class PlanetService {
             .map(planet -> PlanetResponse.of(
                     planet,
                     missionService.findAllMissionByPlanetId(planet.getId()),
-                    missionRepository.findFirstByPlanetId(planet.getId())
-                            .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."))
-                            .getDate(),
-                    missionRepository.findLastByPlanetId(planet.getId())
-                            .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."))
-                            .getDate()
+                    getStartDate(planet.getId()),
+                    getEndDate(planet.getId())
             ))
             .toList();
+    }
+
+    private LocalDate getStartDate(Long planetId) {
+        return missionRepository.findFirstByPlanetId(planetId)
+                .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."))
+                .getDate();
+    }
+
+    private LocalDate getEndDate(Long planetId) {
+        return missionRepository.findLastByPlanetId(planetId)
+                .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."))
+                .getDate();
     }
 
     public void updatePlanet(Long userId, Long planetId, PlanetModifyRequest request) {

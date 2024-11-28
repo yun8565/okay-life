@@ -6,15 +6,11 @@ import com.spaceme.auth.domain.OauthUser;
 import com.spaceme.auth.domain.ProviderType;
 import com.spaceme.auth.dto.request.LoginRequest;
 import com.spaceme.auth.dto.response.AccessTokenResponse;
-import com.spaceme.notification.service.FCMService;
 import com.spaceme.user.domain.User;
 import com.spaceme.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.spaceme.common.AlienConcept.DEFAULT;
-import static com.spaceme.user.domain.NotificationPreference.HOUR_9;
 
 @Service
 @RequiredArgsConstructor
@@ -24,34 +20,30 @@ public class AuthService {
     private final UserRepository userRepository;
     private final OauthProviderComposite oauthProviderComposite;
     private final JwtProvider jwtProvider;
-    private final FCMService fcmService;
 
-    public AccessTokenResponse login(String providerType, LoginRequest loginRequest, String deviceToken) {
+    public AccessTokenResponse login(String providerType, LoginRequest loginRequest) {
         OauthClient provider = oauthProviderComposite.matchProvider(providerType);
         OauthUser oauthUser = provider.requestUserInfo(loginRequest.accessToken());
       
         User user = findOrRegister(
                 oauthUser.email(),
                 oauthUser.nickname(),
-                deviceToken,
                 ProviderType.from(providerType)
         );
 
-        fcmService.subscribeTopic(HOUR_9.name()+"_"+DEFAULT.name(), deviceToken);
         return AccessTokenResponse.of(jwtProvider.createToken(user.getId().toString()));
     }
 
-    private User findOrRegister(String email, String nickname, String deviceToken, ProviderType providerType) {
+    private User findOrRegister(String email, String nickname, ProviderType providerType) {
         return userRepository.findByEmailAndAuthType(email, providerType)
-                .orElseGet(() -> registerUser(email, nickname, deviceToken, providerType));
+                .orElseGet(() -> registerUser(email, nickname, providerType));
     }
 
-    private User registerUser(String email, String nickname, String deviceToken, ProviderType providerType) {
+    private User registerUser(String email, String nickname, ProviderType providerType) {
         User user = User.builder()
                 .email(email)
                 .nickname(nickname)
                 .authType(providerType)
-                .deviceToken(deviceToken)
                 .build();
 
         return userRepository.save(user);

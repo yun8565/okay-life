@@ -37,10 +37,6 @@ public class Galaxy {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private GalaxyTheme galaxyTheme;
 
-    public void updateTitle(String title) {
-        this.title = title;
-    }
-
     public void updateGalaxyTheme(GalaxyTheme galaxyTheme) {
         this.galaxyTheme = galaxyTheme;
     }

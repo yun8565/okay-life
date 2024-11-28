@@ -43,14 +43,10 @@ public class ChatGPTResponse {
 
         String content = choices.get(0).message.getContent().replaceAll(CODE_FORMAT,"").trim();
 
-        System.out.println(content);
-
         try {
             return mapper.readValue(content, clazz);
         } catch (Exception e) {
             throw new InternalServerException("ChatGPT 응답 매핑에 실패했습니다.");
         }
-
-
     }
 }

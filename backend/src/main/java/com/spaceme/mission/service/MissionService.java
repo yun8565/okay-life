@@ -1,6 +1,5 @@
 package com.spaceme.mission.service;
 
-import com.spaceme.common.Status;
 import com.spaceme.common.exception.ForbiddenException;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.mission.domain.Mission;

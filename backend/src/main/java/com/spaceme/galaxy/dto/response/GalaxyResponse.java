@@ -8,7 +8,7 @@ import java.util.List;
 
 public record GalaxyResponse(
         String title,
-        Long planetThemeIdRepresenting,
+        String planetThemeNameRepresenting,
         List<PlanetResponse> planets,
         LocalDate startDate,
         LocalDate endDate
@@ -16,7 +16,7 @@ public record GalaxyResponse(
     public static GalaxyResponse of(Galaxy galaxy, List<PlanetResponse> planets) {
         return new GalaxyResponse(
                 galaxy.getTitle(),
-                planets.get(0).planetThemeId(),
+                planets.get(0).planetThemeName(),
                 planets,
                 galaxy.getStartDate(),
                 galaxy.getEndDate()

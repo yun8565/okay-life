@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.spaceme.collection.domain.ThemeStatus.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
