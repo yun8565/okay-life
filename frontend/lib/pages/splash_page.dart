@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:okay_life_app/api/api_client.dart';
 import 'package:provider/provider.dart';
 import 'package:okay_life_app/pages/dashboard_page.dart';
 import 'package:okay_life_app/pages/login_page.dart';
@@ -20,17 +21,25 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> _checkAuthStatus() async {
     final authState = Provider.of<AuthState>(context, listen: false); // AuthState 가져오기
 
-    // 로컬에서 JWT 확인
-    final jwt = await authState.getJwtFromLocal();
-    if (jwt != null) {
-      // JWT가 있으면 로그인 상태로 업데이트하고 대시보드로 이동
-      authState.login(jwt, {});
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DashboardPage()),
-      );
-    } else {
-      // JWT가 없으면 로그인 페이지로 이동
+    try {
+      // ApiClient를 통해 로컬에서 JWT 확인
+      final jwt = await ApiClient.getJwt();
+      if (jwt != null) {
+        // JWT가 있으면 로그인 상태로 업데이트하고 대시보드로 이동
+        authState.login(jwt, {});
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardPage()),
+        );
+      } else {
+        // JWT가 없으면 로그인 페이지로 이동
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
+    } catch (error) {
+      // 에러 발생 시 로그인 페이지로 이동
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),

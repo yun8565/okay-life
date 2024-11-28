@@ -194,15 +194,16 @@ class _GalaxyPageState extends State<GalaxyPage> {
             ),
           ),
           Positioned(
-            top: 70,
-            right: 10,
+            top: 90,
+            right: 70,
             child: Container(
               decoration: BoxDecoration(
-                color: Color(0xff6976b6).withOpacity(0.2),
+                color: Color(0xff6976b6).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
                   widget.galaxyData["title"],
                   style: TextStyle(color: Colors.white, fontSize: 22),
@@ -226,7 +227,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
               child: Stack(
                 children: [
                   Planet(
-                    imagePath:'assets/planet${i + 1}.png',
+                    imagePath: 'assets/${widget.galaxyData['planets'][i]["planetThemeName"]}.png',
                     size: 150,
                     isFirst: i == 0,
                     isLast: i == planetCount - 1,
@@ -437,36 +438,10 @@ class _GalaxyPageState extends State<GalaxyPage> {
 
     // 조건: 정복하지 않았으며 종료일이 오늘 또는 상태가 "ACQUIRABLE"일 때
     return !conquestStatus[index] &&
-        (nowWithoutTime.isAtSameMomentAs(endDateWithoutTime) ||
+        (nowWithoutTime.isAtSameMomentAs(endDateWithoutTime) &&
             planet['status'] == "ACQUIRABLE");
   }
 
-  Widget _getPlanetImage(int index) {
-    final planet = widget.galaxyData['planets'][index];
-    final String status = planet['status'];
-    final String imagePath = (status == "SOON")
-        ? 'assets/question_planet.png' // 물음표 이미지 경로
-        : 'assets/planet${index + 1}.png'; // 일반 행성 이미지 경로
-
-    // 흑백 필터 적용
-    if (status == "FAILED") {
-      return ColorFiltered(
-        colorFilter: const ColorFilter.mode(
-          Colors.grey,
-          BlendMode.saturation, // 흑백으로 변환
-        ),
-        child: Image.asset(
-          imagePath,
-          fit: BoxFit.cover,
-        ),
-      );
-    } else {
-      return Image.asset(
-        imagePath,
-        fit: BoxFit.cover,
-      );
-    }
-  }
 
   Widget _buildCircle(int routeIndex, int circleIndex) {
     final currentPlanet = widget.galaxyData['planets'][routeIndex];

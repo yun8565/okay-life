@@ -65,8 +65,8 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
             Positioned(
               top: 670,
               left: 250,
-              child: SvgPicture.asset(
-                "assets/lucky.svg",
+              child: Image.asset(
+                "assets/lucky.png",
                 width: 180,
                 height: 180,
               ),
@@ -75,8 +75,8 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
             Positioned(
               top: 560,
               left: 250,
-              child: SvgPicture.asset(
-                "assets/lucky.svg",
+              child: Image.asset(
+                "assets/lucky.png",
                 width: 180,
                 height: 180,
               ),
@@ -164,7 +164,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
                       child: Center(
                         child: TypingEffect(
                           fullText:
-                              "한 가지만 더 물어볼게\n${additionalQuestions[index]}",
+                              "한 가지 더 물어볼게\n${additionalQuestions[index]}",
                         ),
                       ),
                     ),
@@ -610,7 +610,9 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => OverviewPlanPage(galaxyData: galaxyData,),
+          builder: (context) => OverviewPlanPage(
+            galaxyData: galaxyData,
+          ),
         ),
       );
     } catch (error) {
