@@ -41,82 +41,85 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false, // 디버그 배너 제거
         title: 'Okay Life App',
         home: GalaxyPage(
-          galaxyData: dummyGalaxyData,
+          galaxyData: _dummyGalaxyData(),
         ));
   }
 }
 
-final Map<String, dynamic> dummyGalaxyData = {
-  "title": "My Galaxy Adventure",
-  "planetThemeIdRepresenting": 1,
-  "planets": [
-    {
-      "planetId": 1,
-      "title": "Start Planet",
-      "status": "ON_PROGRESS",
-      "planetThemeId": 101,
-      "startDate": "2024-11-20",
-      "endDate": "2024-11-27",
-      "missions": [
-        {
-          "missionId": 1,
-          "content": "Complete task 1",
-          "date": "2024-11-21",
-          "status": "ON_PROGRESS"
-        },
-        {
-          "missionId": 2,
-          "content": "Complete task 2",
-          "date": "2024-11-22",
-          "status": "ON_PROGRESS"
-        },
-      ],
-    },
-    {
-      "planetId": 2,
-      "title": "Second Planet",
-      "status": "SOON",
-      "planetThemeId": 102,
-      "startDate": "2024-12-01",
-      "endDate": "2024-12-10",
-      "missions": [
-        {
-          "missionId": 3,
-          "content": "Gather resources",
-          "date": "2024-12-02",
-          "status": "SOON"
-        },
-        {
-          "missionId": 4,
-          "content": "Prepare for next journey",
-          "date": "2024-12-04",
-          "status": "SOON"
-        },
-      ],
-    },
-    {
-      "planetId": 3,
-      "title": "Final Destination",
-      "status": "FAILED",
-      "planetThemeId": 103,
-      "startDate": "2024-12-11",
-      "endDate": "2024-12-20",
-      "missions": [
-        {
-          "missionId": 5,
-          "content": "Overcome obstacle",
-          "date": "2024-12-13",
-          "status": "FAILED"
-        },
-        {
-          "missionId": 6,
-          "content": "Conquer final challenge",
-          "date": "2024-12-18",
-          "status": "FAILED"
-        },
-      ],
-    },
-  ],
-  "startDate": "2024-11-20",
-  "endDate": "2024-12-31",
-};
+// 더미 데이터 생성 함수
+Map<String, dynamic> _dummyGalaxyData() {
+  return {
+    "title": "My Galaxy Adventure",
+    "planetThemeIdRepresenting": 1,
+    "planets": [
+      {
+        "planetId": 1,
+        "title": "Start Planet",
+        "status": "ACQUIRABLE",
+        "planetThemeName": "Exploration Theme",
+        "startDate": "2024-11-20",
+        "endDate": "2024-11-28",
+        "missions": [
+          {
+            "missionId": 1,
+            "content": "Complete task 1",
+            "date": "2024-11-28",
+            "status": "ON_PROGRESS"
+          },
+          {
+            "missionId": 2,
+            "content": "Complete task 2",
+            "date": "2024-11-29",
+            "status": "ON_PROGRESS"
+          },
+        ],
+      },
+      {
+        "planetId": 2,
+        "title": "Second Planet",
+        "status": "SOON",
+        "planetThemeName": "Preparation Theme",
+        "startDate": "2024-12-01",
+        "endDate": "2024-12-10",
+        "missions": [
+          {
+            "missionId": 3,
+            "content": "Gather resources",
+            "date": "2024-12-02",
+            "status": "SOON"
+          },
+          {
+            "missionId": 4,
+            "content": "Prepare for next journey",
+            "date": "2024-12-04",
+            "status": "SOON"
+          },
+        ],
+      },
+      {
+        "planetId": 3,
+        "title": "Final Destination",
+        "status": "FAILED",
+        "planetThemeName": "Challenge Theme",
+        "startDate": "2024-12-11",
+        "endDate": "2024-12-20",
+        "missions": [
+          {
+            "missionId": 5,
+            "content": "Overcome obstacle",
+            "date": "2024-12-13",
+            "status": "FAILED"
+          },
+          {
+            "missionId": 6,
+            "content": "Conquer final challenge",
+            "date": "2024-12-18",
+            "status": "FAILED"
+          },
+        ],
+      },
+    ],
+    "startDate": "2024-11-20",
+    "endDate": "2024-12-31",
+  };
+}

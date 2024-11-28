@@ -1,14 +1,15 @@
 import 'dart:collection';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:okay_life_app/api/api_client.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Event {
   String title;
   bool complete;
+  int missionId;
 
-  Event(this.title, this.complete);
+  Event(this.title, this.complete, this.missionId);
 
   @override
   String toString() => title;
@@ -17,27 +18,124 @@ class Event {
 class PlanetPage extends StatefulWidget {
   final bool isFirst;
   final bool isLast;
+  final int planetId;
+  final Map<String, dynamic> galaxyData;
 
-  PlanetPage({Key? key, required this.isFirst, required this.isLast})
-      : super(key: key);
+  PlanetPage({
+    Key? key,
+    required this.isFirst,
+    required this.isLast,
+    required this.planetId,
+    required this.galaxyData,
+  }) : super(key: key);
 
   @override
   _PlanetPageState createState() => _PlanetPageState();
 }
 
 class _PlanetPageState extends State<PlanetPage> {
-  final Map<DateTime, Event> eventSource = {
-    DateTime(2024, 11, 26): Event('구독자 분석하기', true),
-    DateTime(2024, 11, 28): Event('영상 업로드하기', false),
-    DateTime(2024, 11, 30): Event('주제 아이디에이션', false),
-  };
+  late final String planetTitle;
+  late final List<dynamic> missions; // 실제 미션 데이터
+  late final List<dynamic> planets; // 전체 행성 리스트
+  late final String status;
+  final Map<DateTime, Event> eventSource = {};
 
-  late final LinkedHashMap<DateTime, Event> events = LinkedHashMap(
-    equals: isSameDay,
-  )..addAll(eventSource);
+  @override
+  void initState() {
+    super.initState();
+    planets = widget.galaxyData['planets'];
+    _initializePlanetData();
+    _initializeEventSource();
+  }
+
+  // 현재 행성 데이터 초기화
+  void _initializePlanetData() {
+    final planet = planets.firstWhere((p) => p['planetId'] == widget.planetId);
+
+    planetTitle = planet['title']; // 행성 이름
+    missions = planet['missions']; // 행성에 포함된 미션 리스트
+    status = planet['status']; //
+  }
+
+  // 미션 데이터를 Event 형태로 변환하여 캘린더에 반영
+  void _initializeEventSource() {
+    eventSource.clear();
+    for (final mission in missions) {
+      final DateTime missionDate = DateTime.parse(mission['date']);
+      final bool isComplete = mission['status'] == 'INCOMPLETED';
+      final int missionId = mission['missionId'];
+      eventSource[missionDate] =
+          Event(mission['content'], isComplete, missionId);
+    }
+  }
+
+  // 미션 상태 업데이트
+  Future<void> _updateMissionStatus(Event event) async {
+    try {
+      // POST 요청
+      await ApiClient.post(
+        '/missions/${event.missionId}/status',
+        data: {'status': event.complete ? 'COMPLETED' : 'INCOMPLETE'},
+      );
+
+      // 요청 성공 시 UI 업데이트
+      setState(() {
+        event.complete = !event.complete;
+      });
+    } catch (e) {
+      // 에러 처리
+      print('Error updating mission status: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('미션 상태 업데이트 실패: $e'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  // 다음 행성으로 이동
+  void _moveToNextPlanet() {
+    final currentIndex =
+        planets.indexWhere((p) => p['planetId'] == widget.planetId);
+    if (currentIndex < planets.length - 1) {
+      final nextPlanet = planets[currentIndex + 1];
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlanetPage(
+            isFirst: currentIndex + 1 == 0,
+            isLast: currentIndex + 1 == planets.length - 1,
+            planetId: nextPlanet['planetId'],
+            galaxyData: widget.galaxyData,
+          ),
+        ),
+      );
+    }
+  }
+
+  // 이전 행성으로 이동
+  void _moveToPreviousPlanet() {
+    final currentIndex =
+        planets.indexWhere((p) => p['planetId'] == widget.planetId);
+    if (currentIndex > 0) {
+      final previousPlanet = planets[currentIndex - 1];
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlanetPage(
+            isFirst: currentIndex - 1 == 0,
+            isLast: currentIndex - 1 == planets.length - 1,
+            planetId: previousPlanet['planetId'],
+            galaxyData: widget.galaxyData,
+          ),
+        ),
+      );
+    }
+  }
 
   Event? getEventForDay(DateTime day) {
-    return events.entries
+    return eventSource.entries
         .where((entry) => isSameDay(entry.key, day))
         .map((entry) => entry.value)
         .firstOrNull;
@@ -57,25 +155,38 @@ class _PlanetPageState extends State<PlanetPage> {
               fit: BoxFit.cover,
             ),
           ),
+          Positioned(
+            top: 100,
+            left: 20,
+            child: IconButton(
+              icon: Icon(CupertinoIcons.back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context); // 이전 화면으로 이동
+              },
+            ),
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Header Section
+              // 헤더 섹션
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    CupertinoIcons.arrowtriangle_left_fill,
-                    color: widget.isFirst
-                        ? Colors.white.withOpacity(0.15)
-                        : Colors.white.withOpacity(0.8),
+                  GestureDetector(
+                    onTap: _moveToPreviousPlanet,
+                    child: Icon(
+                      CupertinoIcons.arrowtriangle_left_fill,
+                      color: widget.isFirst
+                          ? Colors.white.withOpacity(0.15)
+                          : Colors.white.withOpacity(0.8),
+                    ),
                   ),
                   SizedBox(width: 20),
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: "비숑 ",
+                          text: status != "SOON" ? "$planetTitle " : "? ",
                           style: TextStyle(
                             color: Color(0xFFffcf39),
                             fontWeight: FontWeight.bold,
@@ -94,17 +205,20 @@ class _PlanetPageState extends State<PlanetPage> {
                     ),
                   ),
                   SizedBox(width: 20),
-                  Icon(
-                    CupertinoIcons.arrowtriangle_right_fill,
-                    color: widget.isLast
-                        ? Colors.white.withOpacity(0.15)
-                        : Colors.white.withOpacity(0.8),
+                  GestureDetector(
+                    onTap: _moveToNextPlanet,
+                    child: Icon(
+                      CupertinoIcons.arrowtriangle_right_fill,
+                      color: widget.isLast
+                          ? Colors.white.withOpacity(0.15)
+                          : Colors.white.withOpacity(0.8),
+                    ),
                   ),
                 ],
               ),
               SizedBox(height: 20),
 
-              // Calendar Section
+              // 캘린더 섹션
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 padding: EdgeInsets.all(10),
@@ -176,48 +290,48 @@ class _PlanetPageState extends State<PlanetPage> {
                 ),
               ),
               SizedBox(height: 20),
+
+              // 오늘의 이벤트 섹션
               Text(
                 "Today",
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               todayEvent != null
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
                           onTap: () {
-                            setState(() {
-                              todayEvent.complete = !todayEvent.complete;
-                            });
+                            _updateMissionStatus(todayEvent);
                           },
                           child: Container(
-                              width: 24,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: todayEvent.complete
+                                  ? Color(0xff6976b6)
+                                  : Colors.white,
+                              border: Border.all(
                                 color: todayEvent.complete
                                     ? Color(0xff6976b6)
                                     : Colors.white,
-                                border: Border.all(
-                                  color: todayEvent.complete
-                                      ? Color(0xff6976b6)
-                                      : Colors.white,
-                                  width: 2,
-                                ),
+                                width: 2,
                               ),
-                              child: Icon(
-                                Icons.check,
-                                size: 16,
-                                color: todayEvent.complete
-                                    ? Colors.white
-                                    : Color(0xff0a1c4c),
-                              )),
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              size: 16,
+                              color: todayEvent.complete
+                                  ? Colors.white
+                                  : Color(0xff0a1c4c),
+                            ),
+                          ),
                         ),
                         SizedBox(width: 10),
                         Text(
@@ -238,13 +352,11 @@ class _PlanetPageState extends State<PlanetPage> {
                         fontSize: 16,
                       ),
                     ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
             ],
           ),
 
-          // Draggable Scrollable Sheet Section
+          // Timeline 섹션
           DraggableScrollableSheet(
             initialChildSize: 0.1,
             minChildSize: 0.1,
@@ -265,16 +377,15 @@ class _PlanetPageState extends State<PlanetPage> {
                         child: Text(
                           "Timeline",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      SizedBox(height: 20),
                       Column(
-                        children: events.entries.map((entry) {
+                        children: eventSource.entries.map((entry) {
                           final date = entry.key;
                           final event = entry.value;
                           return Padding(
@@ -293,7 +404,7 @@ class _PlanetPageState extends State<PlanetPage> {
                                         color: Colors.white,
                                       ),
                                     ),
-                                    if (entry.key != events.keys.last)
+                                    if (entry.key != eventSource.keys.last)
                                       Container(
                                         width: 2,
                                         height: 80,

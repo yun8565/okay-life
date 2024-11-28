@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:okay_life_app/api/api_client.dart';
+import 'package:okay_life_app/pages/overview_plan_page.dart';
 import 'package:xml/xml.dart';
 import 'package:okay_life_app/widgets/planet.dart';
 
@@ -80,6 +82,52 @@ class _GalaxyPageState extends State<GalaxyPage> {
       widget.galaxyData['planets'].length,
       (index) => false,
     );
+  }
+
+  void _handleConquest(int planetIndex) async {
+    final planetId = widget.galaxyData['planets'][planetIndex]['planetId'];
+    final planetTitle = widget.galaxyData['planets'][planetIndex]['title'];
+    final planetTheme =
+        widget.galaxyData["planets"][planetIndex]["planetThemeName"];
+
+    try {
+      // POST 요청 보내기
+      // final responseData = await ApiClient.post(
+      //   '/planet/$planetId',
+      // );
+
+      // 더미 데이터 사용
+      final responseData = {
+        'acquired': planetId % 2 == 0, // planetId가 짝수면 성공, 홀수면 실패
+        'clearRatio': (planetId * 10) % 100, // 임의의 달성률 계산
+      };
+
+      // 응답 데이터 처리
+      final bool acquired = responseData['acquired'];
+      final int clearRatio = responseData['clearRatio'];
+
+      // 팝업 컨텐츠 업데이트
+      setState(() {
+        popupContent[0] = {
+          "title": "",
+          "contents": '$planetTitle\n$clearRatio% 달성',
+          "description": "",
+          "input": false,
+        };
+        popupContent[1] = {
+          "title": "",
+          "contents": acquired ? '$planetTheme\n정복 성공' : '$planetTheme\n정복 실패',
+          "description": acquired ? "정복한 행성은 도감에서 볼 수 있어요!" : "다음 기회를 노려봐요!",
+          "input": false,
+        };
+        showPopup = true;
+        activePlanetIndex = planetIndex;
+        currentPopupIndex = 0; // 팝업 인덱스 초기화
+      });
+    } catch (e) {
+      print('Error during conquest request: $e');
+      // 에러에 대한 사용자 알림 로직을 추가해도 좋습니다.
+    }
   }
 
   Future<void> _loadRoutes() async {
@@ -178,12 +226,13 @@ class _GalaxyPageState extends State<GalaxyPage> {
               child: Stack(
                 children: [
                   Planet(
-                    imagePath: _isPlanetAvailable(i)
-                        ? 'assets/planet${i + 1}.png'
-                        : 'assets/question_planet.png',
+                    imagePath:'assets/planet${i + 1}.png',
                     size: 150,
                     isFirst: i == 0,
                     isLast: i == planetCount - 1,
+                    planetId: widget.galaxyData['planets'][i]['planetId'],
+                    status: widget.galaxyData['planets'][i]['status'],
+                    galaxyData: widget.galaxyData, // 상태 전달
                   ),
                   if (_shouldShowConquestButton(i))
                     Padding(
@@ -191,8 +240,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            showPopup = true;
-                            activePlanetIndex = i;
+                            _handleConquest(i);
                           });
                         },
                         style: ElevatedButton.styleFrom(
@@ -277,7 +325,62 @@ class _GalaxyPageState extends State<GalaxyPage> {
                                   style: TextStyle(color: Colors.black),
                                 ),
                               ),
-                          if (!popupContent[currentPopupIndex]["input"])
+                          SizedBox(
+                            height: 10,
+                          ),
+                          if (popupContent[currentPopupIndex]["input"])
+                            if (popupContent[currentPopupIndex]["inputType"] ==
+                                "button")
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ...[
+                                    "어려웠어",
+                                    "괜찮았어",
+                                    "쉬웠어"
+                                  ].map((buttonText) => GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            userAnswers.add(buttonText);
+                                            showPopup = false;
+                                            currentPopupIndex = 0;
+                                          });
+                                          // "어려웠어" 또는 "쉬웠어"일 때만 이동
+                                          if (buttonText == "어려웠어" ||
+                                              buttonText == "쉬웠어") {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OverviewPlanPage(
+                                                  galaxyData: widget.galaxyData,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 180,
+                                          height: 40,
+                                          margin:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          decoration: BoxDecoration(
+                                              color: Color(0xff0a1c4c),
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            buttonText,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
+                                        ),
+                                      )),
+                                ],
+                              ),
+                          if (popupContent[currentPopupIndex]["inputType"] !=
+                              "button")
                             ElevatedButton(
                               onPressed: _handlePopupNext,
                               style: ElevatedButton.styleFrom(
@@ -293,6 +396,13 @@ class _GalaxyPageState extends State<GalaxyPage> {
                       ),
                     ),
                   ),
+                  Positioned(
+                      top: 550,
+                      right: 0,
+                      child: Image.asset(
+                        "assets/lucky.png",
+                        width: 210,
+                      ))
                 ],
               ),
             ),
@@ -316,24 +426,46 @@ class _GalaxyPageState extends State<GalaxyPage> {
   }
 
   bool _shouldShowConquestButton(int index) {
-  final planet = widget.galaxyData['planets'][index];
-  final now = DateTime.now();
-  final endDate = DateTime.parse(planet['endDate']);
-
-  // 날짜만 비교하도록 endDate와 now의 시간을 제거
-  final endDateWithoutTime = DateTime(endDate.year, endDate.month, endDate.day);
-  final nowWithoutTime = DateTime(now.year, now.month, now.day);
-
-  // 정복하지 않았으며, 종료일과 오늘 날짜가 같을 때 버튼 표시
-  return !conquestStatus[index] && nowWithoutTime.isAtSameMomentAs(endDateWithoutTime);
-}
-
-  bool _isPlanetAvailable(int index) {
     final planet = widget.galaxyData['planets'][index];
     final now = DateTime.now();
-    final startDate = DateTime.parse(planet['startDate']);
+    final endDate = DateTime.parse(planet['endDate']);
 
-    return now.isAfter(startDate) || now.isAtSameMomentAs(startDate);
+    // 날짜만 비교하도록 endDate와 now의 시간을 제거
+    final endDateWithoutTime =
+        DateTime(endDate.year, endDate.month, endDate.day);
+    final nowWithoutTime = DateTime(now.year, now.month, now.day);
+
+    // 조건: 정복하지 않았으며 종료일이 오늘 또는 상태가 "ACQUIRABLE"일 때
+    return !conquestStatus[index] &&
+        (nowWithoutTime.isAtSameMomentAs(endDateWithoutTime) ||
+            planet['status'] == "ACQUIRABLE");
+  }
+
+  Widget _getPlanetImage(int index) {
+    final planet = widget.galaxyData['planets'][index];
+    final String status = planet['status'];
+    final String imagePath = (status == "SOON")
+        ? 'assets/question_planet.png' // 물음표 이미지 경로
+        : 'assets/planet${index + 1}.png'; // 일반 행성 이미지 경로
+
+    // 흑백 필터 적용
+    if (status == "FAILED") {
+      return ColorFiltered(
+        colorFilter: const ColorFilter.mode(
+          Colors.grey,
+          BlendMode.saturation, // 흑백으로 변환
+        ),
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+      );
+    }
   }
 
   Widget _buildCircle(int routeIndex, int circleIndex) {
@@ -431,7 +563,7 @@ class TypingEffect extends StatefulWidget {
 
   TypingEffect({
     required this.fullText,
-    this.typingSpeed = const Duration(milliseconds: 100),
+    this.typingSpeed = const Duration(milliseconds: 70),
   });
 
   @override
