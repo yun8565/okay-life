@@ -1,49 +1,71 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:okay_life_app/pages/dashboard_page.dart';
-import 'package:scaled_list/scaled_list.dart';
+import 'package:okay_life_app/api/api_client.dart';
 
-class GalaxyDexPage extends StatefulWidget {
-  @override
-  State<GalaxyDexPage> createState() => _GalaxyDexPageState();
+enum ThemeStatus { ACQUIRED, DISCOVERED, HIDDEN }
+
+class PlanetTheme {
+  final String name;
+  final ThemeStatus status;
+
+  PlanetTheme({
+    required this.name,
+    required this.status,
+  });
+
+  // JSON 데이터를 객체로 변환
+  factory PlanetTheme.fromJson(Map<String, dynamic> json) {
+    return PlanetTheme(
+      name: json['name'],
+      status: ThemeStatus.values.firstWhere(
+        (e) => e.toString().split('.').last == json['status'],
+      ),
+    );
+  }
 }
 
-class _GalaxyDexPageState extends State<GalaxyDexPage> {
-  final List<Map<String, dynamic>> galaxyData = []; // 백엔드에서 가져올 데이터
+class GalaxyTheme {
+  final String name;
+  final List<PlanetTheme> planetThemes;
+
+  GalaxyTheme({
+    required this.name,
+    required this.planetThemes,
+  });
+
+  // JSON 데이터를 객체로 변환
+  factory GalaxyTheme.fromJson(Map<String, dynamic> json) {
+    return GalaxyTheme(
+      name: json['name'],
+      planetThemes: (json['planetThemeList'] as List)
+          .map((planet) => PlanetTheme.fromJson(planet))
+          .toList(),
+    );
+  }
+}
+
+class CollectionPage extends StatefulWidget {
+  @override
+  State<CollectionPage> createState() => _CollectionPageState();
+}
+
+class _CollectionPageState extends State<CollectionPage> {
+  late Future<List<GalaxyTheme>> _galaxies;
 
   @override
   void initState() {
     super.initState();
-    fetchGalaxyData(); // 데이터 페치
+    _galaxies = fetchGalaxyThemes();
   }
 
-  Future<void> fetchGalaxyData() async {
-    // 백엔드에서 데이터 가져오기 (예제 데이터 추가)
-    await Future.delayed(Duration(seconds: 2)); // 서버 호출 시뮬레이션
-
-    setState(() {
-      galaxyData.addAll([
-        {
-          "name": "디저트 은하",
-          "image": "assets/planet1.png",
-          "completed": 8,
-          "total": 8,
-        },
-        {
-          "name": "해양 은하",
-          "image": "assets/planet2.png",
-          "completed": 4,
-          "total": 8,
-        },
-        {
-          "name": "우주 은하",
-          "image": "assets/planet3.png",
-          "completed": 2,
-          "total": 8,
-        },
-        {"name": "업데이트 예정", "image": "assets/question_planet.png", "total": 0},
-      ]);
-    });
+  Future<List<GalaxyTheme>> fetchGalaxyThemes() async {
+    try {
+      final response = await ApiClient.get('/collections');
+      final data = response as List;
+      return data.map((json) => GalaxyTheme.fromJson(json)).toList();
+    } catch (error) {
+      print("Error fetching galaxy themes: $error");
+      throw Exception("Failed to load galaxy themes");
+    }
   }
 
   @override
@@ -52,118 +74,116 @@ class _GalaxyDexPageState extends State<GalaxyDexPage> {
       body: Stack(
         children: [
           Positioned.fill(
-              child: Image.asset(
-            "assets/dashboard_bg.png",
-            fit: BoxFit.cover,
-          )),
-          Positioned(
-            top: 100,
-            left: 50,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DashboardPage(),
-                  ),
-                );
-              },
-              child: Icon(
-                CupertinoIcons.arrowtriangle_left_circle_fill,
-                color: Color(0xff6976b6).withOpacity(0.5),
-                size: 50,
-              ),
+            child: Image.asset(
+              "assets/dashboard_bg.png",
+              fit: BoxFit.cover,
             ),
           ),
-          galaxyData.isEmpty
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ), // 로딩 중 표시
-                )
-              : Center(
-                  child: ScaledList(
-                    itemCount: galaxyData.length,
-                    itemColor: (index) {
-                      // 색상은 순환적으로 설정
-                      return Colors.white;
-                    },
-                    itemBuilder: (index, selectedIndex) {
-                      final galaxy = galaxyData[index];
-                      final isSelected = index == selectedIndex;
-
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 5,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (galaxy["completed"] == galaxy["total"])
-                              Icon(Icons.check_circle,
-                                  color: Color(0xff0a1c4c), size: 32), // 완료 아이콘
-                            SizedBox(height: 10),
-                            Image.asset(
-                              galaxy["image"],
-                              height: isSelected ? 110 : 90, // 선택된 아이템 강조
-                            ),
-                            SizedBox(height: 20),
-                            Text(
-                              galaxy["name"],
-                              style: TextStyle(
-                                fontSize: isSelected ? 22 : 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff0a1c4c),
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              galaxy["total"] == 0
-                                  ? "기대해주세요!"
-                                  : galaxy["completed"] == galaxy["total"]
-                                      ? "모두 모았어요!"
-                                      : "${galaxy["completed"]} / ${galaxy["total"]}",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            if (isSelected && galaxy["total"] != 0)
-                              ElevatedButton(
-                                onPressed: () {
-                                  // 상세 화면 이동 또는 기능 구현
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xff0a1c4c),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                ),
-                                child: Text(
-                                  "행성 보기",
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.white),
-                                ),
-                              ),
-                          ],
+          Column(
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                "은하수 도감",
+                style: TextStyle(
+                  fontFamily: "Open Sans",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: FutureBuilder<List<GalaxyTheme>>(
+                  future: _galaxies,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          "데이터를 불러오지 못했습니다.",
+                          style: TextStyle(color: Colors.red, fontSize: 16),
                         ),
                       );
-                    },
-                  ),
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "도감 데이터가 없습니다.",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      );
+                    }
+
+                    final galaxies = snapshot.data!;
+
+                    return ListView.builder(
+                      itemCount: galaxies.length,
+                      itemBuilder: (context, index) {
+                        final galaxy = galaxies[index];
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(105, 118, 182, 0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                galaxy.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                ),
+                                itemCount: galaxy.planetThemes.length,
+                                itemBuilder: (context, index) {
+                                  final planet = galaxy.planetThemes[index];
+                                  return ColorFiltered(
+                                    colorFilter: planet.status ==
+                                            ThemeStatus.DISCOVERED
+                                        ? const ColorFilter.matrix(<double>[
+                                            0.2126, 0.7152, 0.0722, 0, 0, // Red channel
+                                            0.2126, 0.7152, 0.0722, 0, 0, // Green channel
+                                            0.2126, 0.7152, 0.0722, 0, 0, // Blue channel
+                                            0, 0, 0, 1, 0, // Alpha channel
+                                          ])
+                                        : const ColorFilter.mode(
+                                            Colors.transparent,
+                                            BlendMode.dst,
+                                          ),
+                                    child: Image.asset(
+                                      planet.status == ThemeStatus.HIDDEN
+                                          ? "assets/hiddenPlanet.png"
+                                          : "assets/planets/${planet.name}.png",
+                                      fit: BoxFit.contain,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
+              ),
+            ],
+          ),
         ],
       ),
     );

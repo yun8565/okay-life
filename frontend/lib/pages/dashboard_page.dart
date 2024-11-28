@@ -100,58 +100,80 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void openGalaxyPage(Map<String, dynamic> galaxy) async {
-  // 로컬 스토리지에서 방문 여부 확인
-  await _checkFirstVisit();
+    // 로컬 스토리지에서 방문 여부 확인
+    await _checkFirstVisit();
 
-  if (isFirstGalaxyVisit) {
-    // 방문한 적이 없으면 설명 페이지로 이동
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => GalaxyTutorialPage(
-                galaxyId: galaxy['id'],
-              )),
-    );
+    if (isFirstGalaxyVisit) {
+      // 방문한 적이 없으면 설명 페이지로 이동
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => GalaxyTutorialPage(
+                  galaxyId: galaxy['id'],
+                )),
+      );
 
-    // 방문 기록 저장
-    await _setFirstVisit();
+      // 방문 기록 저장
+      await _setFirstVisit();
 
-    // 플래그 업데이트
-    setState(() {
-      isFirstGalaxyVisit = false;
-    });
-  } else {
-    // 이미 방문한 적이 있으면 은하수 페이지로 바로 이동
-    _fetchGalaxyDetailsAndNavigate(galaxy['id']);
+      // 플래그 업데이트
+      setState(() {
+        isFirstGalaxyVisit = false;
+      });
+    } else {
+      // 이미 방문한 적이 있으면 은하수 페이지로 바로 이동
+      _fetchGalaxyDetailsAndNavigate(galaxy['id']);
+    }
   }
-}
 
   Future<void> _fetchGalaxyDetailsAndNavigate(int galaxyId) async {
     try {
-    // API 호출로 데이터 가져오기
-    final response = await ApiClient.get('/galaxies/$galaxyId');
+      // API 호출로 데이터 가져오기
+      final response = await ApiClient.get('/galaxies/$galaxyId');
 
-    // GalaxyPage로 데이터 전달
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GalaxyPage(
-          galaxyData: response, // Fetch된 데이터 전달
+      // GalaxyPage로 데이터 전달
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GalaxyPage(
+            galaxyData: response, // Fetch된 데이터 전달
+          ),
         ),
-      ),
-    );
-  } catch (error) {
-    // 에러 처리
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("은하수 데이터를 가져오지 못했습니다: $error")),
-    );
+      );
+    } catch (error) {
+      // 에러 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("은하수 데이터를 가져오지 못했습니다: $error")),
+      );
+    }
   }
-  }
-  
+
   Future<void> updateMissionStatus(int missionId, bool completed) async {
-    // 체크박스 업데이트를 가정한 API 호출 (테스트용)
-    await Future.delayed(Duration(milliseconds: 500));
-    print("미션 $missionId 상태 업데이트: $completed");
+    try {
+      // /missions/{missionId}/status로 POST 요청
+      final response = await ApiClient.post(
+        '/missions/$missionId/status',
+        data: {'completed': completed}, // 완료 상태 전달
+      );
+
+      // 성공 메시지 출력
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("미션 상태가 성공적으로 업데이트되었습니다!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      print("미션 상태 업데이트 성공: $response");
+    } catch (error) {
+      // 에러 메시지 출력
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("미션 상태 업데이트 중 오류 발생: $error"),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      print("미션 상태 업데이트 실패: $error");
+    }
   }
 
   @override
@@ -516,7 +538,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => GalaxyDexPage()));
+                  MaterialPageRoute(builder: (context) => CollectionPage()));
             },
           )
         ],

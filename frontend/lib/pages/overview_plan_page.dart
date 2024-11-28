@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/dashboard_page.dart';
 
-class OverviewPlanPage extends StatelessWidget {
+class OverviewPlanPage extends StatefulWidget {
   final Map<String, dynamic> galaxyData;
 
   OverviewPlanPage({required this.galaxyData});
 
+  @override
+  State<OverviewPlanPage> createState() => _OverviewPlanPageState();
+}
+
+class _OverviewPlanPageState extends State<OverviewPlanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +48,7 @@ class OverviewPlanPage extends StatelessWidget {
                   SizedBox(height: 20),
                   Expanded(
                     child:
-                        _buildPlanetToggleList(context, galaxyData['planets']),
+                        _buildPlanetToggleList(context, widget.galaxyData['planets']),
                   ),
                   SizedBox(height: 10),
                   GestureDetector(
@@ -200,6 +205,9 @@ class OverviewPlanPage extends StatelessWidget {
       int planetId, String newTitle, BuildContext context) async {
     try {
       await ApiClient.put('/planets/$planetId', data: {'title': newTitle});
+      setState(() {
+        widget.galaxyData['planets'].firstWhere((planet) => planet['planetId'] == planetId)['title'] = newTitle;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("행성 이름이 성공적으로 수정되었습니다!")),
       );

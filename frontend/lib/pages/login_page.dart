@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
+import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/onboarding_page.dart';
 import 'package:okay_life_app/pages/test_page.dart';
 
@@ -14,13 +15,17 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   Future<void> _loginWithKaKao() async {
     try {
+      OAuthToken token;
       if (await isKakaoTalkInstalled()) {
-        OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+        token = await UserApi.instance.loginWithKakaoTalk();
         print('카카오톡으로 로그인 성공: ${token.accessToken}');
       } else {
-        OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+        token = await UserApi.instance.loginWithKakaoAccount();
         print('카카오계정으로 로그인 성공: ${token.accessToken}');
       }
+
+      // 액세스 토큰으로 JWT 요청 및 저장
+      await _fetchAndStoreJwt('Kakao', token.accessToken);
 
       // 로그인 성공 후 다음 페이지로 이동
       _navigateToNextPage();
@@ -33,7 +38,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithGoogle() async {
-    // GoogleSignIn 객체 초기화
     final GoogleSignIn googleSignIn = GoogleSignIn(
       scopes: [
         'email',
@@ -42,24 +46,55 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      // 사용자가 Google 계정으로 로그인
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-      // 로그인 성공 시 액세스 토큰 가져오기
       if (googleUser != null) {
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
 
-        // 액세스 토큰 출력
         print('Access Token: ${googleAuth.accessToken}');
         print('ID Token: ${googleAuth.idToken}');
 
-        // 원하는 추가 로직 처리
+        // 액세스 토큰으로 JWT 요청 및 저장
+        await _fetchAndStoreJwt('Google', googleAuth.accessToken);
+
+        // 로그인 성공 후 다음 페이지로 이동
+        _navigateToNextPage();
       } else {
         print('Google sign-in canceled by user.');
       }
     } catch (error) {
       print('Google sign-in error: $error');
+    }
+  }
+
+  /// `/auth/login/{provider}`로 GET 요청하여 JWT를 받아 로컬에 저장
+  Future<void> _fetchAndStoreJwt(String provider, String? accessToken) async {
+    if (accessToken == null) {
+      print('Access token is null');
+      return;
+    }
+
+    try {
+      // `/auth/login/{provider}`에 GET 요청
+      final response = await ApiClient.get(
+        '/auth/login/$provider',
+        queryParameters: {
+          'accessToken': accessToken,
+        },
+      );
+
+      // 서버에서 JWT 추출
+      final jwt = response['accessToken']; // 서버 응답의 JWT 필드 이름
+      if (jwt != null) {
+        // JWT를 로컬 스토리지에 저장
+        await ApiClient.setJwt(jwt);
+        print('JWT 저장 완료: $jwt');
+      } else {
+        print('JWT를 받지 못했습니다.');
+      }
+    } catch (error) {
+      print('JWT 요청 실패: $error');
     }
   }
 

@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		rdAw/wAuiGQLycdLEEnA1vgsAr4=
+		Zu6wNqOuAO5hTAC1UGO3WfDON8Y=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		R1blY2sBuXYS96A9zNjtzcXprlw=
+		9NVzHN7B5zqXAEjMJsSMxTzdrFI=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,15 +22,7 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-<<<<<<< HEAD
 		Y95yMcgs6KcqM1ajxbJ3B2priUE=
-=======
-<<<<<<< HEAD
-		Y95yMcgs6KcqM1ajxbJ3B2priUE=
-=======
-		FQ3hmiKGoWhH60WsI5o2yIM+K+k=
->>>>>>> develop
->>>>>>> develop
 		</data>
 		<key>flutter_assets/assets/Apple.svg</key>
 		<data>
@@ -51,6 +43,10 @@
 		<key>flutter_assets/assets/dashboard_bg.png</key>
 		<data>
 		Nqr6T1YhhUbahhrLztMmfEhRV/I=
+		</data>
+		<key>flutter_assets/assets/data/auth.json</key>
+		<data>
+		ssXIWlc+N1+BLM6FnCCxJRYdPBo=
 		</data>
 		<key>flutter_assets/assets/devil.png</key>
 		<data>
@@ -194,15 +190,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-<<<<<<< HEAD
-		ag3sIQtbGzBlBeE8DU4CYz/fDfc=
-=======
-<<<<<<< HEAD
-		fqR8Iz1kdN8xrHg4NlT1DUcV7SU=
-=======
-		WJu5vIkpEFkyIWfxhRr0qx5BHSA=
->>>>>>> develop
->>>>>>> develop
+		A4PNUYKjpZGmqlXxeq1kcYtB0fU=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -223,14 +211,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			+1uocugASEHQhX03pTQrpzIeOfD+x+sGZnt++NZyNsQ=
+			gvqmNt7BMVdzvG4C2RrGiCj/2WotmpqtiWsnskaJBAM=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			1+5/rJ47nkS4W8nIf/SZTtY6pxV/kRbXTDW6gKZ2kRw=
+			nGNMD5IpLXK74h28M8P5ypPGZJDG5mgScsA0Rz7wYHk=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -244,15 +232,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-<<<<<<< HEAD
 			YwRdyxsKC40IOh10kpKA95PljlBtfuARV6Uq6hEpMEo=
-=======
-<<<<<<< HEAD
-			YwRdyxsKC40IOh10kpKA95PljlBtfuARV6Uq6hEpMEo=
-=======
-			jJ3lLyo/bdKjHZULPXqKwI5EKxGptPOoVuAdsjMMbE0=
->>>>>>> develop
->>>>>>> develop
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Apple.svg</key>
@@ -288,6 +268,13 @@
 			<key>hash2</key>
 			<data>
 			O0cHIWJEZ5RK667dU57Wp0fTz92DTZ+8X9YWB9G05OU=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/data/auth.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			mPV1wc3C0nZSi/r7LvvHpAYKGO/+DnRqpcqekCw0IbA=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/devil.png</key>
@@ -539,15 +526,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-<<<<<<< HEAD
-			+RTtgwrGPAcDgMXknEs9bJtba2+MUfevhOfyNNFoTcY=
-=======
-<<<<<<< HEAD
-			XpLAGT/2jqYLmZJ0eqKirXMeCIE5hYbNCFkRJJj5liw=
-=======
-			nY8dpBbIDGjw1aFIWERtJS19S7PJhQPqn/QBUQiZRuk=
->>>>>>> develop
->>>>>>> develop
+			N2HRkHluhhiw5Oq3bvc7XzxQ/3dMnd1RI10JFnj/IJk=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>

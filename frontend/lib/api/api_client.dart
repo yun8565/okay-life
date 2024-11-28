@@ -17,7 +17,7 @@ class ApiClient {
   }) async {
     try {
       // 인증 헤더 추가
-      final jwt = await _getJwt();
+      final jwt = await getJwt();
       final response = await _dio.get(
         path,
         queryParameters: queryParameters,
@@ -42,7 +42,7 @@ class ApiClient {
   }) async {
     try {
       // 인증 헤더 추가
-      final jwt = await _getJwt();
+      final jwt = await getJwt();
       final response = await _dio.post(
         path,
         data: data,
@@ -65,7 +65,7 @@ class ApiClient {
     Map<String, dynamic>? data,
   }) async {
     try {
-      final jwt = await _getJwt();
+      final jwt = await getJwt();
       final response = await _dio.put(
         path,
         data: data,
@@ -85,7 +85,7 @@ class ApiClient {
   //! DELETE
   static Future<void> delete(String path) async {
     try {
-      final jwt = await _getJwt();
+      final jwt = await getJwt();
       await _dio.delete(
         path,
         options: Options(
@@ -101,9 +101,21 @@ class ApiClient {
   }
 
   //! 로컬 저장소에서 JWT 가져오기
-  static Future<String?> _getJwt() async {
+  static Future<String?> getJwt() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('jwt'); // 저장된 JWT 반환
+  }
+
+  //! JWT 저장
+  static Future<void> setJwt(String jwt) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('jwt', jwt); // JWT 저장
+  }
+
+  //! JWT 삭제 (로그아웃 시 사용 가능)
+  static Future<void> deleteJwt() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt'); // JWT 삭제
   }
 
   //! 에러 처리

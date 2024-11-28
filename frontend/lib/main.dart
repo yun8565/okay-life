@@ -40,9 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false, // 디버그 배너 제거
         title: 'Okay Life App',
-        home: GalaxyPage(
-          galaxyData: _dummyGalaxyData(),
-        ));
+        home: DashboardPage());
   }
 }
 
@@ -99,7 +97,29 @@ Map<String, dynamic> _dummyGalaxyData() {
       {
         "planetId": 3,
         "title": "Final Destination",
-        "status": "FAILED",
+        "status": "SOON",
+        "planetThemeName": "Challenge Theme",
+        "startDate": "2024-12-11",
+        "endDate": "2024-12-20",
+        "missions": [
+          {
+            "missionId": 5,
+            "content": "Overcome obstacle",
+            "date": "2024-12-13",
+            "status": "FAILED"
+          },
+          {
+            "missionId": 6,
+            "content": "Conquer final challenge",
+            "date": "2024-12-18",
+            "status": "FAILED"
+          },
+        ],
+      },
+      {
+        "planetId": 4,
+        "title": "Final Destination",
+        "status": "SOON",
         "planetThemeName": "Challenge Theme",
         "startDate": "2024-12-11",
         "endDate": "2024-12-20",
