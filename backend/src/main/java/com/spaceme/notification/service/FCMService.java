@@ -42,7 +42,7 @@ public class FCMService {
         }
     }
 
-    public void subscribeTopic(AlienConcept topic, String deviceToken) {
+    public void subscribeTopic(String topic, String deviceToken) {
         try {
             firebaseMessaging.subscribeToTopic(List.of(deviceToken), deviceToken);
             log.info("구독 성공 -- TOKEN = {}, TOPIC = {}", deviceToken, topic);
@@ -52,10 +52,10 @@ public class FCMService {
         }
     }
 
-    public void unSubscribeTopic(AlienConcept topic, String deviceToken) {
+    public void unSubscribeTopic(String topic, String deviceToken) {
         try {
-            firebaseMessaging.unsubscribeFromTopic(List.of(deviceToken), topic.name());
-            log.info("구독 취소 성공 -- TOKEN = {}, TOPIC = {}", deviceToken, topic.name());
+            firebaseMessaging.unsubscribeFromTopic(List.of(deviceToken), topic);
+            log.info("구독 취소 성공 -- TOKEN = {}, TOPIC = {}", deviceToken, topic);
         } catch (Exception exception) {
             log.error("구독 취소에 실패 -- {}", exception.getMessage());
             throw new InternalServerException("FCM 설정 과정에서 오류가 발생했습니다.");

@@ -5,7 +5,8 @@ import com.spaceme.chatGPT.dto.request.PlanRequest;
 import com.spaceme.chatGPT.dto.response.*;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.galaxy.service.GalaxyService;
-import com.spaceme.user.domain.User;
+import com.spaceme.user.domain.UserPreference;
+import com.spaceme.user.repository.UserPreferenceRepository;
 import com.spaceme.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,14 @@ import java.util.Map;
 public class ChatGPTService {
     private final WebClient webClient;
     private final UserRepository userRepository;
+    private final UserPreferenceRepository userPreferenceRepository;
     private final GalaxyService galaxyService;
 
     public ThreeResponse generateRoadMap(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+        UserPreference userPreference = userPreferenceRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("사용자 설정을 찾을 수 없습니다."));
 
-        String prompt = user.getSpaceGoal() + "을 위한 구체적인 로드맵을 3단계로 제시해줘.\n" +
+        String prompt = userPreference.getSpaceGoal() + "을 위한 구체적인 로드맵을 3단계로 제시해줘.\n" +
                 "로드맵의 예시는 다음과 같아.\n" +
                 "예를 들어 '수능영어 1타강사'라는 목표를 이루기 위한 로드맵은" +
                 "1. 외고 진학\n" +

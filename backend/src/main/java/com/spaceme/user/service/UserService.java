@@ -1,11 +1,15 @@
 package com.spaceme.user.service;
 
+import com.spaceme.common.AlienConcept;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.notification.service.FCMService;
+import com.spaceme.user.domain.NotificationPreference;
 import com.spaceme.user.domain.User;
-import com.spaceme.user.dto.request.AlienConceptRequest;
+import com.spaceme.user.domain.UserPreference;
+import com.spaceme.user.dto.request.PreferenceRequest;
 import com.spaceme.user.dto.request.SpaceGoalRequest;
 import com.spaceme.user.dto.response.UserResponse;
+import com.spaceme.user.repository.UserPreferenceRepository;
 import com.spaceme.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +21,21 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserPreferenceRepository userPreferenceRepository;
     private final FCMService fcmService;
 
     public void registerSpaceGoal(Long userId, SpaceGoalRequest request) {
-        User user = findUser(userId);
+        UserPreference userPreference = findUserPreference(userId);
 
-        user.setSpaceGoal(request.spaceGoal());
+        userPreference.setSpaceGoal(request.spaceGoal());
     }
 
     @Transactional(readOnly = true)
     public UserResponse getCurrentUserInfo(Long userId) {
         User user = findUser(userId);
+        UserPreference userPreference = findUserPreference(userId);
 
-        return UserResponse.from(user);
+        return UserResponse.from(user, userPreference.getSpaceGoal());
     }
 
     public void updateDeviceToken(Long userId, String deviceToken) {
@@ -38,16 +44,55 @@ public class UserService {
         user.updateDeviceToken(deviceToken);
     }
 
-    public void updateAlienConcept(Long userId, String deviceToken, AlienConceptRequest request) {
-        User user = findUser(userId);
+    public void updateUserPreference(Long userId, String deviceToken, PreferenceRequest request) {
+        UserPreference userPreference = findUserPreference(userId);
 
-        user.updateAlienConcept(request.alienConcept());
-        fcmService.unSubscribeTopic(user.getAlienConcept(), deviceToken);
-        fcmService.subscribeTopic(request.alienConcept(), deviceToken);
+        request.spaceGoal().ifPresent(userPreference::setSpaceGoal);
+
+        request.alienConcept().ifPresent(alienConcept -> {
+            updateAlienConcept(userPreference, alienConcept, deviceToken);
+        });
+
+        request.notificationPreference().ifPresent(notificationPreference -> {
+            updateNotificationPreference(userPreference, notificationPreference, deviceToken);
+        });
+    }
+
+    private void updateNotificationPreference(UserPreference userPreference, NotificationPreference notificationPreference, String deviceToken) {
+        fcmService.unSubscribeTopic(generateTopic(
+                userPreference.getNotificationPreference(),
+                userPreference.getAlienConcept()
+        ), deviceToken);
+
+        fcmService.subscribeTopic(generateTopic(
+                notificationPreference,
+                userPreference.getAlienConcept()
+        ), deviceToken);
+    }
+
+    private void updateAlienConcept(UserPreference userPreference, AlienConcept alienConcept, String deviceToken) {
+        fcmService.unSubscribeTopic(generateTopic(
+                userPreference.getNotificationPreference(),
+                userPreference.getAlienConcept()
+        ), deviceToken);
+
+        fcmService.subscribeTopic(generateTopic(
+                userPreference.getNotificationPreference(),
+                alienConcept
+        ), deviceToken);
     }
 
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("사용자 정보를 찾을 수 없습니다."));
+    }
+
+    private UserPreference findUserPreference(Long userId) {
+        return userPreferenceRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("사용자 설정 정보를 찾을 수 없습니다."));
+    }
+
+    private String generateTopic(NotificationPreference notificationPreference, AlienConcept alienConcept) {
+        return notificationPreference.name() + alienConcept;
     }
 }
