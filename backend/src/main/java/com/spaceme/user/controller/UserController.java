@@ -1,7 +1,6 @@
 package com.spaceme.user.controller;
 
 import com.spaceme.auth.domain.Auth;
-import com.spaceme.notification.domain.Device;
 import com.spaceme.user.dto.request.PreferenceRequest;
 import com.spaceme.user.dto.request.SpaceGoalRequest;
 import com.spaceme.user.dto.response.UserResponse;
@@ -31,22 +30,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getCurrentUserInfo(userId));
     }
 
-    @PutMapping("/token")
-    public ResponseEntity<Void> updateDeviceToken(
-            @Auth Long userId,
-            @Device String deviceToken
-    ) {
-        userService.updateDeviceToken(userId, deviceToken);
-        return ResponseEntity.noContent().build();
-    }
-
     @PatchMapping("/me")
     public ResponseEntity<Void> updateUserInfo(
             @Auth Long userId,
-            @Device String deviceToken,
             @RequestBody PreferenceRequest request
     ) {
-        userService.updateUserPreference(userId, deviceToken, request);
+        userService.updateUserPreference(userId, request);
         return ResponseEntity.noContent().build();
     }
 }

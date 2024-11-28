@@ -1,8 +1,6 @@
 package com.spaceme.mission.service;
 
-import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.mission.repository.MissionRepository;
-import com.spaceme.planet.domain.Planet;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;

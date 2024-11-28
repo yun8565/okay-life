@@ -4,7 +4,7 @@ import com.spaceme.common.exception.NotFoundException;
 import java.util.Arrays;
 
 public enum ProviderType {
-    KAKAO, APPLE, GOOGLE;
+    KAKAO, GOOGLE;
 
     public static ProviderType from(String type) {
         return Arrays.stream(values())

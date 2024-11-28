@@ -1,21 +1,14 @@
 package com.spaceme.notification.controller;
 
-import com.spaceme.notification.dto.NotificationTestRequest;
 import com.spaceme.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/notifications")
+@RequiredArgsConstructor
+@RequestMapping("/notification/")
 public class NotificationController {
-
     private final NotificationService notificationService;
 
-    @PostMapping
-    public ResponseEntity<Void> test(@RequestBody NotificationTestRequest request) {
-        notificationService.sendNotification(request.topic(), request.message());
-        return ResponseEntity.noContent().build();
-    }
 }

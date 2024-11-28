@@ -20,13 +20,7 @@ public class User {
     @Column(nullable = false)
     private String nickname;
 
-    private String deviceToken;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProviderType authType;
-
-    public void updateDeviceToken(String deviceToken) {
-        this.deviceToken = deviceToken;
-    }
 }

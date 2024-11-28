@@ -17,13 +17,17 @@ public class UserPreference {
     @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @Setter
     private String spaceGoal;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private AlienConcept alienConcept = AlienConcept.DEFAULT;
 
-    @Column(nullable = false)
-    private NotificationPreference notificationPreference;
+    public void updateSpaceGoal(String spaceGoal) {
+        this.spaceGoal = spaceGoal;
+    }
+
+    public void updateAlienConcept(AlienConcept alienConcept) {
+        this.alienConcept = alienConcept;
+    }
 }

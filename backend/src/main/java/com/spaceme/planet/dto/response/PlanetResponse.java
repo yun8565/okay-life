@@ -11,7 +11,7 @@ public record PlanetResponse(
         Long planetId,
         String title,
         Status status,
-        Long planetThemeId,
+        String planetThemeName,
         LocalDate startDate,
         LocalDate endDate,
         List<MissionResponse> missions
@@ -25,7 +25,7 @@ public record PlanetResponse(
                 planet.getId(),
                 planet.getTitle(),
                 planet.getStatus(),
-                planet.getPlanetTheme().getId(),
+                planet.getPlanetTheme().getName(),
                 startDate,
                 endDate,
                 missions
