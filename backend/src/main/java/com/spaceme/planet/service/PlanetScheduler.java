@@ -42,12 +42,10 @@ public class PlanetScheduler {
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkPlanetAcquirable() {
         planetRepository.findByStatus(ON_PROGRESS).forEach(planet -> {
-            LocalDate lastDate = missionRepository.findLastByPlanetId(planet.getId())
-                    .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."))
-                    .getDate();
+            Mission lastMission = missionRepository.findLastByPlanetId(planet.getId())
+                    .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."));
 
-            if(missionRepository.findAllByDate(lastDate).stream()
-                    .allMatch(mission -> mission.getStatus().isPast())) {
+            if(lastMission.getStatus().isPast()) {
                 planet.updateStatus(ACQUIRABLE);
                 log.info("행성 ID : {} 획득 가능 상태로 업데이트 완료", planet.getId());
             }

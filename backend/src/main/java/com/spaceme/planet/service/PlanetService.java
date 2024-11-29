@@ -19,8 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.spaceme.common.domain.Status.ACQUIRABLE;
-import static com.spaceme.common.domain.Status.CLEAR;
+import static com.spaceme.common.domain.Status.*;
 
 @Service
 @RequiredArgsConstructor
@@ -70,12 +69,11 @@ public class PlanetService {
 
         double probability = getProbability(planetId);
         boolean hasAcquired = probabilityGenerator.acquirePlanetTheme(probability);
+        Planet planet = planetRepository.findById(planetId)
+                .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
 
-        if(hasAcquired) {
-            Planet planet = planetRepository.findById(planetId)
-                    .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
-            planet.updateStatus(CLEAR);
-        }
+        planet.updateStatus(hasAcquired ? CLEAR : FAILED);
+
         return RatioResponse.of(hasAcquired, (int)(probability*100));
     }
 
