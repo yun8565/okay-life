@@ -9,6 +9,9 @@ import com.spaceme.user.domain.UserPreference;
 import com.spaceme.user.repository.UserPreferenceRepository;
 import com.spaceme.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,6 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 public class ChatGPTService {
+    private static final Logger log = LoggerFactory.getLogger(ChatGPTService.class);
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final UserPreferenceRepository userPreferenceRepository;
@@ -111,6 +115,7 @@ public class ChatGPTService {
                 .block()
                 .toResponse(DateGroupResponse.class);
 
+        log.info("Dates: {}",dateGroupResponse.toString());
         return dateGroupResponse;
     }
 
@@ -179,6 +184,7 @@ public class ChatGPTService {
                  .block()
                  .toResponse(PlanResponse.class);
 
-        return galaxyService.saveGalaxy(userId, planResponse, planRequest);
+         log.info("Plan : {}",planResponse.toString());
+         return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
 }
