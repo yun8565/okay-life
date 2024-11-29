@@ -63,6 +63,7 @@ public class ChatGPTService {
                 + goalRequest.startDate() + "~" + goalRequest.endDate()
                 + "동안 노력할거야."
                 + "이때 사용자를 파악할 수 있는 3개의 질문을 생성해줘.\n"
+                + "질문은 반말로 해."
                 + "json 형식으로 key는 three, value는 질문 내용만";
 
         return webClient.post()
@@ -83,7 +84,8 @@ public class ChatGPTService {
 
     @Transactional
     public DateGroupResponse generateDays(Long userId, PlanRequest planRequest) {
-        String combinedInput = "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"중" + planRequest.days()+ "에 해당하는 일자만 남겨\n" +
+        String combinedInput = "너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야."+
+                "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"중" + planRequest.days()+ "에 해당하는 일자만 남겨\n" +
                 "p2. 남은 일자들을 "+ planRequest.step() +"개의 그룹으로 나눠. 이때 각 그룹별로 포함되어있는 일자 개수가 동일해야해. 등분되지 않는 날짜는 버림처리해줘.\n" +
                 "p3.  json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "dateGroup : {\n" +
@@ -132,6 +134,7 @@ public class ChatGPTService {
                 "let’s think step by step."+
                 "p1. 사용자의 목표를 달성하는데 필요한 세부 목표를 총" + planRequest.step() +
                 "개의 단계로 나눠서 세워. 넌 사용자를 고려한 세부 목표 수립 전문가니까 사용자의 목표와 질의응답을 잘 고려해서 세부 목표를 만들어줄 수 있어.\n" +
+                "세부 목표의 길이는 15자 내외로.\n"+
                 "p2. 각 세부 목표를 이루기 위한 " + totalDates +
                 "개의 계획을 생성해줘. 넌 사용자를 고려한 계획 수립 전문가니까 세부 목표와 질의응답 내용을 잘 고려해서 계획을 만들어줄 수 있어." +
                 "계획을 세울 때 고려해야하는 점들은 다음과 같아.\n" +
@@ -139,7 +142,8 @@ public class ChatGPTService {
                 "2. 현실적인 계획을 수립해줘\n" +
                 "3. 실현 가능한 계획을 수립해줘\n" +
                 "4. 문장을 명사로 종결해줘\n" +
-                "5. 하나의 세부 목표당 계획이" + totalDates + "개인지 다시한번 확인해줘." +
+                "5. 계획의 길이는 20자 내외로\n"+
+                "6. 하나의 세부 목표당 계획이" + totalDates + "개인지 다시한번 확인해줘." +
                 "만약" + totalDates + "개가 아니라면 추가적인 계획을 생성해서" + totalDates + "개로 개수를 맞춰줘." +
                 "p3. 세부 목표와 계획을 json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "{\"planets\" : [\n" +
