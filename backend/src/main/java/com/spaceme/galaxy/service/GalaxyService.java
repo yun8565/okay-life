@@ -93,16 +93,22 @@ public class GalaxyService {
     }
 
     private void saveMissions(Long userId, Planet planet, List<ChatGPTMissionResponse> missions) {
-        missions.forEach(mission ->
-                missionRepository.save(
-                        Mission.builder()
-                                .planet(planet)
-                                .date(LocalDate.parse(mission.date()))
-                                .createdBy(userId)
-                                .content(mission.content())
-                                .build()
+        missions.stream()
+                .filter(mission -> isTodayOrFuture(LocalDate.parse(mission.date())))
+                .forEach(mission ->
+                    missionRepository.save(Mission.builder()
+                            .planet(planet)
+                            .date(LocalDate.parse(mission.date()))
+                            .createdBy(userId)
+                            .content(mission.content())
+                            .build()
                 )
         );
+    }
+
+    private boolean isTodayOrFuture(LocalDate date) {
+        LocalDate today = LocalDate.now();
+        return date.isEqual(today) || date.isAfter(today);
     }
 
     private Galaxy createGalaxy(PlanRequest planRequest, User user) {
