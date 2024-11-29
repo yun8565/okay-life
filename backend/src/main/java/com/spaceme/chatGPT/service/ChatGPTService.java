@@ -54,9 +54,6 @@ public class ChatGPTService {
     }
 
     public ThreeResponse generateQuestions(Long userId, GoalRequest goalRequest) {
-        if(userRepository.existsById(userId))
-                throw new NotFoundException("사용자를 찾을 수 없습니다.");
-
         String prompt = "너는 목표를 달성하고 싶은 사용자를 위해 세부 목표와 계획을 수립해주는 전문가야.\n"
                 + "사용자의 목표 달성에 필요한 세부 목표와 계획을 잘 세워주기 위해서는 사용자의 상황을 정확히 파악해야 해.\n"
                 + "너가 해야할 일은 다음과 같아.\n"
