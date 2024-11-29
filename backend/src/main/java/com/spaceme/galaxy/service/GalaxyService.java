@@ -85,7 +85,7 @@ public class GalaxyService {
         return planetRepository.save(
                 Planet.builder()
                         .galaxy(galaxy)
-                        .planetTheme(themeGenerator.getRandomPlanetTheme())
+                        .planetTheme(themeGenerator.getRandomPlanetTheme(galaxy.getGalaxyTheme()))
                         .createdBy(userId)
                         .title(planetResponse.title())
                         .build()
@@ -122,7 +122,7 @@ public class GalaxyService {
 
         galaxy.updateGalaxyTheme(themeGenerator.getRandomGalaxyTheme());
         planetRepository.findByGalaxyId(galaxyId).forEach(planet ->
-                planet.updatePlanetTheme(themeGenerator.getRandomPlanetTheme())
+                planet.updatePlanetTheme(themeGenerator.getRandomPlanetTheme(galaxy.getGalaxyTheme()))
         );
     }
 

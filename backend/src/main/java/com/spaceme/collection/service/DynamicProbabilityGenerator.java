@@ -45,10 +45,10 @@ public class DynamicProbabilityGenerator {
         );
     }
 
-    public PlanetTheme getRandomPlanetTheme() {
+    public PlanetTheme getRandomPlanetTheme(GalaxyTheme galaxyTheme) {
         return getRandomTheme(
                 planetThemeRepository.getTotalWeight(),
-                planetThemeRepository::findAll,
+                () -> planetThemeRepository.findByGalaxyThemeId(galaxyTheme.getId()),
                 PlanetTheme::getWeight
         );
     }
