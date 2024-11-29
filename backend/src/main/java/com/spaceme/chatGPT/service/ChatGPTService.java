@@ -84,8 +84,9 @@ public class ChatGPTService {
 
     @Transactional
     public DateGroupResponse generateDays(Long userId, PlanRequest planRequest) {
-        String combinedInput = "너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야."+
-                "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"중" + planRequest.days()+ "에 해당하는 일자만 남겨\n" +
+        String combinedInput = "날짜를 여러개의 그룹으로 나눠줘. 이때 그룹 안에 있는 날짜 개수는 모두 동일해야해." +
+                "너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야."+
+                "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"중" + planRequest.days()+ "요일에 해당하는 일자만 남겨\n" +
                 "p2. 남은 일자들을 "+ planRequest.step() +"개의 그룹으로 나눠. 이때 각 그룹별로 포함되어있는 일자 개수가 동일해야해. 등분되지 않는 날짜는 버림처리해줘.\n" +
                 "p3.  json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "dateGroup : {\n" +
