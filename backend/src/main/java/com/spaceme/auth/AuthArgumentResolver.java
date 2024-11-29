@@ -6,6 +6,7 @@ import com.spaceme.common.exception.BadRequestException;
 import com.spaceme.common.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,6 +21,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String BEARER_TYPE = "Bearer ";
@@ -44,6 +46,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         String accessToken = extractAccessToken(request.getHeader(AUTHORIZATION));
         jwtProvider.validateToken(accessToken);
 
+        log.debug(jwtProvider.getSubject(accessToken));
         return Long.valueOf(jwtProvider.getSubject(accessToken));
     }
 
