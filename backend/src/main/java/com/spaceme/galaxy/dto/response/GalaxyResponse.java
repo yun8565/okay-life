@@ -15,10 +15,16 @@ public record GalaxyResponse(
         LocalDate endDate
 ) {
     public static GalaxyResponse of(Galaxy galaxy, List<PlanetResponse> planets) {
+        String representingTheme = switch(galaxy.getGalaxyTheme().getName()) {
+            case "our" -> "earth";
+            case "dessert" -> "candy";
+            default -> "sigor_jabson";
+        };
+
         return new GalaxyResponse(
                 galaxy.getId(),
                 galaxy.getTitle(),
-                planets.get(0).planetThemeName(),
+                representingTheme,
                 planets,
                 galaxy.getStartDate(),
                 galaxy.getEndDate()
