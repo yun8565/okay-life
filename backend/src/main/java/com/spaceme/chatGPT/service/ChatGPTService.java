@@ -118,8 +118,6 @@ public class ChatGPTService {
 
         DateGroupResponse dateGroupResponse = generateDays(userId, planRequest);
 
-        int dates = dateGroupResponse.dateGroup().get()
-
         int seperatedDates = dateGroupResponse.dateGroup().get(0).dates().size();
 
         int totalDates = dateGroupResponse.dateGroup().stream()
