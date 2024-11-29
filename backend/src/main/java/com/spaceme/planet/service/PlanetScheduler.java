@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static com.spaceme.common.Status.*;
+import static com.spaceme.common.domain.Status.*;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)

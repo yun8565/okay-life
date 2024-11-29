@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.spaceme.common.AlienConcept.DEFAULT;
+import static com.spaceme.common.domain.AlienConcept.DEFAULT;
 
 @Service
 @RequiredArgsConstructor

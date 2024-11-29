@@ -1,6 +1,6 @@
 package com.spaceme.notification.service;
 
-import com.spaceme.common.AlienConcept;
+import com.spaceme.common.domain.AlienConcept;
 import com.spaceme.common.exception.InternalServerException;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.notification.domain.Notification;
@@ -41,7 +41,7 @@ public class NotificationService {
 
         int index = calculateHashWithSent(today.toString(), notifications);
         Notification selected = notifications.get(index);
-        selected.addSentCount();
+        selected.updateCountIfNewDay(today);
 
         log.info("오늘의 메시지 (Concept: {}): {}", concept, selected.getMessage());
         return NotificationResponse.of(selected.getMessage());

@@ -1,6 +1,6 @@
 package com.spaceme.notification.repository;
 
-import com.spaceme.common.AlienConcept;
+import com.spaceme.common.domain.AlienConcept;
 import com.spaceme.notification.domain.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 

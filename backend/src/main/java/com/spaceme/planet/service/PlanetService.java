@@ -19,8 +19,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.spaceme.common.Status.ACQUIRABLE;
-import static com.spaceme.common.Status.CLEAR;
+import static com.spaceme.common.domain.Status.ACQUIRABLE;
+import static com.spaceme.common.domain.Status.CLEAR;
 
 @Service
 @RequiredArgsConstructor
