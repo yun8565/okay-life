@@ -150,8 +150,8 @@ public class ChatGPTService {
                 "p4. 세부 목표와 계획을 json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "{\"planets\" : [\n" +
                 "\"title\" : 세부 목표,\n" +
-                "\"missions\" : [{\"content\" : \"계획\", \"date\" : \"2025-01-01\"}]\n" +
-                "]}\n" +
+                "\"missions\" : [{\"content\" : \"계획\"}]\n" +
+                "]}" +
                 "정신 똑바로 차려라" +
                 "json 값만 반환해.";
 
