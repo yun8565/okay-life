@@ -30,6 +30,7 @@ public class Planet {
     private String title;
 
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private Status status = SOON;
 
     @Column(nullable = false)
