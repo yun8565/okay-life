@@ -23,6 +23,3 @@ security:
     secret-key: ${JWT_SECRET_KEY}
     access-expiration: ${ACCESS_EXPIRATION}
     refresh-expiration: ${REFRESH_EXPIRATION}
-
-firebase:
-  admin-key: ${FIREBASE_ADMIN_SDK}
