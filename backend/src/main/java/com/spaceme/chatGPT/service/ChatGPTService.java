@@ -35,7 +35,7 @@ public class ChatGPTService {
                 "2. 영어영문과 입학\n" +
                 "3. 학원 강사 취업 "+
                 "json 형식으로 three라는 key에 value로 단계별 내용만 넣어줘." +
-                "로드맵의 각 단계별 내용은 최대 30자로 해줘.";
+                "로드맵의 각 단계별 내용은 15자 내외로 해줘.";
 
         return webClient.post()
                 .uri("/chat/completions")
