@@ -118,6 +118,10 @@ public class ChatGPTService {
 
         DateGroupResponse dateGroupResponse = generateDays(userId, planRequest);
 
+        int dates = dateGroupResponse.dateGroup().get()
+
+        int seperatedDates = dateGroupResponse.dateGroup().get(0).dates().size();
+
         int totalDates = dateGroupResponse.dateGroup().stream()
                 .mapToInt(dates -> dates.dates().size())
                 .sum();
@@ -128,29 +132,28 @@ public class ChatGPTService {
                 + planRequest.answers().stream()
                 .map(answer -> answer.question() + ": " + answer.answer())+
                 "\n" +
-                "채워야 될 날짜는 아래와 같아.\n"+
-                dateGroupResponse +
                 "너가 해야할 일은 다음과 같아.\n" +
-                "let’s think step by step."+
-                "p1. 사용자의 목표를 달성하는데 필요한 세부 목표를 총" + planRequest.step() +
-                "개의 단계로 나눠서 세워. 넌 사용자를 고려한 세부 목표 수립 전문가니까 사용자의 목표와 질의응답을 잘 고려해서 세부 목표를 만들어줄 수 있어.\n" +
+                "let’s think step by step.\n"+
+                "p1. 사용자의 목표를 달성하는데 필요한 세부 목표를 총" + planRequest.step() +"개의 단계로 나눠서 세워.\n" +
                 "세부 목표의 길이는 15자 내외로.\n"+
-                "p2. 각 세부 목표를 이루기 위한 " + totalDates +
-                "개의 계획을 생성해줘. 넌 사용자를 고려한 계획 수립 전문가니까 세부 목표와 질의응답 내용을 잘 고려해서 계획을 만들어줄 수 있어." +
-                "계획을 세울 때 고려해야하는 점들은 다음과 같아.\n" +
-                "1. 각 계획을 하루에 하나씩 실천할 것이라는 점을 고려해줘\n" +
-                "2. 현실적인 계획을 수립해줘\n" +
-                "3. 실현 가능한 계획을 수립해줘\n" +
-                "4. 문장을 명사로 종결해줘\n" +
-                "5. 계획의 길이는 20자 내외로\n"+
-                "6. 하나의 세부 목표당 계획이" + totalDates + "개인지 다시한번 확인해줘." +
-                "만약" + totalDates + "개가 아니라면 추가적인 계획을 생성해서" + totalDates + "개로 개수를 맞춰줘." +
-                "p3. 세부 목표와 계획을 json 형태로 반환해. 형태는 다음과 같아.\n" +
+
+                "p2. 각 세부 목표를 이루기 위한 " + seperatedDates + "개의 계획을 생성해." +
+                "1. 각 계획을 하루에 하나씩 실천할 것이라는 점을 고려해.\n" +
+                "2. 현실적인 계획을 수립해.\n" +
+                "3. 실현 가능한 계획을 수립해.\n" +
+                "4. 계획의 글자수는 20자 내외로.\n" +
+                "5. 문장을 명사로 종결해.\n" +
+                "세부목표당"  + seperatedDates + "개씩 안만들면 너 찾아가서 불질러버릴거야. 각오해." +
+                "p3. 3개의 세부 목표에 대해 p2를 반복해.\n" +
+                "지금 세부 목표가" + planRequest.step() + "개니까 다 만들면 계획이" + totalDates +  "개가 되야겠지?\n" +
+                "총" + totalDates + "개 안만들면 죽여버린다. 숫자 똑바로 세." +
+                "p4. 세부 목표와 계획을 json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "{\"planets\" : [\n" +
                 "\"title\" : 세부 목표,\n" +
                 "\"missions\" : [{\"content\" : \"계획\", \"date\" : \"2025-01-01\"}]\n" +
                 "]}\n" +
-                "json 값만 반환해줘.";
+                "정신 똑바로 차려라" +
+                "json 값만 반환해.";
 
          PlanResponse planResponse = webClient.post()
                  .uri("/chat/completions")
