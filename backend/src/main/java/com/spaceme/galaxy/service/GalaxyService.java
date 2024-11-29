@@ -112,7 +112,6 @@ public class GalaxyService {
                 .user(user)
                 .startDate(LocalDate.parse(planRequest.startDate()))
                 .endDate(LocalDate.parse(planRequest.endDate()))
-                .days(planRequest.days())
                 .build();
     }
 
