@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record GalaxyResponse(
+        Long galaxyId,
         String title,
         String planetThemeNameRepresenting,
         List<PlanetResponse> planets,
@@ -15,6 +16,7 @@ public record GalaxyResponse(
 ) {
     public static GalaxyResponse of(Galaxy galaxy, List<PlanetResponse> planets) {
         return new GalaxyResponse(
+                galaxy.getId(),
                 galaxy.getTitle(),
                 planets.get(0).planetThemeName(),
                 planets,
