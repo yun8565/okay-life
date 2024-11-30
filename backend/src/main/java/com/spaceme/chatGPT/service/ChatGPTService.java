@@ -100,7 +100,8 @@ public class ChatGPTService {
         String combinedInput =  "input은 다음과 같아.\n" +
                 "1. 목표(String) :"+ planRequest.title() + "\n 2. 3개의 질의응답 (질문(String) : 답변 (String)) : "
                 + planRequest.answers().stream()
-                    .map(answer -> "\""+answer.question() + "\" : \"" + answer.answer()+"\",") +
+                    .map(answer -> "\""+answer.question() + "\" : \"" + answer.answer()+"\"")
+                    .collect(Collectors.joining(",")) +
                 "\n3. 날짜 json :\n"+dateJson +
                 "\n너가 해야할 일은 다음과 같아.\n let’s think step by step.\n" +
                 "p1. 사용자의 목표를 달성하는데 필요한 중간 목표(행성 제목)를 총 " + planRequest.step() +"개로 나눠서 세워.\n" +
