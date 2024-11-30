@@ -12,18 +12,21 @@ import com.spaceme.user.domain.User;
 import com.spaceme.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReviewService {
 
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final PlanetRepository planetRepository;
 
+    @Transactional
     public void saveReview(Long userId, ReviewRequest reviewRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
@@ -67,7 +70,6 @@ public class ReviewService {
 
         Planet planet = planetRepository.findById(planetId)
                 .orElseThrow(() -> new NotFoundException("해당 행성을 찾을 수 없습니다."));
-
 
         return new ReviewResponse(
                 planet.getTitle(),

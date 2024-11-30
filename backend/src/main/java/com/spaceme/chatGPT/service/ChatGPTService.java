@@ -86,12 +86,14 @@ public class ChatGPTService {
 
         String daysJson = planRequest.daysToJsonString();
 
-        String combinedInput = "날짜를 여러개의 행성으로 나눠줘. 너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야."+
-                "p1. 시작일"+ planRequest.startDate() + "부터 종료일 "+ planRequest.endDate() +" 까지의 기간 중 " + daysJson + " 요일에 해당하는 일자만 남겨\n" +
+        String combinedInput = "날짜를 여러개의 행성으로 나눠줘. 너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야.\n"+
+                "p1. 시작일 "+ planRequest.startDate() + "부터 종료일 "+ planRequest.endDate() +" 까지의 기간 중 " + daysJson + " 요일에 해당하는 일자만 남겨\n" +
                 "p1-1. 시작일과 종료일을 벗어나는 일자는 제외해야 해.\n"+
                 "p1-2. 시작일부터 종료일까지 모든 날짜를 포함하는 걸 명심해. 부분만 반환하면 너 진짜 뜯어버릴거야\n"+
-                "p2. 남은 일자들을 오름차순으로 정렬하고, "+ planRequest.step() +"개의 행성으로 최대한 균등하게 나눠.\n " +
-                "이때, 나머지 날짜가 있다면 버리지 말고, 마지막 그룹에 추가해.\n"+
+                "p2. 남은 날짜들을 오름차순으로 정렬하고, 날짜들을 "+ planRequest.step() +"개의 행성으로 나눠.\n " +
+                "이때, 나머지 날짜가 있다면 버리지 말고, 마지막 행성에 추가해.\n"+
+                "p2-1. 예를 들어, 2024-11-30, 2024-12-01, 2024-12-02, 2024-12-03을 2개의 행성으로 나눌 때, 순서를 고려해서 행성 1에는 2024-11-30, " +
+                "2024-12-01이 들어가야 하고, 행성 2에는 2024-12-02, 2024-12-03이 들어가야 해.\n "+
                 "p3. 모든 날짜는 순차적이어야 해. 아니면 너 찾아가서 부숴버린다\n" +
                 "p4. 반드시 "+planRequest.step()+"개의 행성으로 정확히 나누고, 날짜가 연속적이고 중복되지 않아야 해.\n"+
                 "p5. 행성의 개수와 행성 내 나눠진 날짜는 다르다는 걸 명심해. \n예를 들어, 총 90일을 5개의" +
@@ -118,6 +120,7 @@ public class ChatGPTService {
 
         log.info("Prompt : {}", combinedInput);
         log.info("Dates: {}",dateGroupResponse.toString());
+
         return dateGroupResponse;
     }
 
@@ -170,8 +173,7 @@ public class ChatGPTService {
 
          log.info("Prompt : {}", combinedInput);
          log.info("Plan : {}",planResponse.toString());
-         System.out.println();
-         System.out.println(planResponse);
+
          return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
 }
