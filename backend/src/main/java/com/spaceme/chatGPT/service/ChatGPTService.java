@@ -1,8 +1,11 @@
 package com.spaceme.chatGPT.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spaceme.chatGPT.dto.request.GoalRequest;
 import com.spaceme.chatGPT.dto.request.PlanRequest;
 import com.spaceme.chatGPT.dto.response.*;
+import com.spaceme.common.exception.InternalServerException;
 import com.spaceme.common.exception.NotFoundException;
 import com.spaceme.galaxy.service.GalaxyService;
 import com.spaceme.user.domain.UserPreference;
@@ -13,8 +16,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.time.DayOfWeek.*;
 
 @RequiredArgsConstructor
 @Service
@@ -82,52 +93,9 @@ public class ChatGPTService {
     }
 
     @Transactional
-    public DateGroupResponse generateDays(PlanRequest planRequest) {
-
-        String daysJson = planRequest.daysToJsonString();
-
-        String combinedInput = "날짜를 여러개의 행성으로 나눠줘. 너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야.\n"+
-                "p1. 시작일 "+ planRequest.startDate() + "부터 종료일 "+ planRequest.endDate() +" 까지의 기간 중 " + daysJson + " 요일에 해당하는 일자만 남겨\n" +
-                "p1-1. 시작일과 종료일을 벗어나는 일자는 제외해야 해.\n"+
-                "p1-2. 시작일부터 종료일까지 모든 날짜를 포함하는 걸 명심해. 부분만 반환하면 너 진짜 뜯어버릴거야\n"+
-                "p2. 남은 날짜들을 오름차순으로 정렬하고, 날짜들을 "+ planRequest.step() +"개의 행성으로 나눠.\n " +
-                "이때, 나머지 날짜가 있다면 버리지 말고, 마지막 행성에 추가해.\n"+
-                "p2-1. 예를 들어, 2024-11-30, 2024-12-01, 2024-12-02, 2024-12-03을 2개의 행성으로 나눌 때, 순서를 고려해서 행성 1에는 2024-11-30, " +
-                "2024-12-01이 들어가야 하고, 행성 2에는 2024-12-02, 2024-12-03이 들어가야 해.\n "+
-                "p3. 모든 날짜는 순차적이어야 해. 아니면 너 찾아가서 부숴버린다\n" +
-                "p4. 반드시 "+planRequest.step()+"개의 행성으로 정확히 나누고, 날짜가 연속적이고 중복되지 않아야 해.\n"+
-                "p5. 행성의 개수와 행성 내 나눠진 날짜는 다르다는 걸 명심해. \n예를 들어, 총 90일을 5개의" +
-                " 행성으로 나누면 5개가 아니라 18개의 날짜가 각 행성에 포함되어야 해. "+
-                "p6. json 형태로 반환해. 형태는 다음과 같아.\n" +
-                "dateGroup : {\n" +
-                "\"title\" : n번 행성,\n" +
-                "\"dates\" : [{\"date\" : YYYY-mm-dd 형식}]\n" +
-                "}\n" +
-                "json 값만 반환해줘.";
-
-        DateGroupResponse dateGroupResponse = webClient.post()
-                .uri("/chat/completions")
-                .bodyValue(Map.of(
-                        "model", "gpt-4o-mini",
-                        "messages", List.of(Map.of("role", "user", "content", combinedInput)),
-                        "max_tokens", 5000,
-                        "temperature",0.0
-                ))
-                .retrieve()
-                .bodyToMono(ChatGPTResponse.class)
-                .block()
-                .toResponse(DateGroupResponse.class);
-
-        log.info("Prompt : {}", combinedInput);
-        log.info("Dates: {}",dateGroupResponse.toString());
-
-        return dateGroupResponse;
-    }
-
-    @Transactional
     public Long generatePlan(Long userId, PlanRequest planRequest) {
 
-        String dateJson = generateDays(planRequest).toJsonString();
+        String dateJson = splitDates(planRequest);
 
         String combinedInput =  "input은 다음과 같아.\n" +
                 "1. 목표(String) :"+ planRequest.title() + "\n 2. 3개의 질의응답 (질문(String) : 답변 (String)) : "
@@ -176,4 +144,57 @@ public class ChatGPTService {
 
          return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
+
+    public String splitDates(PlanRequest planRequest) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate start = LocalDate.parse(planRequest.startDate(), formatter);
+        LocalDate end = LocalDate.parse(planRequest.endDate(), formatter);
+
+        Set<DayOfWeek> selectedDays = planRequest.days().stream()
+                .map(this::dayOfWeekFromKorean)
+                .collect(Collectors.toSet());
+
+        List<LocalDate> filteredDates = start.datesUntil(end.plusDays(1))
+                .filter(date -> selectedDays.contains(date.getDayOfWeek()))
+                .sorted()
+                .toList();
+
+        int size = filteredDates.size();
+        int chunkSize = size / planRequest.step();
+        int remainder = size % planRequest.step();
+
+        List<Map<String, Object>> dateGroups = new ArrayList<>();
+        int startIndex = 0;
+
+        for (int i = 1; i <= planRequest.step(); i++) {
+            int endIndex = startIndex + chunkSize + (remainder-- > 0 ? 1 : 0);
+            List<Map<String, String>> dates = filteredDates.subList(startIndex, endIndex).stream()
+                    .map(date -> Map.of("date", date.format(formatter)))
+                    .toList();
+            dateGroups.add(Map.of("title", i + "번 행성", "dates", dates));
+            startIndex = endIndex;
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(dateGroups);
+        } catch (JsonProcessingException e) {
+            throw new InternalServerException("JSON 변환 과정에서 오류가 발생했습니다.");
+        }
+    }
+
+    private DayOfWeek dayOfWeekFromKorean(String day) {
+        return switch (day) {
+            case "월" -> MONDAY;
+            case "화" -> TUESDAY;
+            case "수" -> WEDNESDAY;
+            case "목" -> THURSDAY;
+            case "금" -> FRIDAY;
+            case "토" -> SATURDAY;
+            case "일" -> SUNDAY;
+            default -> throw new InternalServerException("요일 매핑에 실패했습니다. " + day);
+        };
+    }
+
+
 }
