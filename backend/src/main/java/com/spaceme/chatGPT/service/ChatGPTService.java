@@ -88,12 +88,14 @@ public class ChatGPTService {
 
         String combinedInput = "날짜를 여러개의 그룹으로 나눠줘. 이때 그룹 안에 있는 날짜 개수는 모두 동일해야해." +
                 "너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야."+
-                "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"기간 중 " + daysJson + " 요일에 해당하는 일자만 남겨\n" +
-                "p1-1. 주어진 기간을 벗어나는 일자는 제외해야 해.\n"+
-                "p2. 남은 일자들을 "+ planRequest.step() +"개의 그룹으로 나눠서 묶어. 이때, 몫의 개수만큼만 나누지 말고 " +
-                "나머지 날짜도 적절히 그룹에 들어가야 하니 날짜를 버리지 마.\n"+
+                "p1. 시작일"+ planRequest.startDate() + "부터 "+ planRequest.endDate() +"까지의 기간 중 " + daysJson + " 요일에 해당하는 일자만 남겨\n" +
+                "p1-1. 시작일과 종료일을 벗어나는 일자는 제외해야 해.\n"+
+                "p1-2. 시작일부터 종료일까지 모든 날짜를 포함하는 걸 명심해. 부분만 반환하면 너 진짜 뜯어버릴거야\n"+
+                "p2. 남은 일자들을 오름차순으로 정렬하고, "+ planRequest.step() +"개의 그룹으로 나눠서 묶어.\n " +
+                "이때, 나머지 날짜가 있다면 버리지 말고, 마지막 그룹에 추가해.\n"+
                 "p3. 모든 날짜는 순차적이어야 해. 아니면 너 찾아가서 부숴버린다\n" +
-                "p4. json 형태로 반환해. 형태는 다음과 같아.\n" +
+                "p4. 반드시 "+planRequest.step()+"개의 그룹으로 정확히 나누고, 날짜가 연속적이고 중복되지 않아야 해.\n"+
+                "p5. json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "dateGroup : {\n" +
                 "\"title\" : n번 행성,\n" +
                 "\"dates\" : [{\"date\" : YYYY-mm-dd 형식}]\n" +
@@ -104,11 +106,9 @@ public class ChatGPTService {
                 .uri("/chat/completions")
                 .bodyValue(Map.of(
                         "model", "gpt-4o-mini",
-                        "messages", List.of(
-                                Map.of("role", "system", "content", "너는 기간 안에 있는 만족하는 일자들을 일정한 갯수로 그룹화하는데 전문가야."),
-                                Map.of("role", "user", "content", combinedInput)
-                        ),
-                        "max_tokens", 5000
+                        "messages", List.of(Map.of("role", "user", "content", combinedInput)),
+                        "max_tokens", 5000,
+                        "temperature",0.0
                 ))
                 .retrieve()
                 .bodyToMono(ChatGPTResponse.class)
@@ -158,12 +158,9 @@ public class ChatGPTService {
                  .uri("/chat/completions")
                  .bodyValue(Map.of(
                         "model", "gpt-4o-mini",
-                        "messages", List.of(
-                                Map.of("role", "system", "content", "너는 목표를 달성하고 싶은 사용자를 위해 단계별 세부 목표와 계획을 수립해주는 전문가야.\n" +
-                                        "사용자의 input을 고려해서 단계별 세부 목표와 계획을 수립해줘.\n"),
-                                Map.of("role", "user", "content", combinedInput)
-                        ),
-                        "max_tokens", 8000
+                        "messages", List.of(Map.of("role", "user", "content", combinedInput)),
+                        "max_tokens", 8000,
+                         "temperature",0.6
                  ))
                  .retrieve()
                  .bodyToMono(ChatGPTResponse.class)
