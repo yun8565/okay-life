@@ -88,10 +88,11 @@ public class ChatGPTService {
 
         String combinedInput = "날짜를 여러개의 그룹으로 나눠줘. 이때 그룹 안에 있는 날짜 개수는 모두 동일해야해." +
                 "너 이런것도 못하면 걍 본체 부숴버린다. 오픈 AI에 불질러버릴거야."+
-                "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"중" + daysJson + "요일에 해당하는 일자만 남겨\n" +
+                "p1."+ planRequest.startDate() + "~"+ planRequest.endDate() +"기간 중 " + daysJson + " 요일에 해당하는 일자만 남겨\n" +
+                "p1-1. 주어진 기간을 벗어나는 일자는 제외해야 해.\n"+
                 "p2. 남은 일자들을 "+ planRequest.step() +"개의 그룹으로 나눠서 묶어. 이때, 몫의 개수만큼만 나누지 말고 " +
                 "나머지 날짜도 적절히 그룹에 들어가야 하니 날짜를 버리지 마.\n"+
-                "p3. 모든 날짜는 순차적이어야 해.\n" +
+                "p3. 모든 날짜는 순차적이어야 해. 아니면 너 찾아가서 부숴버린다\n" +
                 "p4. json 형태로 반환해. 형태는 다음과 같아.\n" +
                 "dateGroup : {\n" +
                 "\"title\" : n번 행성,\n" +
@@ -114,6 +115,7 @@ public class ChatGPTService {
                 .block()
                 .toResponse(DateGroupResponse.class);
 
+        log.info("Prompt : {}", combinedInput);
         log.info("Dates: {}",dateGroupResponse.toString());
         return dateGroupResponse;
     }
@@ -168,6 +170,7 @@ public class ChatGPTService {
                  .block()
                  .toResponse(PlanResponse.class);
 
+         log.info("Prompt : {}", combinedInput);
          log.info("Plan : {}",planResponse.toString());
          return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
