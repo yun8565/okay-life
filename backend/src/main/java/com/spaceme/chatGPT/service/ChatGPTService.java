@@ -169,6 +169,8 @@ public class ChatGPTService {
 
          log.info("Prompt : {}", combinedInput);
          log.info("Plan : {}",planResponse.toString());
+         System.out.println();
+         System.out.println(planResponse);
          return galaxyService.saveGalaxy(userId, planResponse, planRequest);
     }
 }

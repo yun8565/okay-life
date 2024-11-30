@@ -52,7 +52,8 @@ public class ReviewService {
                 .map(planet -> new ReviewPlanetResponse(
                         planet.getTitle(),
                         planet.getId(),
-                        planet.getPlanetTheme().getId()
+                        planet.getPlanetTheme().getName(),
+                        planet.getStatus()
                 ))
                 .collect(Collectors.toList());
     }
