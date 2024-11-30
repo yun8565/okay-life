@@ -53,11 +53,13 @@ class _OverviewPlanPageState extends State<OverviewPlanPage> {
                   SizedBox(height: 10),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DashboardPage()),
-                      );
+                      print("확정 버튼 클릭됨");
+                      Future.delayed(Duration.zero, () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DashboardPage()),
+                        );
+                      });
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -94,6 +96,7 @@ class _OverviewPlanPageState extends State<OverviewPlanPage> {
       itemBuilder: (context, index) {
         final planet = planets[index];
         return ExpansionTile(
+          key: ValueKey(planet['planetId']),
           title: Row(
             children: [
               Text(
@@ -202,34 +205,49 @@ class _OverviewPlanPageState extends State<OverviewPlanPage> {
   }
 
   Future<void> _updatePlanet(
-      int planetId, String newTitle, BuildContext context) async {
-    try {
-      await ApiClient.put('/planets/$planetId', data: {'title': newTitle});
-      setState(() {
-        widget.galaxyData?['planets'].firstWhere((planet) => planet['planetId'] == planetId)['title'] = newTitle;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("행성 이름이 성공적으로 수정되었습니다!")),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("행성 수정 중 오류 발생: $error")),
-      );
-    }
+    int planetId, String newTitle, BuildContext context) async {
+  try {
+    await ApiClient.put('/planets/$planetId', data: {'title': newTitle});
+    setState(() {
+      // 데이터 업데이트
+      final planet = widget.galaxyData?['planets']
+          .firstWhere((planet) => planet['planetId'] == planetId);
+      if (planet != null) {
+        planet['title'] = newTitle;
+      }
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("행성 이름이 성공적으로 수정되었습니다!")),
+    );
+  } catch (error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("행성 수정 중 오류 발생: $error")),
+    );
   }
+}
 
   Future<void> _updateMission(
-      int missionId, String newContent, BuildContext context) async {
-    try {
-      await ApiClient.put('/missions/$missionId',
-          data: {'content': newContent});
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("미션 내용이 성공적으로 수정되었습니다!")),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("미션 수정 중 오류 발생: $error")),
-      );
-    }
+    int missionId, String newContent, BuildContext context) async {
+  try {
+    await ApiClient.put('/missions/$missionId', data: {'content': newContent});
+    setState(() {
+      // 데이터 업데이트
+      for (var planet in widget.galaxyData?['planets'] ?? []) {
+        final mission = (planet['missions'] as List)
+            .firstWhere((mission) => mission['missionId'] == missionId, orElse: () => null);
+        if (mission != null) {
+          mission['content'] = newContent;
+          break;
+        }
+      }
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("미션 내용이 성공적으로 수정되었습니다!")),
+    );
+  } catch (error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("미션 수정 중 오류 발생: $error")),
+    );
   }
+}
 }

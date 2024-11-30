@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:okay_life_app/api/api_client.dart';
 
@@ -123,7 +124,8 @@ class _CollectionPageState extends State<CollectionPage> {
                       itemBuilder: (context, index) {
                         final galaxy = galaxies[index];
                         return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
                           padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             color: const Color.fromRGBO(105, 118, 182, 0.2),
@@ -132,11 +134,15 @@ class _CollectionPageState extends State<CollectionPage> {
                           child: Column(
                             children: [
                               Text(
-                                galaxy.name,
+                                galaxy.name == "our"
+                                    ? "우리 은하"
+                                    : galaxy.name == "dessert"
+                                        ? "디저트 은하"
+                                        : "강아지 은하",
                                 style: const TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 20,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 10),
@@ -153,22 +159,25 @@ class _CollectionPageState extends State<CollectionPage> {
                                 itemBuilder: (context, index) {
                                   final planet = galaxy.planetThemes[index];
                                   return ColorFiltered(
-                                    colorFilter: planet.status ==
-                                            ThemeStatus.DISCOVERED
-                                        ? const ColorFilter.matrix(<double>[
-                                            0.2126, 0.7152, 0.0722, 0, 0, // Red channel
-                                            0.2126, 0.7152, 0.0722, 0, 0, // Green channel
-                                            0.2126, 0.7152, 0.0722, 0, 0, // Blue channel
-                                            0, 0, 0, 1, 0, // Alpha channel
-                                          ])
-                                        : const ColorFilter.mode(
-                                            Colors.transparent,
-                                            BlendMode.dst,
-                                          ),
+                                    colorFilter:
+                                        planet.status == ThemeStatus.DISCOVERED
+                                            ? const ColorFilter.matrix(<double>[
+                                                0.2126, 0.7152, 0.0722, 0,
+                                                0, // Red channel
+                                                0.2126, 0.7152, 0.0722, 0,
+                                                0, // Green channel
+                                                0.2126, 0.7152, 0.0722, 0,
+                                                0, // Blue channel
+                                                0, 0, 0, 1, 0, // Alpha channel
+                                              ])
+                                            : const ColorFilter.mode(
+                                                Colors.transparent,
+                                                BlendMode.dst,
+                                              ),
                                     child: Image.asset(
                                       planet.status == ThemeStatus.HIDDEN
-                                          ? "assets/hiddenPlanet.png"
-                                          : "assets/planets/${planet.name}.png",
+                                          ? "assets/question_planet.png"
+                                          : "assets/${planet.name}.png",
                                       fit: BoxFit.contain,
                                     ),
                                   );
@@ -183,6 +192,20 @@ class _CollectionPageState extends State<CollectionPage> {
                 ),
               ),
             ],
+          ),
+          Positioned(
+            top: 90,
+            left: 10,
+            child: IconButton(
+              icon: Icon(
+                CupertinoIcons.back,
+                color: Colors.white60,
+                size: 30,
+              ),
+              onPressed: () {
+                Navigator.pop(context); // 이전 화면으로 이동
+              },
+            ),
           ),
         ],
       ),

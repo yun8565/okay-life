@@ -34,6 +34,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter_icons:
+  ios: true
+  image_path: "assets/app_icon.png"
+  adaptive_icon_foreground: "assets/app_icon.png"
+  remove_alpha_ios: true
 
 dependency_overrides:
   intl: ^0.19.0
@@ -47,6 +54,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/app_icon.png
     - assets/background.png
     - assets/planet.json
     - assets/planet_bg.png
@@ -85,6 +93,30 @@ flutter:
     - assets/planet5_route4.svg
     - assets/galaxy_tutorial_bg_1.png
     - assets/galaxy_tutorial_bg_2.png
+    - assets/bichon.png
+    - assets/candy.png
+    - assets/chocolate.png
+    - assets/cupcake.png
+    - assets/doughnut.png
+    - assets/earth.png
+    - assets/ice_cream.png
+    - assets/macaron.png
+    - assets/mars.png
+    - assets/dalmatian.png
+    - assets/mercury.png
+    - assets/neptune.png
+    - assets/saturn.png
+    - assets/moon.png
+    - assets/piece_of_cake.png
+    - assets/pug.png
+    - assets/schnauzer.png
+    - assets/shiba.png
+    - assets/sigor_jabson.png
+    - assets/spitz.png
+    - assets/st_bernard.png
+    - assets/sun.png
+    - assets/venus.png
+    - assets/waffle.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

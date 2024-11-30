@@ -5,13 +5,13 @@ class ApiClient {
   static final Dio _dio = Dio(
     BaseOptions(
       baseUrl: 'https://api.spaceme.kro.kr',
-      connectTimeout: const Duration(seconds: 5), // 요청 타임아웃 (5초)
-      receiveTimeout: const Duration(seconds: 3), // 응답 타임아웃 (3초)
+      connectTimeout: const Duration(seconds: 60), // 요청 타임아웃 (5초)
+      receiveTimeout: const Duration(seconds: 60), // 응답 타임아웃 (3초)
     ),
   );
 
   //! GET
-  static Future<Map<String, dynamic>?> get(
+  static Future<dynamic> get(
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
@@ -29,7 +29,7 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        return response.data as Map<String, dynamic>;
+        return response.data;
       } else if (response.statusCode == 404) {
         // Not Found
         throw Exception('Resource not found: $path');
@@ -43,7 +43,44 @@ class ApiClient {
   }
 
   //! POST
-  static Future<Map<String, dynamic>?> post(
+static Future<dynamic> post(
+  String path, {
+  Map<String, dynamic>? data,
+}) async {
+  try {
+    final jwt = await getJwt();
+    final response = await _dio.post(
+      path,
+      data: data,
+      options: Options(
+        headers: {
+          if (jwt != null) 'Authorization': 'Bearer $jwt',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // 응답이 JSON 객체인지 확인
+      if (response.data is Map<String, dynamic>) {
+        return response.data as Map<String, dynamic>;
+      } else if (response.data is String) {
+        // JSON 문자열일 경우 파싱
+        return response.data; // 파싱을 원하면 `jsonDecode(response.data)` 추가
+      }
+      return response.data; // 기타 응답 처리
+    } else if (response.statusCode == 204) {
+      return null; // No Content
+    } else {
+      throw Exception('Unhandled status code: ${response.statusCode}');
+    }
+  } catch (error) {
+    _handleError(error);
+    rethrow;
+  }
+}
+
+  //! POST with Headers
+  static Future<Response> postWithHeaders(
     String path, {
     Map<String, dynamic>? data,
   }) async {
@@ -60,18 +97,11 @@ class ApiClient {
         ),
       );
 
-      if (response.statusCode == 200) {
-        return response.data as Map<String, dynamic>;
-      } else if (response.statusCode == 201) {
-        // Created
-        if (response.data != null) {
-          return response.data as Map<String, dynamic>;
-        } else {
-          throw Exception('Response body is empty for status 201.');
-        }
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response; // 응답 전체 반환 (데이터와 헤더 포함)
       } else if (response.statusCode == 204) {
         // No Content
-        return null; // 반환값 없음
+        throw Exception('No content returned from the server.');
       } else {
         throw Exception('Unhandled status code: ${response.statusCode}');
       }
@@ -80,6 +110,37 @@ class ApiClient {
       rethrow; // 호출자에게 에러 전달
     }
   }
+
+  //! PATCH
+static Future<Map<String, dynamic>?> patch(
+  String path, {
+  Map<String, dynamic>? data,
+}) async {
+  try {
+    final jwt = await getJwt();
+    final response = await _dio.patch(
+      path,
+      data: data,
+      options: Options(
+        headers: {
+          if (jwt != null) 'Authorization': 'Bearer $jwt',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return response.data as Map<String, dynamic>;
+    } else if (response.statusCode == 204) {
+      // No Content
+      return null; // 반환값 없음
+    } else {
+      throw Exception('Unhandled status code: ${response.statusCode}');
+    }
+  } catch (error) {
+    _handleError(error);
+    rethrow;
+  }
+}
 
   //! PUT
   static Future<Map<String, dynamic>?> put(
@@ -134,7 +195,6 @@ class ApiClient {
     }
   }
 
-
   //! 로컬 저장소에서 JWT 가져오기
   static Future<String?> getJwt() async {
     final prefs = await SharedPreferences.getInstance();
@@ -155,7 +215,6 @@ class ApiClient {
 
   //! 에러 처리
   static void _handleError(dynamic error) {
-    if (error is DioException) {
-    }
+    if (error is DioException) {}
   }
 }

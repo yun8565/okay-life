@@ -62,7 +62,7 @@ class _PlanetPageState extends State<PlanetPage> {
     eventSource.clear();
     for (final mission in missions) {
       final DateTime missionDate = DateTime.parse(mission['date']);
-      final bool isComplete = mission['status'] == 'INCOMPLETED';
+      final bool isComplete = mission['status'] == 'CLEAR';
       final int missionId = mission['missionId'];
       eventSource[missionDate] =
           Event(mission['content'], isComplete, missionId);
@@ -71,28 +71,43 @@ class _PlanetPageState extends State<PlanetPage> {
 
   // 미션 상태 업데이트
   Future<void> _updateMissionStatus(Event event) async {
-    try {
-      // POST 요청
-      await ApiClient.post(
-        '/missions/${event.missionId}/status',
-        data: {'status': event.complete ? 'COMPLETED' : 'INCOMPLETE'},
-      );
+  try {
+    // POST 요청으로 미션 상태 업데이트
+    await ApiClient.post(
+      '/missions/${event.missionId}/status',
+      data: {'status': event.complete ? 'FAILED' : 'CLEAR'}, // 상태 반전
+    );
 
-      // 요청 성공 시 UI 업데이트
-      setState(() {
-        event.complete = !event.complete;
-      });
-    } catch (e) {
-      // 에러 처리
-      print('Error updating mission status: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('미션 상태 업데이트 실패: $e'),
-          duration: Duration(seconds: 2),
-        ),
+    // 요청 성공 시 상태 업데이트
+    setState(() {
+      event.complete = !event.complete; // 완료 상태 반전
+      // 특정 이벤트만 eventSource에서 갱신
+      final DateTime? missionDate = eventSource.keys.firstWhere(
+        (date) => eventSource[date]?.missionId == event.missionId,
+        orElse: () => DateTime.now(),
       );
-    }
+      if (missionDate != null) {
+        eventSource[missionDate] = Event(
+          event.title,
+          event.complete,
+          event.missionId,
+        );
+      }
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("미션 상태가 성공적으로 업데이트되었습니다!"),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  } catch (e) {
+    print('미션 상태 업데이트 실패: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("미션 상태 업데이트 실패")),
+    );
   }
+}
 
   // 다음 행성으로 이동
   void _moveToNextPlanet() {
@@ -308,6 +323,7 @@ class _PlanetPageState extends State<PlanetPage> {
                         GestureDetector(
                           onTap: () {
                             _updateMissionStatus(todayEvent);
+                            setState(() {});
                           },
                           child: Container(
                             width: 24,
