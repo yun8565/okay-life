@@ -132,8 +132,7 @@ public class ChatGPTService {
                  .bodyValue(Map.of(
                         "model", "gpt-4o-mini",
                         "messages", List.of(Map.of("role", "user", "content", combinedInput)),
-                        "max_tokens", 8000,
-                         "temperature",0.6
+                        "max_tokens", 8000
                  ))
                  .retrieve()
                  .bodyToMono(ChatGPTResponse.class)
