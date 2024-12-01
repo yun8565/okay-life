@@ -47,7 +47,7 @@ void main() async {
     javaScriptAppKey: 'c85dd45dd6a8bc233775dd97496eeaad',
   );
 
-  ApiClient.deleteJwt();
+  // ApiClient.deleteJwt();
 
   runApp(
     MultiProvider(
@@ -117,18 +117,37 @@ class LocalPushNotifications {
           backgroundHandler, // backgroundHandler 등록
     );
 
-    // await scheduleTestNotification();
-    await scheduleDailyNotification();
+    await scheduleTestNotification();
+    // await scheduleDailyNotificationAt();
   }
 
-  static Future<void> scheduleDailyNotification() async {
+  
+  static Future<void> scheduleDailyNotificationAt(String time) async {
     try {
-      // 백엔드에서 알림 내용 가져오기
+      // 시간 파싱 (오전/오후 포함)
+      final bool isPM = time.contains("오후");
+      final parts = time.replaceAll(RegExp(r'[^\d:]'), '').split(':');
+      int hour = int.parse(parts[0]);
+      final int minute = int.parse(parts[1]);
+
+      // 오후 처리
+      if (isPM && hour != 12) hour += 12; // 오후 12시는 그대로 유지
+      if (!isPM && hour == 12) hour = 0; // 오전 12시는 0시로 변환
+
+      final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+      tz.TZDateTime scheduledDate =
+          tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+
+      if (scheduledDate.isBefore(now)) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+
+       // 백엔드에서 알림 내용 가져오기
       final notificationData = await ApiClient.get('/notifications'); // API 경로
 
-      final String title = notificationData?['title'] ?? '기본 제목';
-      final String body = notificationData?['body'] ?? '기본 내용';
-      final String payload = notificationData?['payload'] ?? 'dashboard';
+      final String title = '우주 정복';
+      final String body = notificationData?['message'] ?? '기본 내용';
+
 
       const DarwinNotificationDetails iosNotificationDetails =
           DarwinNotificationDetails();
@@ -136,8 +155,6 @@ class LocalPushNotifications {
       const NotificationDetails notificationDetails = NotificationDetails(
         iOS: iosNotificationDetails,
       );
-
-      final tz.TZDateTime scheduledDate = _nextInstanceOfSixPM();
 
       await flutterLocalNotificationsPlugin.zonedSchedule(
         0, // Notification ID
@@ -151,16 +168,19 @@ class LocalPushNotifications {
         matchDateTimeComponents: DateTimeComponents.time, // 매일 같은 시간
       );
     } catch (e) {
-      debugPrint('Failed to fetch notification data: $e');
+      debugPrint('Failed to schedule daily notification: $e');
     }
   }
+
 
   // 10초 뒤 테스트 알림 추가
   static Future<void> scheduleTestNotification() async {
     try {
-      const String title = "테스트 알림";
-      const String body = "이 알림은 10초 뒤에 표시됩니다.";
-      const String payload = "test_payload";
+       // 백엔드에서 알림 내용 가져오기
+      final notificationData = await ApiClient.get('/notifications'); // API 경로
+
+      final String title = '우주 정복';
+      final String body = notificationData?['message'] ?? '기본 내용';
 
       const DarwinNotificationDetails iosNotificationDetails =
           DarwinNotificationDetails();

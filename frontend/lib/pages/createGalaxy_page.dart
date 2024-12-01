@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:okay_life_app/api/api_client.dart';
@@ -54,6 +55,20 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
               fit: BoxFit.cover,
             ),
           ),
+          Positioned(
+            top: 70,
+            left: 10,
+            child: IconButton(
+              icon: Icon(
+                CupertinoIcons.back,
+                color: Colors.white60,
+                size: 30,
+              ),
+              onPressed: () {
+                Navigator.pop(context); // 이전 화면으로 이동
+              },
+            ),
+          ),
           Center(
             child: isLoading
                 ? _buildLoadingPage() // 로딩 중일 때 로딩 화면 표시
@@ -89,14 +104,14 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
   Widget _buildLoadingPage() {
     return Container(
       width: 350,
-      height: 620,
+      height: 350,
       decoration: BoxDecoration(
         color: Color(0xff6976b6).withOpacity(0.2),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Center(
         child: Text(
-          "추가 질문 생성 중 ...",
+          "로딩 중 ...",
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ),
@@ -193,7 +208,13 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
+                    Text(
+                      textAlign: TextAlign.center,
+                      "답변이 길고 자세할수록\n더욱 정확한 계획을 제공할 수 있습니다.",
+                      style: TextStyle(color: Colors.white30, fontSize: 13),
+                    ),
+                    SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
                         if (additionalAnswers[index].text.isNotEmpty) {
@@ -398,7 +419,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
             config: CalendarDatePicker2WithActionButtonsConfig(
                 calendarType: CalendarDatePicker2Type.range,
                 firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(Duration(days: 365)),
+                lastDate: DateTime.now().add(Duration(days: 90)),
                 selectedDayHighlightColor: Color(0xff0a1c4c).withOpacity(0.8),
                 selectedDayTextStyle: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold)),
@@ -523,10 +544,10 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
       final initialData = {
         "title": goalController.text,
         "startDate": selectedDates.isNotEmpty
-            ? "${selectedDates[0]!.year}-${selectedDates[0]!.month}-${selectedDates[0]!.day}"
+            ? "${selectedDates[0]!.year}-${selectedDates[0]!.month.toString().padLeft(2, '0')}-${selectedDates[0]!.day.toString().padLeft(2, '0')}"
             : "",
         "endDate": selectedDates.length > 1
-            ? "${selectedDates[1]!.year}-${selectedDates[1]!.month}-${selectedDates[1]!.day}"
+            ? "${selectedDates[1]!.year}-${selectedDates[1]!.month.toString().padLeft(2, '0')}-${selectedDates[1]!.day.toString().padLeft(2, '0')}"
             : "",
         "step": selectedIndex,
         "days": selectedDay,
@@ -541,7 +562,11 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
       // 목표만 /chat/question으로 전송
       final response = await ApiClient.post(
         '/chat/question',
-        data: {"goal": initialData["title"], "startDate": initialData["startDate"], "endDate": initialData["endDate"]},
+        data: {
+          "goal": initialData["title"],
+          "startDate": initialData["startDate"],
+          "endDate": initialData["endDate"]
+        },
       );
 
       // 응답에서 추가 질문 가져오기
@@ -559,11 +584,11 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
       });
 
       // 에러 처리
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("추가 질문을 가져오지 못했습니다: $error"),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text("추가 질문을 가져오지 못했습니다: $error"),
+      //   ),
+      // );
     }
   }
 
@@ -573,14 +598,13 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
     });
 
     try {
-      // 초기 질문 + 추가 질문 데이터 결합
       final allData = {
         "title": goalController.text,
         "startDate": selectedDates.isNotEmpty
-            ? "${selectedDates[0]!.year}-${selectedDates[0]!.month}-${selectedDates[0]!.day}"
+            ? "${selectedDates[0]!.year}-${selectedDates[0]!.month.toString().padLeft(2, '0')}-${selectedDates[0]!.day.toString().padLeft(2, '0')}"
             : "",
         "endDate": selectedDates.length > 1
-            ? "${selectedDates[1]!.year}-${selectedDates[1]!.month}-${selectedDates[1]!.day}"
+            ? "${selectedDates[1]!.year}-${selectedDates[1]!.month.toString().padLeft(2, '0')}-${selectedDates[1]!.day.toString().padLeft(2, '0')}"
             : "",
         "step": selectedIndex,
         "days": selectedDay,
@@ -592,47 +616,57 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
           },
         ),
       };
+      print("Sending data to /chat/plan: $allData");
 
-      // /chat/plan로 데이터 전송
-      final response = await ApiClient.post(
+      final response = await ApiClient.postWithHeaders(
         '/chat/plan',
         data: allData,
       );
 
-      // /chat/plan의 응답에서 galaxyId 추출
-      final galaxyId = response?['galaxyId'];
-      if (galaxyId == null) {
-        throw Exception("Invalid response: Missing galaxyId");
+      print("Received response: ${response.statusCode}");
+      print("Response headers: ${response.headers}");
+      print("Response data: ${response.data}");
+
+      final locationHeader = response.headers['location']?.first;
+      print("Extracted Location header: $locationHeader");
+
+      if (locationHeader != null) {
+        final galaxyId = _extractGalaxyIdFromLocation(locationHeader);
+        print("Extracted Galaxy ID: $galaxyId");
+
+        if (galaxyId != null) {
+          final galaxyData = await ApiClient.get('/galaxies/$galaxyId');
+          print("Galaxy data: $galaxyData");
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OverviewPlanPage(galaxyData: galaxyData),
+            ),
+          );
+        } else {
+          throw Exception("galaxyId is null");
+        }
+      } else {
+        throw Exception("Location header is missing");
       }
-
-      // /galaxies/{galaxyId}로 은하수 데이터 조회
-      final galaxyData = await ApiClient.get('/galaxies/$galaxyId');
-
-      // 성공적으로 데이터를 가져왔으면 overview 페이지로 이동
-      setState(() {
-        isLoading = false; // 로딩 상태 해제
-      });
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OverviewPlanPage(
-            galaxyData: galaxyData,
-          ),
-        ),
-      );
     } catch (error) {
-      setState(() {
-        isLoading = false; // 로딩 상태 해제
-      });
-
-      // 에러 처리
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("데이터 처리 중 오류가 발생했습니다: $error"),
-        ),
-      );
+      print("Error occurred: $error");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text("데이터 처리 중 오류가 발생했습니다: $error")),
+      // );
     }
+  }
+
+  /// Location 헤더에서 galaxyId 추출
+  String? _extractGalaxyIdFromLocation(String locationHeader) {
+    final uri = Uri.tryParse(locationHeader);
+    if (uri != null) {
+      // URI의 path에서 galaxyId 추출 (예: /some/path/{galaxyId})
+      final segments = uri.pathSegments;
+      return segments.isNotEmpty ? segments.last : null;
+    }
+    return null;
   }
 }
 

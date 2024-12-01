@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:okay_life_app/api/api_client.dart';
+import 'package:okay_life_app/main.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -7,14 +9,55 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+  late String nickname;
+  late String email;
+  late String spaceGoal;
+  late String concept;
+  bool isLoading = true;
+
   // 초기 선택된 시간
-  String _selectedTime = '오후 09:00';
-  bool _isNotificationOn = false; // 알림 ON/OFF 상태
+  String _selectedTime = '오후 06:00';
+  bool _isNotificationOn = true; // 알림 ON/OFF 상태
 
   // 말투 설정 상태
   bool isDefaultChecked = true; // 기본
   bool isSpaceChecked = false; // 우주 컨셉
   bool isToughChecked = false; // 건달 컨셉
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    // 테스트용 사용자 이름 반환
+    final response = await ApiClient.get("/users/me");
+
+    setState(() {
+      nickname = response["nickname"];
+      email = response["email"];
+      spaceGoal = response["spaceGoal"];
+      concept = response["concept"];
+
+      // 말투 설정 초기화
+      if (concept == "DEFAULT") {
+        isDefaultChecked = true;
+        isSpaceChecked = false;
+        isToughChecked = false;
+      } else if (concept == "SPACE") {
+        isDefaultChecked = false;
+        isSpaceChecked = true;
+        isToughChecked = false;
+      } else if (concept == "BRO") {
+        isDefaultChecked = false;
+        isSpaceChecked = false;
+        isToughChecked = true;
+      }
+
+      isLoading = false;
+    });
+  }
 
   // 1시간 단위로 시간 목록 생성
   final List<String> _timeOptions = [
@@ -44,7 +87,6 @@ class _SettingPageState extends State<SettingPage> {
     '오전 12:00',
   ];
 
-  // 시간 선택 Bottom Sheet
   void _showTimePicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -54,7 +96,6 @@ class _SettingPageState extends State<SettingPage> {
           color: Colors.white,
           child: Column(
             children: [
-              // 상단 제목 및 닫기 버튼
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -74,11 +115,10 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ],
               ),
-              // CupertinoPicker
               Expanded(
                 child: CupertinoPicker(
                   backgroundColor: Colors.white,
-                  itemExtent: 40.0, // 각 아이템의 높이
+                  itemExtent: 40.0,
                   scrollController: FixedExtentScrollController(
                     initialItem: _timeOptions.indexOf(_selectedTime),
                   ),
@@ -86,6 +126,12 @@ class _SettingPageState extends State<SettingPage> {
                     setState(() {
                       _selectedTime = _timeOptions[index];
                     });
+
+                    // 선택된 시간으로 알림 업데이트
+                    if (_isNotificationOn) {
+                      LocalPushNotifications.scheduleDailyNotificationAt(
+                          _selectedTime);
+                    }
                   },
                   children: _timeOptions.map((String time) {
                     return Center(
@@ -104,8 +150,92 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  void _updateUserSettings() async {
+    try {
+      final updatedConcept = isDefaultChecked
+          ? "DEFAULT"
+          : isSpaceChecked
+              ? "SPACE"
+              : "BRO";
+
+      final data = {
+        "alienConcept": updatedConcept,
+        "spaceGoal": spaceGoal,
+      };
+
+      final response = await ApiClient.patch('/users/me', data: data);
+
+      LocalPushNotifications.scheduleTestNotification();
+
+      if (response != null) {
+        print("Settings updated successfully: $response");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("설정이 성공적으로 업데이트되었습니다!")),
+        );
+      } else {
+        print("No response from the server");
+      }
+    } catch (e) {
+      print("Error updating settings: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("설정 업데이트 중 오류가 발생했습니다.")),
+      );
+    }
+  }
+
+  void _showEditDialog(BuildContext context) {
+    TextEditingController _dialogController =
+        TextEditingController(text: spaceGoal);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "우주 목표 수정",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: TextField(
+            controller: _dialogController,
+            decoration: InputDecoration(
+              hintText: "우주 목표를 입력하세요",
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              // 텍스트 필드 값 변경 시 업데이트
+              spaceGoal = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // 다이얼로그 닫기
+              },
+              child: Text("취소"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  spaceGoal = _dialogController.text; // 수정된 값 저장
+                });
+                Navigator.pop(context); // 다이얼로그 닫기
+                _updateUserSettings(); // 수정 API 호출
+              },
+              child: Text("저장"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
       body: Stack(
         children: [
@@ -114,6 +244,16 @@ class _SettingPageState extends State<SettingPage> {
             child: Image.asset(
               "assets/dashboard_bg.png",
               fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            top: 100,
+            left: 20,
+            child: IconButton(
+              icon: Icon(CupertinoIcons.back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context); // 이전 화면으로 이동
+              },
             ),
           ),
           Column(
@@ -137,10 +277,10 @@ class _SettingPageState extends State<SettingPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RichText(
-                          text: const TextSpan(
+                          text: TextSpan(
                             children: [
                               TextSpan(
-                                text: '민희원',
+                                text: nickname,
                                 style: TextStyle(
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold,
@@ -159,8 +299,8 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
                         const SizedBox(height: 1),
-                        const Text(
-                          'lgdxschool@gmail.com',
+                        Text(
+                          email,
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.white,
@@ -174,68 +314,37 @@ class _SettingPageState extends State<SettingPage> {
               const SizedBox(height: 10),
               // 우주 목표 섹션
               Container(
-                width: 350,
-                height: 110,
+                alignment: Alignment.center,
+                width: 311,
+                height: 40,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: const Color(0xFF6976B6).withOpacity(0.2),
+                  color: const Color(0xFF0A1C4C),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                child: GestureDetector(
+                  onTap: () {
+                    _showEditDialog(context); // 다이얼로그 표시
+                  },
+                  child: Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 3),
-                        child: const Text(
-                          '우주 목표',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15),
+                          child: Text(
+                            spaceGoal.isEmpty ? "우주 목표를 입력하세요" : spaceGoal,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                            overflow: TextOverflow.ellipsis, // 텍스트가 길 경우 말줄임표
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        alignment: Alignment.center,
-                        width: 311,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: const Color(0xFF0A1C4C),
-                        ),
-                        child: Row(
-                          children: [
-                            // 텍스트 입력 (초기 값으로 기존 내용 표시)
-                            Expanded(
-                              child: TextField(
-                                controller:
-                                    TextEditingController(text: "기존 우주 목표 텍스트"),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.only(left: 15),
-                                ),
-                              ),
-                            ),
-                            // 수정 아이콘
-                            IconButton(
-                              icon: Image.asset(
-                                "assets/modify.png",
-                                width: 24,
-                                height: 24,
-                              ),
-                              onPressed: () {
-                                // 수정 아이콘 클릭 시 동작 추가
-                                print("수정 아이콘 클릭됨");
-                              },
-                            ),
-                          ],
-                        ),
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.white),
+                        onPressed: () {
+                          _showEditDialog(context); // 다이얼로그 표시
+                        },
                       ),
                     ],
                   ),
@@ -279,6 +388,15 @@ class _SettingPageState extends State<SettingPage> {
                               setState(() {
                                 _isNotificationOn = value;
                               });
+
+                              if (_isNotificationOn) {
+                                // 알림 스케줄링
+                                LocalPushNotifications
+                                    .scheduleDailyNotificationAt(_selectedTime);
+                              } else {
+                                // 알림 취소
+                                flutterLocalNotificationsPlugin.cancel(0);
+                              }
                             },
                           ),
                         ],
@@ -362,6 +480,7 @@ class _SettingPageState extends State<SettingPage> {
                                   isSpaceChecked = false;
                                   isToughChecked = false;
                                 });
+                                _updateUserSettings();
                               },
                               child: Row(
                                 children: [
@@ -387,6 +506,7 @@ class _SettingPageState extends State<SettingPage> {
                                   isSpaceChecked = true;
                                   isToughChecked = false;
                                 });
+                                _updateUserSettings();
                               },
                               child: Row(
                                 children: [
@@ -412,6 +532,7 @@ class _SettingPageState extends State<SettingPage> {
                                   isSpaceChecked = false;
                                   isToughChecked = true;
                                 });
+                                _updateUserSettings();
                               },
                               child: Row(
                                 children: [

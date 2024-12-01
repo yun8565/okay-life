@@ -42,41 +42,41 @@ class _TutorialPageState extends State<TutorialPage> {
 
   // 데이터 로딩
   // 데이터 로딩
-Future<void> _fetchPyramidData() async {
-  setState(() {
-    isLoading = true; // 로딩 시작
-  });
+  Future<void> _fetchPyramidData() async {
+    setState(() {
+      isLoading = true; // 로딩 시작
+    });
 
-  try {
-    // GET 요청으로 데이터 가져오기
-    final response = await ApiClient.get('/chat/goal');
-    
-    // 응답 데이터 처리
-    if (response != null && response['three'] != null) {
+    try {
+      // GET 요청으로 데이터 가져오기
+      final response = await ApiClient.get('/chat/goal');
+
+      // 응답 데이터 처리
+      if (response != null && response['three'] != null) {
+        setState(() {
+          pyramidData = List<String>.from(response['three']); // 'three' 필드의 데이터
+          isLoading = false; // 로딩 종료
+        });
+
+        // 자동으로 피라미드 페이지로 이동
+        _pageController.jumpToPage(
+          _pageController.page!.toInt() + 1,
+        );
+      } else {
+        throw Exception("Invalid response format");
+      }
+    } catch (error) {
       setState(() {
-        pyramidData = List<String>.from(response['three']); // 'three' 필드의 데이터
         isLoading = false; // 로딩 종료
       });
-
-      // 자동으로 피라미드 페이지로 이동
-      _pageController.jumpToPage(
-        _pageController.page!.toInt() + 1,
+      // 에러 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("피라미드 데이터를 가져오는데 실패했습니다: $error"),
+        ),
       );
-    } else {
-      throw Exception("Invalid response format");
     }
-  } catch (error) {
-    setState(() {
-      isLoading = false; // 로딩 종료
-    });
-    // 에러 처리
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("피라미드 데이터를 가져오는데 실패했습니다: $error"),
-      ),
-    );
   }
-}
 
   // 페이지 컨텐츠 생성
   Widget _buildPageContent({
@@ -200,8 +200,8 @@ Future<void> _fetchPyramidData() async {
         Positioned(
           top: 540,
           left: 230,
-          child: SvgPicture.asset(
-            svgAsset ?? "assets/devil.svg",
+          child: Image.asset(
+            svgAsset ?? "assets/devil.png",
             width: 180,
             height: 180,
           ),
@@ -266,8 +266,8 @@ Future<void> _fetchPyramidData() async {
         Positioned(
           top: 540,
           left: 230,
-          child: SvgPicture.asset(
-            "assets/devil.svg",
+          child: Image.asset(
+            "assets/devil.png",
             width: 180,
             height: 180,
           ),
@@ -350,31 +350,36 @@ Future<void> _fetchPyramidData() async {
                     SizedBox(height: 20),
                     Stack(
                       children: [
-                        SvgPicture.asset(
-                          "assets/pyramid.svg", // 피라미드 이미지 경로
-                          width: 250,
-                          height: 250,
-                          fit: BoxFit.contain,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: SvgPicture.asset(
+                            "assets/pyramid.svg", // 피라미드 이미지 경로
+                            width: 250,
+                            height: 250,
+                            fit: BoxFit.contain,
+                          ),
                         ),
-                        Container(
-                          margin: EdgeInsets.only(top: 40),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: pyramidData.map((step) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 20, left: 87),
-                                child: Text(
-                                  step,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                        Center(
+                          child: Container(
+                            margin: EdgeInsets.only(top: 40),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: pyramidData.reversed.map((step) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 20, left: 0),
+                                  child: Text(
+                                    step,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ],
@@ -413,8 +418,8 @@ Future<void> _fetchPyramidData() async {
         Positioned(
           top: 590,
           left: 240,
-          child: SvgPicture.asset(
-            "assets/devil.svg",
+          child: Image.asset(
+            "assets/devil.png",
             width: 180,
             height: 180,
           ),
@@ -547,8 +552,8 @@ Future<void> _fetchPyramidData() async {
         Positioned(
           top: 540,
           left: 230,
-          child: SvgPicture.asset(
-            svgAsset ?? "assets/devil.svg",
+          child: Image.asset(
+            svgAsset ?? "assets/devil.png",
             width: 180,
             height: 180,
           ),
@@ -596,7 +601,7 @@ Future<void> _fetchPyramidData() async {
               pageNum: 7),
           _buildTestContent(
             text: "안녕!\n나는 은하수 생성을\n도와 줄 럭키야!",
-            svgAsset: "assets/lucky.svg",
+            svgAsset: "assets/lucky.png",
           ),
         ],
       ),

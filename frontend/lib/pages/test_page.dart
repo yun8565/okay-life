@@ -63,11 +63,11 @@ class _TestPageState extends State<TestPage> {
     );
 
     // 성공 처리
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("우주 목표가 성공적으로 등록되었습니다!"),
-      ),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text("우주 목표가 성공적으로 등록되었습니다!"),
+    //   ),
+    // );
 
     // 입력 필드 초기화 및 페이지 이동
     setState(() {
@@ -115,7 +115,7 @@ class _TestPageState extends State<TestPage> {
                     ),
                   ),
                   Text(
-                    "당신의 5년 뒤가 더욱 빛날 수 있도록\n중단기적 목표를 입력해주세요.",
+                    "당신의 5년 뒤가 더욱 빛날 수 있도록\n중장기적 목표를 입력해주세요.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.4),
