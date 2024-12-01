@@ -20,7 +20,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _checkAuthStatus() async {
-    final authState = Provider.of<AuthState>(context, listen: false); // AuthState 가져오기
+    final authState =
+        Provider.of<AuthState>(context, listen: false); // AuthState 가져오기
 
     try {
       // ApiClient를 통해 로컬에서 JWT 확인
@@ -30,7 +31,7 @@ class _SplashPageState extends State<SplashPage> {
         authState.login(jwt, {});
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => TestPage()),
+          MaterialPageRoute(builder: (context) => DashboardPage()),
         );
       } else {
         // JWT가 없으면 로그인 페이지로 이동
@@ -55,13 +56,13 @@ class _SplashPageState extends State<SplashPage> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/background.png'), 
+            image: AssetImage('assets/background.png'),
             fit: BoxFit.cover,
           ),
         ),
         child: Center(
           child: Lottie.asset(
-            "assets/planet.json", 
+            "assets/planet.json",
             width: 200,
           ),
         ),
