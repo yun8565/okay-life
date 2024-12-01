@@ -5,7 +5,7 @@ import com.spaceme.collection.dto.GalaxyThemeResponse;
 import com.spaceme.collection.dto.PlanetThemeResponse;
 import com.spaceme.collection.repository.GalaxyThemeRepository;
 import com.spaceme.collection.repository.PlanetThemeRepository;
-import com.spaceme.common.Status;
+import com.spaceme.common.domain.Status;
 import com.spaceme.planet.repository.PlanetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;

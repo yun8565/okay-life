@@ -9,6 +9,7 @@ import com.spaceme.mission.dto.response.MissionResponse;
 import com.spaceme.mission.repository.MissionRepository;
 import com.spaceme.planet.domain.Planet;
 import com.spaceme.planet.repository.PlanetRepository;
+import com.spaceme.planet.service.PlanetScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.spaceme.common.Status.CLEAR;
+import static com.spaceme.common.domain.Status.CLEAR;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
     private final PlanetRepository planetRepository;
+    private final PlanetScheduler planetScheduler;
 
     public List<MissionResponse> findAllMissionByPlanetId(Long planetId) {
         return missionRepository.findAllByPlanetId(planetId).stream()
@@ -65,6 +67,9 @@ public class MissionService {
                 .orElseThrow(() -> new NotFoundException("미션을 찾을 수 없습니다."));
 
         mission.updateStatus(CLEAR);
+        missionRepository.save(mission);
+
+        planetScheduler.checkPlanetAcquirable();
     }
 
     public void validateMission(Long userId, Long missionId) {

@@ -1,6 +1,6 @@
 package com.spaceme.planet.repository;
 
-import com.spaceme.common.Status;
+import com.spaceme.common.domain.Status;
 import com.spaceme.planet.domain.Planet;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

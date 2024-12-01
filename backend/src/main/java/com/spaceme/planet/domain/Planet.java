@@ -2,11 +2,11 @@ package com.spaceme.planet.domain;
 
 import com.spaceme.collection.domain.PlanetTheme;
 import com.spaceme.galaxy.domain.Galaxy;
-import com.spaceme.common.Status;
+import com.spaceme.common.domain.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static com.spaceme.common.Status.SOON;
+import static com.spaceme.common.domain.Status.SOON;
 
 @Entity
 @Getter
@@ -30,6 +30,7 @@ public class Planet {
     private String title;
 
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private Status status = SOON;
 
     @Column(nullable = false)

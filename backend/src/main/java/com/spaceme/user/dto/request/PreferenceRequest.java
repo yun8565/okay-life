@@ -1,6 +1,6 @@
 package com.spaceme.user.dto.request;
 
-import com.spaceme.common.AlienConcept;
+import com.spaceme.common.domain.AlienConcept;
 
 import java.util.Optional;
 

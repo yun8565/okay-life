@@ -1,6 +1,6 @@
 package com.spaceme.user.dto.response;
 
-import com.spaceme.common.AlienConcept;
+import com.spaceme.common.domain.AlienConcept;
 import com.spaceme.user.domain.User;
 import com.spaceme.user.domain.UserPreference;
 

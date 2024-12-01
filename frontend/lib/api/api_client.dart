@@ -195,6 +195,7 @@ static Future<Map<String, dynamic>?> patch(
     }
   }
 
+
   //! 로컬 저장소에서 JWT 가져오기
   static Future<String?> getJwt() async {
     final prefs = await SharedPreferences.getInstance();

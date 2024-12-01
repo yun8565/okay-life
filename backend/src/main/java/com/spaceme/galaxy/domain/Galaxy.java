@@ -27,10 +27,6 @@ public class Galaxy {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @ElementCollection
-    @Column(nullable = false)
-    private List<String> days;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 

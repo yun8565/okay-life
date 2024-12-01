@@ -1,6 +1,6 @@
 package com.spaceme.user.domain;
 
-import com.spaceme.common.AlienConcept;
+import com.spaceme.common.domain.AlienConcept;
 import jakarta.persistence.*;
 import lombok.*;
 

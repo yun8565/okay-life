@@ -85,7 +85,7 @@ public class GalaxyService {
         return planetRepository.save(
                 Planet.builder()
                         .galaxy(galaxy)
-                        .planetTheme(themeGenerator.getRandomPlanetTheme())
+                        .planetTheme(themeGenerator.getRandomPlanetTheme(galaxy.getGalaxyTheme()))
                         .createdBy(userId)
                         .title(planetResponse.title())
                         .build()
@@ -93,16 +93,22 @@ public class GalaxyService {
     }
 
     private void saveMissions(Long userId, Planet planet, List<ChatGPTMissionResponse> missions) {
-        missions.forEach(mission ->
-                missionRepository.save(
-                        Mission.builder()
-                                .planet(planet)
-                                .date(LocalDate.parse(mission.date()))
-                                .createdBy(userId)
-                                .content(mission.content())
-                                .build()
+        missions.stream()
+                .filter(mission -> isTodayOrFuture(LocalDate.parse(mission.date())))
+                .forEach(mission ->
+                    missionRepository.save(Mission.builder()
+                            .planet(planet)
+                            .date(LocalDate.parse(mission.date()))
+                            .createdBy(userId)
+                            .content(mission.content())
+                            .build()
                 )
         );
+    }
+
+    private boolean isTodayOrFuture(LocalDate date) {
+        LocalDate today = LocalDate.now();
+        return date.isEqual(today) || date.isAfter(today);
     }
 
     private Galaxy createGalaxy(PlanRequest planRequest, User user) {
@@ -112,7 +118,6 @@ public class GalaxyService {
                 .user(user)
                 .startDate(LocalDate.parse(planRequest.startDate()))
                 .endDate(LocalDate.parse(planRequest.endDate()))
-                .days(planRequest.days())
                 .build();
     }
 
@@ -123,7 +128,7 @@ public class GalaxyService {
 
         galaxy.updateGalaxyTheme(themeGenerator.getRandomGalaxyTheme());
         planetRepository.findByGalaxyId(galaxyId).forEach(planet ->
-                planet.updatePlanetTheme(themeGenerator.getRandomPlanetTheme())
+                planet.updatePlanetTheme(themeGenerator.getRandomPlanetTheme(galaxy.getGalaxyTheme()))
         );
     }
 

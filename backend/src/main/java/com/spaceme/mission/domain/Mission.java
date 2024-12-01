@@ -1,13 +1,13 @@
 package com.spaceme.mission.domain;
 
-import com.spaceme.common.Status;
+import com.spaceme.common.domain.Status;
 import com.spaceme.planet.domain.Planet;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 
-import static com.spaceme.common.Status.*;
+import static com.spaceme.common.domain.Status.*;
 
 @Entity
 @Getter

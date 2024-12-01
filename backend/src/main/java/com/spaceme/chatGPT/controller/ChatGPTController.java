@@ -24,11 +24,8 @@ public class ChatGPTController {
     }
 
     @PostMapping("/question")
-    public ResponseEntity<ThreeResponse> questionChatGPT(
-            @Auth Long userId,
-            @RequestBody GoalRequest goalRequest
-    ) {
-        return ResponseEntity.ok(chatGPTService.generateQuestions(userId, goalRequest));
+    public ResponseEntity<ThreeResponse> questionChatGPT(@RequestBody GoalRequest goalRequest) {
+        return ResponseEntity.ok(chatGPTService.generateQuestions(goalRequest));
     }
 
     @PostMapping("/plan")

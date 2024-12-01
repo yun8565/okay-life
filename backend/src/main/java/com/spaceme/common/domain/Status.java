@@ -1,4 +1,4 @@
-package com.spaceme.common;
+package com.spaceme.common.domain;
 
 public enum Status {
     SOON, FAILED, CLEAR, ON_PROGRESS, ACQUIRABLE;

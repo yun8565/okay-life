@@ -1,10 +1,10 @@
 package com.spaceme.notification.domain;
 
-import com.spaceme.common.AlienConcept;
+import com.spaceme.common.domain.AlienConcept;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import static com.spaceme.common.AlienConcept.DEFAULT;
+import static com.spaceme.common.domain.AlienConcept.DEFAULT;
 
 @Entity
 @Getter
@@ -18,10 +18,4 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     private AlienConcept alienConcept = DEFAULT;
-
-    private int sent;
-
-    public void addSentCount() {
-        sent += 1;
-    }
 }

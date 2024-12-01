@@ -1,6 +1,6 @@
 package com.spaceme.planet.dto.response;
 
-import com.spaceme.common.Status;
+import com.spaceme.common.domain.Status;
 import com.spaceme.mission.dto.response.MissionResponse;
 import com.spaceme.planet.domain.Planet;
 

@@ -1,6 +1,6 @@
 package com.spaceme.mission.dto.response;
 
-import com.spaceme.common.Status;
+import com.spaceme.common.domain.Status;
 import com.spaceme.mission.domain.Mission;
 
 import java.time.LocalDate;

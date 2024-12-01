@@ -30,7 +30,7 @@ class _SplashPageState extends State<SplashPage> {
         authState.login(jwt, {});
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardPage()),
+          MaterialPageRoute(builder: (context) => TestPage()),
         );
       } else {
         // JWT가 없으면 로그인 페이지로 이동
