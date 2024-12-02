@@ -118,6 +118,10 @@ class _DashboardPageState extends State<DashboardPage> {
         otherGalaxies = galaxies; // 전체 은하수 목록 저장
         totalPlanetsCount =
             currentGalaxy?['planets']?.length ?? 0; // planets 개수 계산
+        ongoingPlanetsCount = currentGalaxy?['planets']
+              ?.where((planet) => planet['status'] != 'SOON')
+              .length ??
+          0;
         print("Current Galaxy: $currentGalaxy");
         print("Total Planets Count: $totalPlanetsCount");
         print(otherGalaxies); // 디버그 출력 추가
@@ -164,9 +168,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
 
       ongoingPlanetsCount = currentGalaxy?['planets']
-              ?.where((planet) =>
-                  planet['status'] != 'SOON' &&
-                  planet['status'] != 'ON_PROGRESS')
+              ?.where((planet) => planet['status'] != 'SOON')
               .length ??
           0;
       totalPlanetsCount = currentGalaxy?['planets']?.length ?? 0;

@@ -20,6 +20,8 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
   final List<String?> selectedDay = [];
   bool isLoading = false;
   int currentPage = 0;
+  int dotCount = 1; // 로딩 애니메이션 점 개수
+  late Timer _loadingTimer;
 
   PageController pageController = PageController();
 
@@ -33,12 +35,22 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
         currentPage = pageController.page!.round(); // 현재 페이지를 추적
       });
     });
+    _startLoadingAnimation();
   }
 
   @override
   void dispose() {
     pageController.dispose();
     super.dispose();
+  }
+
+  // 로딩 애니메이션 점 개수 조정
+  void _startLoadingAnimation() {
+    _loadingTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        dotCount = (dotCount % 3) + 1; // 1, 2, 3 반복
+      });
+    });
   }
 
   List<String> additionalQuestions = [];
@@ -111,7 +123,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
       ),
       child: Center(
         child: Text(
-          "로딩 중 ...",
+          "로딩 중 ${'.' * dotCount}",
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ),
