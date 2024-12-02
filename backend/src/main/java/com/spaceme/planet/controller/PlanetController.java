@@ -33,4 +33,9 @@ public class PlanetController {
     ) {
         return ResponseEntity.ok(planetService.acquirePlanet(userId, planetId));
     }
+
+    @PutMapping("/test/{planetId}")
+    public void updatePlanetAndMissions(@PathVariable Long planetId) {
+        planetService.updatePlanetAndMissions(planetId);
+    }
 }
