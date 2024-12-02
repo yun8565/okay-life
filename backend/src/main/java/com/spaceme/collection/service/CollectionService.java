@@ -56,7 +56,8 @@ public class CollectionService {
     private ThemeStatus determineStatus(Status status) {
         return switch (status) {
             case CLEAR -> ACQUIRED;
-            case SOON, FAILED, ACQUIRABLE, ON_PROGRESS -> DISCOVERED;
+            case FAILED, ACQUIRABLE, ON_PROGRESS -> DISCOVERED;
+            case SOON -> HIDDEN;
         };
     }
 }
