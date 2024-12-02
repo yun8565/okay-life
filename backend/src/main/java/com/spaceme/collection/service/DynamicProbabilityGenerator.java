@@ -29,12 +29,14 @@ public class DynamicProbabilityGenerator {
 
         int randomValue = random.nextInt(totalWeight) + 1;
 
-        return themes.stream()
-                .reduce((selected, next) -> {
-                    int cumulativeWeight = weightFunction.apply(selected) + weightFunction.apply(next);
-                    return randomValue <= cumulativeWeight ? next : selected;
-                })
-                .orElseThrow(() -> new InternalServerException("테마를 선택하는 과정에서 오류가 발생했습니다."));
+        int cumulativeWeight = 0;
+        for (T theme : themes) {
+            cumulativeWeight += weightFunction.apply(theme);
+            if (randomValue <= cumulativeWeight)
+                return theme;
+        }
+
+        throw new InternalServerException("테마를 선택하는 과정에서 오류가 발생했습니다.");
     }
 
     public GalaxyTheme getRandomGalaxyTheme() {
