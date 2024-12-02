@@ -36,7 +36,7 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
     {
       "background": "assets/galaxy_tutorial_bg_1.png",
       "message":
-          "은하수는 여러 테마가 있고 \n생성 시마다 랜덤으로\n테마가 배정 돼\n이번엔 럭키가\n강아지 은하수를 만들어줬어!",
+          "은하수는 여러 테마가 있고 \n생성 시마다 랜덤으로\n테마가 배정 돼!",
       "focused": false,
       "lineStart": {"x": 150.0, "y": 500.0},
     },
@@ -214,14 +214,9 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
                                     )
                                   : ElevatedButton(
                                       onPressed: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) => GalaxyPage(
-                                              
-                                        //     ),
-                                        //   ),
-                                        // );
+                                        onPressed: () {
+                                          Navigator.pop(context, widget.galaxyId); // GalaxyPage로 돌아감
+                                        };
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Color(0xff0a1c4c),

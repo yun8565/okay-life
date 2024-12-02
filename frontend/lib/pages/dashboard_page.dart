@@ -119,9 +119,9 @@ class _DashboardPageState extends State<DashboardPage> {
         totalPlanetsCount =
             currentGalaxy?['planets']?.length ?? 0; // planets 개수 계산
         ongoingPlanetsCount = currentGalaxy?['planets']
-              ?.where((planet) => planet['status'] != 'SOON')
-              .length ??
-          0;
+                ?.where((planet) => planet['status'] != 'SOON')
+                .length ??
+            0;
         print("Current Galaxy: $currentGalaxy");
         print("Total Planets Count: $totalPlanetsCount");
         print(otherGalaxies); // 디버그 출력 추가
@@ -183,17 +183,23 @@ class _DashboardPageState extends State<DashboardPage> {
     await _checkFirstVisit();
 
     if (isFirstGalaxyVisit) {
-      // 방문한 적이 없으면 설명 페이지로 이동
-      Navigator.push(
+      // 방문한 적이 없으면 튜토리얼 페이지로 이동
+      final returnedGalaxyId = await Navigator.push<int>(
         context,
         MaterialPageRoute(
-            builder: (context) => GalaxyTutorialPage(
-                  galaxyId: galaxy['galaxyId'],
-                )),
+          builder: (context) => GalaxyTutorialPage(
+            galaxyId: galaxy['galaxyId'],
+          ),
+        ),
       );
 
-      // 방문 기록 저장
-      await _setFirstVisit();
+      // 튜토리얼 완료 후 방문 기록 저장
+      if (returnedGalaxyId != null) {
+        await _setFirstVisit();
+
+        // 튜토리얼 완료 후 갤럭시 페이지로 이동
+        _fetchGalaxyDetailsAndNavigate(returnedGalaxyId);
+      }
 
       // 플래그 업데이트
       setState(() {
@@ -315,7 +321,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       } else if (snapshot.hasData) {
                         final userName = snapshot.data!;
                         return Padding(
-                          padding: const EdgeInsets.only(top: 110, left: 40),
+                          padding: const EdgeInsets.only(top: 110, left: 20),
                           child: Container(
                             alignment: Alignment.centerLeft,
                             padding: EdgeInsets.all(20),

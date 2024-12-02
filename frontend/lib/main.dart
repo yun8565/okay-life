@@ -117,7 +117,7 @@ class LocalPushNotifications {
           backgroundHandler, // backgroundHandler 등록
     );
 
-    await scheduleTestNotification();
+    // await scheduleTestNotification();
     // await scheduleDailyNotificationAt();
   }
 
