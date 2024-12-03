@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:okay_life_app/api/api_client.dart';
+import 'package:okay_life_app/pages/dashboard_page.dart';
 import 'package:okay_life_app/pages/overview_plan_page.dart';
 import 'package:xml/xml.dart';
 import 'package:okay_life_app/widgets/planet.dart';
@@ -22,6 +23,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
   List<bool> conquestStatus = []; // 각 행성 정복 상태
   List<String> userAnswers = [];
   List<TextEditingController> textControllers = [];
+  bool showTestButton = true;
 
   bool showPopup = false; // 팝업 표시 여부
   int currentPopupIndex = 0; // 현재 보여지는 팝업 인덱스
@@ -97,33 +99,50 @@ class _GalaxyPageState extends State<GalaxyPage> {
     );
   }
 
+  void _makePlanetAcquirable(int planetIndex) async {
+    final planetId = widget.galaxyData?['planets'][planetIndex]['planetId'];
+
+    try {
+      print("Sending PUT request to /test/$planetId...");
+      await ApiClient.put('/planets/test/$planetId');
+
+      setState(() {
+        widget.galaxyData?['planets'][planetIndex]['status'] = 'ACQUIRABLE';
+        showTestButton = false;
+      });
+      print("Planet $planetId is now ACQUIRABLE.");
+    } catch (e) {
+      print("Error making planet acquirable: $e");
+    }
+  }
+
   final Map<String, String> themeNameToKorean = {
-  "bichon": "비숑 행성",
-  "candy": "사탕 행성",
-  "chocolate": "초콜릿 행성",
-  "cupcake": "컵 케이크 행성",
-  "dalmatian": "달마시안 행성",
-  "doughnut": "도넛 행성",
-  "earth": "지구 행성",
-  "ice_cream": "아이스크림 행성",
-  "macaron": "마카롱 행성",
-  "mars": "화성 행성",
-  "mercury": "수성 행성",
-  "moon": "달 행성",
-  "neptune": "해왕성 행성",
-  "piece_of_cake": "조각 케이크 행성",
-  "pug": "퍼그 행성",
-  "saturn": "토성 행성",
-  "schnauzer": "슈나우저 행성",
-  "shiba": "시바견 행성",
-  "sigor_jabson": "시고르자브종 행성",
-  "spitz": "스피츠 행성",
-  "st_bernard": "세인트 버나드 행성",
-  "sun": "태양 행성",
-  "venus": "금성 행성",
-  "waffle": "금성 행성"
-  // 나머지 17개의 themeName을 여기에 추가
-};
+    "bichon": "비숑 행성",
+    "candy": "사탕 행성",
+    "chocolate": "초콜릿 행성",
+    "cupcake": "컵 케이크 행성",
+    "dalmatian": "달마시안 행성",
+    "doughnut": "도넛 행성",
+    "earth": "지구 행성",
+    "ice_cream": "아이스크림 행성",
+    "macaron": "마카롱 행성",
+    "mars": "화성 행성",
+    "mercury": "수성 행성",
+    "moon": "달 행성",
+    "neptune": "해왕성 행성",
+    "piece_of_cake": "조각 케이크 행성",
+    "pug": "퍼그 행성",
+    "saturn": "토성 행성",
+    "schnauzer": "슈나우저 행성",
+    "shiba": "시바견 행성",
+    "sigor_jabson": "시고르자브종 행성",
+    "spitz": "스피츠 행성",
+    "st_bernard": "세인트 버나드 행성",
+    "sun": "태양 행성",
+    "venus": "금성 행성",
+    "waffle": "금성 행성"
+    // 나머지 17개의 themeName을 여기에 추가
+  };
 
   void _handleConquest(int planetIndex) async {
     final planetId = widget.galaxyData?['planets'][planetIndex]['planetId'];
@@ -143,7 +162,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
       final int clearRatio = responseData?['clearRatio'];
 
       // themeName을 매핑된 한글 이름으로 변환
-    final String displayTheme = themeNameToKorean[planetTheme] ?? planetTheme;
+      final String displayTheme = themeNameToKorean[planetTheme] ?? planetTheme;
 
       // 팝업 컨텐츠 업데이트
       setState(() {
@@ -155,7 +174,8 @@ class _GalaxyPageState extends State<GalaxyPage> {
         };
         popupContent[1] = {
           "title": "",
-          "contents": acquired ? '$displayTheme\n정복 성공' : '$displayTheme\n정복 실패',
+          "contents":
+              acquired ? '$displayTheme\n정복 성공' : '$displayTheme\n정복 실패',
           "description": acquired ? "정복한 행성은 도감에서 볼 수 있어요!" : "다음 기회를 노려봐요!",
           "input": false,
         };
@@ -239,6 +259,24 @@ class _GalaxyPageState extends State<GalaxyPage> {
               fit: BoxFit.cover,
             ),
           ),
+          if (showTestButton)
+            Positioned(
+              top: 150,
+              right: 20,
+              child: ElevatedButton(
+                onPressed: () {
+                  _makePlanetAcquirable(0); // 상태 변경
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(130, 40),
+                  backgroundColor: Colors.white24,
+                ),
+                child: Text(
+                  "테스트",
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ),
+            ),
           Positioned(
             top: 80,
             right: 20,
@@ -352,7 +390,8 @@ class _GalaxyPageState extends State<GalaxyPage> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 20),
                                 child: TextField(
-                                  controller: textControllers[currentPopupIndex],
+                                  controller:
+                                      textControllers[currentPopupIndex],
                                   onSubmitted: (value) {
                                     if (value.isNotEmpty) {
                                       setState(() {
@@ -391,8 +430,7 @@ class _GalaxyPageState extends State<GalaxyPage> {
                                                 userAnswers.add(buttonText);
                                               });
                                               _handlePopupNext();
-                                              setState((){
-                                              });
+                                              setState(() {});
                                             },
                                             child: Container(
                                               width: 180,
@@ -448,7 +486,10 @@ class _GalaxyPageState extends State<GalaxyPage> {
             child: IconButton(
               icon: Icon(CupertinoIcons.back, color: Colors.white),
               onPressed: () {
-                Navigator.pop(context); // 이전 화면으로 이동
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => DashboardPage()),
+                );
               },
             ),
           ),
@@ -458,112 +499,122 @@ class _GalaxyPageState extends State<GalaxyPage> {
   }
 
   void _handlePopupNext() async {
-  // 유효성 검사
-  if (currentPopupIndex < 0 || currentPopupIndex >= popupContent.length) {
-    print("Invalid currentPopupIndex: $currentPopupIndex");
-    return;
-  }
+    // 유효성 검사
+    if (currentPopupIndex < 0 || currentPopupIndex >= popupContent.length) {
+      print("Invalid currentPopupIndex: $currentPopupIndex");
+      return;
+    }
 
-  final currentPopup = popupContent[currentPopupIndex];
-  final currentType = currentPopup["type"];
+    final currentPopup = popupContent[currentPopupIndex];
+    final currentType = currentPopup["type"];
 
-  print("Current Popup Index: $currentPopupIndex");
-  print("Current Popup Type: $currentType");
+    print("Current Popup Index: $currentPopupIndex");
+    print("Current Popup Type: $currentType");
 
-  try {
-    if (currentType == "difficulty") {
-      // "어려웠어", "쉬웠어", "괜찮았어" 처리
-      final userChoice = userAnswers.isNotEmpty ? userAnswers.last : null;
+    try {
+      if (currentType == "difficulty") {
+        // "어려웠어", "쉬웠어", "괜찮았어" 처리
+        final userChoice = userAnswers.isNotEmpty ? userAnswers.last : null;
 
-      print("User Choice: $userChoice");
+        print("User Choice: $userChoice");
 
-      if (userChoice == "어려웠어" || userChoice == "쉬웠어") {
+        if (userChoice == "어려웠어" || userChoice == "쉬웠어") {
+          setState(() {
+            if (popupContent.every((popup) => popup["type"] != "adjust_plan")) {
+              popupContent.add({
+                "type": "adjust_plan",
+                "title": "",
+                "contents": "그렇다면 계획을 수정할래?",
+                "description": "",
+                "input": true,
+                "inputType": "button",
+                "buttonOptions": ["아니, 괜찮아", "수정하고 싶어"],
+              });
+            }
+            currentPopupIndex++;
+          });
+        } else if (userChoice == "괜찮았어") {
+          // "괜찮았어" 선택 시 POST 요청 후 팝업 종료
+          await _submitReviewAnswers(); // POST 요청
+          setState(() {
+            showPopup = false; // 팝업 종료
+            currentPopupIndex = 0; // 초기화
+          });
+        }
+      } else if (currentType == "adjust_plan") {
+        // "계획 수정 여부" 질문 처리
+        final userChoice = userAnswers.isNotEmpty ? userAnswers.last : null;
+
+        print("User Choice in adjust_plan: $userChoice");
+
+        if (userChoice == "아니, 괜찮아") {
+          await _submitReviewAnswers(); // POST 요청
+          setState(() {
+            showPopup = false; // 팝업 종료
+            currentPopupIndex = 0; // 초기화
+          });
+        } else if (userChoice == "수정하고 싶어") {
+          await _submitReviewAnswers(); // POST 요청
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OverviewPlanPage(
+                galaxyData: widget.galaxyData,
+              ),
+            ),
+          );
+        }
+      } else if (currentPopupIndex < popupContent.length - 1) {
+        // 다음 팝업으로 이동
         setState(() {
-          if (popupContent.every((popup) => popup["type"] != "adjust_plan")) {
-            popupContent.add({
-              "type": "adjust_plan",
-              "title": "",
-              "contents": "그렇다면 계획을 수정할래?",
-              "description": "",
-              "input": true,
-              "inputType": "button",
-              "buttonOptions": ["아니, 괜찮아", "수정하고 싶어"],
-            });
-          }
           currentPopupIndex++;
         });
-      } else if (userChoice == "괜찮았어") {
-        // "괜찮았어" 선택 시 POST 요청 후 팝업 종료
+      } else {
+        // 마지막 팝업 처리 후 종료
         await _submitReviewAnswers(); // POST 요청
         setState(() {
-          showPopup = false; // 팝업 종료
+          showPopup = false;
           currentPopupIndex = 0; // 초기화
         });
       }
-    } else if (currentType == "adjust_plan") {
-      // "계획 수정 여부" 질문 처리
-      final userChoice = userAnswers.isNotEmpty ? userAnswers.last : null;
-
-      print("User Choice in adjust_plan: $userChoice");
-
-      if (userChoice == "아니, 괜찮아") {
-        await _submitReviewAnswers(); // POST 요청
-        setState(() {
-          showPopup = false; // 팝업 종료
-          currentPopupIndex = 0; // 초기화
-        });
-      } else if (userChoice == "수정하고 싶어") {
-        await _submitReviewAnswers(); // POST 요청
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OverviewPlanPage(
-              galaxyData: widget.galaxyData,
-            ),
-          ),
-        );
-      }
-    } else if (currentPopupIndex < popupContent.length - 1) {
-      // 다음 팝업으로 이동
-      setState(() {
-        currentPopupIndex++;
-      });
-    } else {
-      // 마지막 팝업 처리 후 종료
-      await _submitReviewAnswers(); // POST 요청
-      setState(() {
-        showPopup = false;
-        currentPopupIndex = 0; // 초기화
-      });
+    } catch (e) {
+      print("Error in _handlePopupNext: $e");
     }
-  } catch (e) {
-    print("Error in _handlePopupNext: $e");
   }
-}
+
   Future<void> _submitReviewAnswers() async {
-  try {
-    final planetId =
-        widget.galaxyData?['planets'][activePlanetIndex]['planetId'];
-    // 사용자 답변 데이터 준비
-    final data = {
-      "planetId": planetId,
-      "keep": textControllers[popupContent.indexWhere((popup) => popup["type"] == "keep")].text.trim(),
-      "problem": textControllers[popupContent.indexWhere((popup) => popup["type"] == "problem")].text.trim(),
-      "tryNext": textControllers[popupContent.indexWhere((popup) => popup["type"] == "try")].text.trim(),
-    };
-    
-    print("Submitting review data: $data");
+    try {
+      final planetId =
+          widget.galaxyData?['planets'][activePlanetIndex]['planetId'];
+      // 사용자 답변 데이터 준비
+      final data = {
+        "planetId": planetId,
+        "keep": textControllers[
+                popupContent.indexWhere((popup) => popup["type"] == "keep")]
+            .text
+            .trim(),
+        "problem": textControllers[
+                popupContent.indexWhere((popup) => popup["type"] == "problem")]
+            .text
+            .trim(),
+        "tryNext": textControllers[
+                popupContent.indexWhere((popup) => popup["type"] == "try")]
+            .text
+            .trim(),
+      };
 
-    final response = await ApiClient.post('/reviews', data: data);
-    if (response != null) {
-      print("Review answers submitted successfully: $response");
-    } else {
-      print("Server returned null response");
+      print("Submitting review data: $data");
+
+      final response = await ApiClient.post('/reviews', data: data);
+      if (response != null) {
+        print("Review answers submitted successfully: $response");
+      } else {
+        print("Server returned null response");
+      }
+    } catch (e) {
+      print("Error in _submitReviewAnswers: $e");
     }
-  } catch (e) {
-    print("Error in _submitReviewAnswers: $e");
   }
-}
 
   bool _shouldShowConquestButton(int index) {
     final planet = widget.galaxyData?['planets'][index];
@@ -625,12 +676,12 @@ class _GalaxyPageState extends State<GalaxyPage> {
   List<Offset> get routeOffsets {
     final int planetCount = widget.galaxyData?['planets'].length;
     if (planetCount == 3) {
-      return [Offset(120, 180), Offset(100, 520)];
+      return [Offset(100, 180), Offset(60, 500)];
     } else if (planetCount == 4) {
       return [
-        Offset(181, 210),
-        Offset(76, 390),
-        Offset(170, 580),
+        Offset(161, 200),
+        Offset(76, 360),
+        Offset(170, 530),
       ];
     } else if (planetCount == 5) {
       return [
@@ -647,13 +698,13 @@ class _GalaxyPageState extends State<GalaxyPage> {
     final int planetCount = widget.galaxyData?['planets'].length;
 
     if (planetCount == 3) {
-      return [Offset(20, 200), Offset(250, 400), Offset(100, 720)][index];
+      return [Offset(0, 200), Offset(220, 390), Offset(70, 700)][index];
     } else if (planetCount == 4) {
       return [
         Offset(50, 140),
-        Offset(282, 260),
-        Offset(43, 575),
-        Offset(257, 713),
+        Offset(252, 260),
+        Offset(43, 535),
+        Offset(257, 663),
       ][index];
     } else if (planetCount == 5) {
       return [

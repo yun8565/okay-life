@@ -193,14 +193,6 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       );
 
-      // 튜토리얼 완료 후 방문 기록 저장
-      if (returnedGalaxyId != null) {
-        await _setFirstVisit();
-
-        // 튜토리얼 완료 후 갤럭시 페이지로 이동
-        _fetchGalaxyDetailsAndNavigate(returnedGalaxyId);
-      }
-
       // 플래그 업데이트
       setState(() {
         isFirstGalaxyVisit = false;

@@ -12,6 +12,7 @@ import 'package:okay_life_app/pages/galaxy_page.dart';
 import 'package:okay_life_app/pages/setting_page.dart';
 import 'package:okay_life_app/pages/splash_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -48,6 +49,8 @@ void main() async {
   );
 
   // ApiClient.deleteJwt();
+  // 삭제: 은하수를 방문했는지 확인하는 로컬 데이터 삭제
+  await _deleteVisitedGalaxyData();
 
   runApp(
     MultiProvider(
@@ -57,6 +60,13 @@ void main() async {
       child: MyApp(initialRoute: initialRoute),
     ),
   );
+}
+
+/// 방문 여부 데이터를 삭제하는 함수
+Future<void> _deleteVisitedGalaxyData() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('visitedGalaxy');
+  debugPrint('Visited galaxy data deleted.');
 }
 
 class MyApp extends StatelessWidget {
@@ -190,7 +200,7 @@ class LocalPushNotifications {
       );
 
       final tz.TZDateTime scheduledDate =
-          tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10)); // 10초 뒤
+          tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)); // 10초 뒤
 
       await flutterLocalNotificationsPlugin.zonedSchedule(
         1, // 다른 Notification ID

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:okay_life_app/api/api_client.dart';
 import 'package:okay_life_app/pages/galaxy_page.dart';
 
 class GalaxyTutorialPage extends StatefulWidget {
@@ -71,6 +72,38 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
     setState(() {
       _currentPage = page;
     });
+  }
+
+  Future<void> _fetchGalaxyDetailsAndNavigate(int galaxyId) async {
+    try {
+      // API 호출로 데이터 가져오기
+      final List<dynamic> response = await ApiClient.get('/galaxies');
+
+      // galaxyId에 해당하는 갤럭시 선택
+      final Map<String, dynamic>? selectedGalaxy = response.firstWhere(
+        (galaxy) => galaxy['galaxyId'] == galaxyId,
+        orElse: () => null, // 없으면 null 반환
+      );
+
+      if (selectedGalaxy == null) {
+        throw Exception('해당 galaxyId에 대한 데이터를 찾을 수 없습니다.');
+      }
+
+      // GalaxyPage로 데이터 전달
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GalaxyPage(
+            galaxyData: selectedGalaxy, // 전달할 갤럭시 데이터
+          ),
+        ),
+      );
+    } catch (error) {
+      // 에러 처리
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text("은하수 데이터를 가져오지 못했습니다: $error")),
+      // );
+    }
   }
 
   @override
@@ -214,9 +247,8 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
                                     )
                                   : ElevatedButton(
                                       onPressed: () {
-                                        onPressed: () {
-                                          Navigator.pop(context, widget.galaxyId); // GalaxyPage로 돌아감
-                                        };
+                                        _fetchGalaxyDetailsAndNavigate(
+                                            widget.galaxyId); // GalaxyPage로 돌아감
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Color(0xff0a1c4c),

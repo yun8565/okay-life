@@ -43,41 +43,41 @@ class ApiClient {
   }
 
   //! POST
-static Future<dynamic> post(
-  String path, {
-  Map<String, dynamic>? data,
-}) async {
-  try {
-    final jwt = await getJwt();
-    final response = await _dio.post(
-      path,
-      data: data,
-      options: Options(
-        headers: {
-          if (jwt != null) 'Authorization': 'Bearer $jwt',
-        },
-      ),
-    );
+  static Future<dynamic> post(
+    String path, {
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final jwt = await getJwt();
+      final response = await _dio.post(
+        path,
+        data: data,
+        options: Options(
+          headers: {
+            if (jwt != null) 'Authorization': 'Bearer $jwt',
+          },
+        ),
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      // 응답이 JSON 객체인지 확인
-      if (response.data is Map<String, dynamic>) {
-        return response.data as Map<String, dynamic>;
-      } else if (response.data is String) {
-        // JSON 문자열일 경우 파싱
-        return response.data; // 파싱을 원하면 `jsonDecode(response.data)` 추가
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // 응답이 JSON 객체인지 확인
+        if (response.data is Map<String, dynamic>) {
+          return response.data as Map<String, dynamic>;
+        } else if (response.data is String) {
+          // JSON 문자열일 경우 파싱
+          return response.data; // 파싱을 원하면 `jsonDecode(response.data)` 추가
+        }
+        return response.data; // 기타 응답 처리
+      } else if (response.statusCode == 204) {
+        return null; // No Content
+      } else {
+        throw Exception('Unhandled status code: ${response.statusCode}');
       }
-      return response.data; // 기타 응답 처리
-    } else if (response.statusCode == 204) {
-      return null; // No Content
-    } else {
-      throw Exception('Unhandled status code: ${response.statusCode}');
+    } catch (error) {
+      _handleError(error);
+      rethrow;
     }
-  } catch (error) {
-    _handleError(error);
-    rethrow;
   }
-}
 
   //! POST with Headers
   static Future<Response> postWithHeaders(
@@ -112,38 +112,38 @@ static Future<dynamic> post(
   }
 
   //! PATCH
-static Future<Map<String, dynamic>?> patch(
-  String path, {
-  Map<String, dynamic>? data,
-}) async {
-  try {
-    final jwt = await getJwt();
-    final response = await _dio.patch(
-      path,
-      data: data,
-      options: Options(
-        headers: {
-          if (jwt != null) 'Authorization': 'Bearer $jwt',
-        },
-      ),
-    );
+  static Future<Map<String, dynamic>?> patch(
+    String path, {
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final jwt = await getJwt();
+      final response = await _dio.patch(
+        path,
+        data: data,
+        options: Options(
+          headers: {
+            if (jwt != null) 'Authorization': 'Bearer $jwt',
+          },
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      return response.data as Map<String, dynamic>;
-    } else if (response.statusCode == 204) {
-      // No Content
-      return null; // 반환값 없음
-    } else {
-      throw Exception('Unhandled status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      } else if (response.statusCode == 204) {
+        // No Content
+        return null; // 반환값 없음
+      } else {
+        throw Exception('Unhandled status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      _handleError(error);
+      rethrow;
     }
-  } catch (error) {
-    _handleError(error);
-    rethrow;
   }
-}
 
   //! PUT
-  static Future<Map<String, dynamic>?> put(
+  static Future<dynamic> put(
     String path, {
     Map<String, dynamic>? data,
   }) async {
@@ -160,7 +160,14 @@ static Future<Map<String, dynamic>?> patch(
       );
 
       if (response.statusCode == 200) {
-        return response.data as Map<String, dynamic>;
+        final responseData = response.data;
+        // 응답이 Map 형태인지 확인
+        if (responseData is Map<String, dynamic>) {
+          return responseData;
+        } else {
+          // Map이 아니라면 그대로 반환 (e.g., String 응답)
+          return responseData;
+        }
       } else if (response.statusCode == 204) {
         // No Content
         return null; // 반환값 없음
@@ -194,7 +201,6 @@ static Future<Map<String, dynamic>?> patch(
       rethrow;
     }
   }
-
 
   //! 로컬 저장소에서 JWT 가져오기
   static Future<String?> getJwt() async {
