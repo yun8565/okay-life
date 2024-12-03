@@ -32,7 +32,7 @@ public class CollectionService {
         LinkedHashMap<Long, ThemeStatus> planetMap = planetRepository.findAllByUserId(userId).stream()
                 .collect(Collectors.toMap(planet -> planet.getPlanetTheme().getId(),
                         planet -> determineStatus(planet.getStatus()),
-                        (existing, replacement) -> existing,
+                        ThemeStatus::getHigherPriority,
                         LinkedHashMap::new
                 ));
 
