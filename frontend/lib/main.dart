@@ -48,7 +48,7 @@ void main() async {
     javaScriptAppKey: 'c85dd45dd6a8bc233775dd97496eeaad',
   );
 
-  ApiClient.deleteJwt();
+  // ApiClient.deleteJwt();
   // 삭제: 은하수를 방문했는지 확인하는 로컬 데이터 삭제
   await _deleteVisitedGalaxyData();
 
@@ -200,7 +200,7 @@ class LocalPushNotifications {
       );
 
       final tz.TZDateTime scheduledDate =
-          tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10)); // 10초 뒤
+          tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)); // 10초 뒤
 
       await flutterLocalNotificationsPlugin.zonedSchedule(
         1, // 다른 Notification ID

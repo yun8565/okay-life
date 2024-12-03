@@ -81,18 +81,10 @@ class _CollectionPageState extends State<CollectionPage> {
             ),
           ),
           Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              const Text(
-                "은하수 도감",
-                style: TextStyle(
-                  fontFamily: "Open Sans",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 70),
               Expanded(
                 child: FutureBuilder<List<GalaxyTheme>>(
                   future: _galaxies,

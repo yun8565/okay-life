@@ -36,8 +36,7 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
     },
     {
       "background": "assets/galaxy_tutorial_bg_1.png",
-      "message":
-          "은하수는 여러 테마가 있고 \n생성 시마다 랜덤으로\n테마가 배정 돼!",
+      "message": "은하수는 여러 테마가 있고 \n생성 시마다 랜덤으로\n테마가 배정 돼!",
       "focused": false,
       "lineStart": {"x": 150.0, "y": 500.0},
     },
@@ -90,11 +89,11 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
       }
 
       // GalaxyPage로 데이터 전달
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => GalaxyPage(
-            galaxyData: selectedGalaxy, // 선택된 갤럭시 데이터 전달
+            galaxyData: selectedGalaxy, // 전달할 갤럭시 데이터
           ),
         ),
       );
@@ -247,7 +246,8 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
                                     )
                                   : ElevatedButton(
                                       onPressed: () {
-                                          _fetchGalaxyDetailsAndNavigate(widget.galaxyId); // GalaxyPage로 돌아감
+                                        _fetchGalaxyDetailsAndNavigate(
+                                            widget.galaxyId); // GalaxyPage로 돌아감
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Color(0xff0a1c4c),
