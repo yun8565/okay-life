@@ -48,7 +48,7 @@ void main() async {
     javaScriptAppKey: 'c85dd45dd6a8bc233775dd97496eeaad',
   );
 
-  // ApiClient.deleteJwt();
+  ApiClient.deleteJwt();
   // 삭제: 은하수를 방문했는지 확인하는 로컬 데이터 삭제
   await _deleteVisitedGalaxyData();
 
