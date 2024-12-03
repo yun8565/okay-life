@@ -131,7 +131,6 @@ class LocalPushNotifications {
     // await scheduleDailyNotificationAt();
   }
 
-  
   static Future<void> scheduleDailyNotificationAt(String time) async {
     try {
       // 시간 파싱 (오전/오후 포함)
@@ -152,12 +151,11 @@ class LocalPushNotifications {
         scheduledDate = scheduledDate.add(const Duration(days: 1));
       }
 
-       // 백엔드에서 알림 내용 가져오기
+      // 백엔드에서 알림 내용 가져오기
       final notificationData = await ApiClient.get('/notifications'); // API 경로
 
       final String title = '우주 정복';
       final String body = notificationData?['message'] ?? '기본 내용';
-
 
       const DarwinNotificationDetails iosNotificationDetails =
           DarwinNotificationDetails();
@@ -182,11 +180,10 @@ class LocalPushNotifications {
     }
   }
 
-
   // 10초 뒤 테스트 알림 추가
   static Future<void> scheduleTestNotification() async {
     try {
-       // 백엔드에서 알림 내용 가져오기
+      // 백엔드에서 알림 내용 가져오기
       final notificationData = await ApiClient.get('/notifications'); // API 경로
 
       final String title = '우주 정복';
