@@ -1,9 +1,11 @@
 package com.spaceme.planet.service;
 
 import com.spaceme.collection.service.DynamicProbabilityGenerator;
+import com.spaceme.common.domain.Status;
 import com.spaceme.common.exception.BadRequestException;
 import com.spaceme.common.exception.ForbiddenException;
 import com.spaceme.common.exception.NotFoundException;
+import com.spaceme.mission.domain.Mission;
 import com.spaceme.mission.repository.MissionRepository;
 import com.spaceme.mission.service.MissionService;
 import com.spaceme.planet.domain.Planet;
@@ -100,5 +102,16 @@ public class PlanetService {
         Optional.of(planetRepository.existsByIdAndCreatedBy(planetId, userId))
                 .filter(Boolean::booleanValue)
                 .orElseThrow(() -> new ForbiddenException("접근 권한이 없습니다."));
+    }
+
+    @Transactional
+    public void updatePlanetAndMissions(Long planetId) {
+
+        Planet planet = planetRepository.findById(planetId)
+                .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
+
+        List<Mission> missions = missionRepository.findAllByPlanetId(planet.getId());
+        missions.forEach(mission -> mission.updateStatus(Status.CLEAR));
+        planet.updateStatus(Status.ACQUIRABLE);
     }
 }
