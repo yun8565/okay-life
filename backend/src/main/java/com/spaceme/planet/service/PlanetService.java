@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static com.spaceme.common.domain.Status.*;
 
@@ -111,7 +112,13 @@ public class PlanetService {
                 .orElseThrow(() -> new NotFoundException("행성을 찾을 수 없습니다."));
 
         List<Mission> missions = missionRepository.findAllByPlanetId(planet.getId());
-        missions.forEach(mission -> mission.updateStatus(Status.CLEAR));
+        int size = missions.size();
+        int clearCount = size / 2;
+
+        IntStream.range(0, size).forEach(i -> missions.get(i).updateStatus(
+                i < clearCount ? CLEAR : FAILED)
+        );
+
         planet.updateStatus(Status.ACQUIRABLE);
     }
 }

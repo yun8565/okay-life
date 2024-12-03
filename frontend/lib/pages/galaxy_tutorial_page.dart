@@ -36,7 +36,8 @@ class _GalaxyTutorialPageState extends State<GalaxyTutorialPage> {
     },
     {
       "background": "assets/galaxy_tutorial_bg_1.png",
-      "message": "은하수는 여러 테마가 있고 \n생성 시마다 랜덤으로\n테마가 배정 돼!",
+      "message":
+          "은하수는 여러 테마가 있고 \n생성 시마다 랜덤으로\n테마가 배정 돼!",
       "focused": false,
       "lineStart": {"x": 150.0, "y": 500.0},
     },

@@ -193,11 +193,6 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       );
 
-        await _setFirstVisit();
-
-        // 튜토리얼 완료 후 갤럭시 페이지로 이동
-        _fetchGalaxyDetailsAndNavigate(galaxy['galaxyId']);
-
       // 플래그 업데이트
       setState(() {
         isFirstGalaxyVisit = false;
