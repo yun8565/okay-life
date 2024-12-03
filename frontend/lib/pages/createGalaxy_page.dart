@@ -91,7 +91,7 @@ class _CreateGalaxyPageState extends State<CreateGalaxyPage> {
           if (additionalQuestions.isEmpty)
             Positioned(
               top: 670,
-              left: 250,
+              right: 20,
               child: Image.asset(
                 "assets/lucky.png",
                 width: 180,
@@ -688,7 +688,7 @@ class TypingEffect extends StatefulWidget {
 
   TypingEffect({
     required this.fullText,
-    this.typingSpeed = const Duration(milliseconds: 100),
+    this.typingSpeed = const Duration(milliseconds: 70),
   });
 
   @override

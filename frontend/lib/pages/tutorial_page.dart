@@ -486,21 +486,6 @@ class _TutorialPageState extends State<TutorialPage> {
                         ),
                       ),
                     ),
-                  GestureDetector(
-                    onTap: () {
-                      _pageController.jumpToPage(7);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(right: 70),
-                      width: 150,
-                      height: 30,
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "skip",
-                        style: TextStyle(color: Colors.white38, fontSize: 16),
-                      ),
-                    ),
-                  ),
                 ],
               ),
               Container(
@@ -615,7 +600,7 @@ class TypingEffect extends StatefulWidget {
 
   TypingEffect({
     required this.fullText,
-    this.typingSpeed = const Duration(milliseconds: 100),
+    this.typingSpeed = const Duration(milliseconds: 70),
   });
 
   @override
